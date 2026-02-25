@@ -35,6 +35,186 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
   late FindInventoryModel _model;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
+  int _currentPage = 1;
+  int _pageTotal = 1;
+  int _perPage = 25;
+  int _itemsTotal = 0;
+  int? _nextPage;
+  int? _prevPage;
+  bool _isPaginationLoading = false;
+  List<int>? _activeInventoryIdList;
+  final Map<int, InventoryStruct> _inventoryLookup = {};
+
+  List<InventoryListingStruct> _parseInventoryListingItems(
+    dynamic responseBody,
+  ) {
+    final itemsJson = getJsonField(responseBody, r'''$.items''');
+    final source = itemsJson is List
+        ? itemsJson
+        : (responseBody is List ? responseBody : <dynamic>[]);
+
+    return source
+        .map<InventoryListingStruct?>((item) {
+          if (item is! Map) {
+            return null;
+          }
+
+          final itemMap = item.cast<String, dynamic>();
+          final listing = InventoryListingStruct.maybeFromMap(itemMap);
+          if (listing == null) {
+            return null;
+          }
+
+          final inlineInventory = InventoryStruct.maybeFromMap(itemMap['items']);
+          final shouldHydrateInventory = !listing.hasInventory() ||
+              listing.inventory.id == 0 ||
+              listing.inventory.itemName.isEmpty;
+
+          if (shouldHydrateInventory && inlineInventory != null) {
+            listing.inventory = inlineInventory;
+          }
+
+          if ((listing.inventory.id == 0 || listing.inventory.itemName.isEmpty) &&
+              _inventoryLookup.containsKey(listing.inventoryId)) {
+            listing.inventory = _inventoryLookup[listing.inventoryId];
+          }
+
+          return listing;
+        })
+        .withoutNulls
+        .toList()
+        .cast<InventoryListingStruct>();
+  }
+
+  List<int> _parseInventoryIds(dynamic responseBody) {
+    final source = _parseInventorySource(responseBody);
+
+    return source
+        .map<InventoryStruct?>(InventoryStruct.maybeFromMap)
+        .withoutNulls
+        .map((e) => e.id)
+        .where((id) => id != 0)
+        .toList();
+  }
+
+  List<dynamic> _parseInventorySource(dynamic responseBody) {
+    if (responseBody is List) {
+      return responseBody;
+    }
+    final itemsJson = getJsonField(responseBody, r'''$.items''');
+    if (itemsJson is List) {
+      return itemsJson;
+    }
+    return <dynamic>[];
+  }
+
+  void _cacheInventoryLookup(dynamic responseBody) {
+    final inventoryList = _parseInventorySource(responseBody)
+        .map<InventoryStruct?>(InventoryStruct.maybeFromMap)
+        .withoutNulls;
+
+    for (final inventory in inventoryList) {
+      if (inventory.id != 0) {
+        _inventoryLookup[inventory.id] = inventory;
+      }
+    }
+  }
+
+  int? _asInt(dynamic value) {
+    if (value == null) {
+      return null;
+    }
+    if (value is int) {
+      return value;
+    }
+    if (value is num) {
+      return value.toInt();
+    }
+    if (value is String) {
+      return int.tryParse(value);
+    }
+    return null;
+  }
+
+  void _applyPagingState(dynamic responseBody) {
+    final paging = getJsonField(responseBody, r'''$.paging''');
+    final page = _asInt(getJsonField(paging, r'''$.page''')) ??
+        _asInt(getJsonField(responseBody, r'''$.curPage''')) ??
+        _asInt(getJsonField(responseBody, r'''$.page''')) ??
+        1;
+    final perPage = _asInt(getJsonField(paging, r'''$.per_page''')) ??
+        _asInt(getJsonField(responseBody, r'''$.perPage''')) ??
+        _perPage;
+    final itemsTotal = _asInt(getJsonField(paging, r'''$.items_total''')) ??
+        _asInt(getJsonField(responseBody, r'''$.itemsTotal''')) ??
+        _asInt(getJsonField(responseBody, r'''$.itemsReceived''')) ??
+        _itemsTotal;
+    final pageTotal = _asInt(getJsonField(paging, r'''$.page_total''')) ??
+        _asInt(getJsonField(responseBody, r'''$.pageTotal''')) ??
+        _pageTotal;
+    final nextPage = _asInt(getJsonField(paging, r'''$.next_page''')) ??
+        _asInt(getJsonField(responseBody, r'''$.nextPage'''));
+    final prevPage = _asInt(getJsonField(paging, r'''$.prev_page''')) ??
+        _asInt(getJsonField(responseBody, r'''$.prevPage'''));
+
+    _currentPage = page > 0 ? page : 1;
+    _perPage = perPage > 0 ? perPage : 25;
+    _itemsTotal = itemsTotal >= 0 ? itemsTotal : 0;
+    _pageTotal = pageTotal > 0
+        ? pageTotal
+        : (_itemsTotal > 0 && _perPage > 0
+            ? ((_itemsTotal + _perPage - 1) ~/ _perPage)
+            : 1);
+    _nextPage = nextPage ?? (_currentPage < _pageTotal ? _currentPage + 1 : null);
+    _prevPage = prevPage ?? (_currentPage > 1 ? _currentPage - 1 : null);
+  }
+
+  Future<void> _loadInventoryPage(int page) async {
+    if (_isPaginationLoading) {
+      return;
+    }
+
+    _isPaginationLoading = true;
+    safeSetState(() {});
+
+    final response = await InventoryListingGroup.inventoryListGetCall.call(
+      branchId: FFAppState().branchId,
+      inventoryIdList: _activeInventoryIdList,
+      expiryDate:
+          _model.chosenDate != null ? _model.chosenDate?.millisecondsSinceEpoch : 0,
+      page: page,
+      perPage: _perPage,
+    );
+
+    if ((response.succeeded)) {
+      _model.inventoryItems = _parseInventoryListingItems(response.jsonBody);
+      _applyPagingState(response.jsonBody);
+    } else {
+      await showDialog(
+        context: context,
+        builder: (alertDialogContext) {
+          return AlertDialog(
+            title: Text('Error (Inventory Pagination)'),
+            content: Text(
+              getJsonField(
+                (response.jsonBody ?? ''),
+                r'''$.message''',
+              ).toString(),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(alertDialogContext),
+                child: Text('Ok'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+
+    _isPaginationLoading = false;
+    safeSetState(() {});
+  }
 
   @override
   void initState() {
@@ -54,31 +234,24 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
       );
 
       if ((_model.searchInventory?.succeeded ?? true)) {
+        _cacheInventoryLookup(_model.searchInventory?.jsonBody);
+        final inventoryIds = _parseInventoryIds(_model.searchInventory?.jsonBody);
         _model.listInventoryLoad =
             await InventoryListingGroup.inventoryListGetCall.call(
           branchId: FFAppState().branchId,
-          inventoryIdList: ((_model.searchInventory?.jsonBody ?? '')
-                  .toList()
-                  .map<InventoryStruct?>(InventoryStruct.maybeFromMap)
-                  .toList() as Iterable<InventoryStruct?>)
-              .withoutNulls
-              ?.map((e) => e.id)
-              .toList(),
+          inventoryIdList: inventoryIds,
           expiryDate: _model.chosenDate != null
               ? _model.chosenDate?.millisecondsSinceEpoch
               : 0,
+          page: 1,
+          perPage: _perPage,
         );
 
         if ((_model.listInventoryLoad?.succeeded ?? true)) {
-          _model.inventoryItems = ((_model.listInventoryLoad?.jsonBody ?? '')
-                  .toList()
-                  .map<InventoryListingStruct?>(
-                    InventoryListingStruct.maybeFromMap,
-                  )
-                  .toList() as Iterable<InventoryListingStruct?>)
-              .withoutNulls
-              .toList()
-              .cast<InventoryListingStruct>();
+          _model.inventoryItems =
+              _parseInventoryListingItems(_model.listInventoryLoad?.jsonBody);
+          _applyPagingState(_model.listInventoryLoad?.jsonBody);
+          _activeInventoryIdList = inventoryIds;
           safeSetState(() {});
         } else {
           await showDialog(
@@ -145,6 +318,12 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
   @override
   Widget build(BuildContext context) {
     context.watch<FFAppState>();
+    final canGoPrev =
+        !_isPaginationLoading && (_prevPage != null || _currentPage > 1);
+    final canGoNext =
+        !_isPaginationLoading && (_nextPage != null || _currentPage < _pageTotal);
+    final showPaginationControls =
+        _pageTotal > 1 || _nextPage != null || _prevPage != null;
 
     return GestureDetector(
       onTap: () {
@@ -227,6 +406,13 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
                                       if ((_model.searchInventorySubmit
                                               ?.succeeded ??
                                           true)) {
+                                        _cacheInventoryLookup(
+                                          _model.searchInventorySubmit?.jsonBody,
+                                        );
+                                        final inventoryIds =
+                                            _parseInventoryIds(
+                                          _model.searchInventorySubmit?.jsonBody,
+                                        );
                                         _model.listInventorySubmit =
                                             await InventoryListingGroup
                                                 .inventoryListGetCall
@@ -236,41 +422,22 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
                                               ? _model.chosenDate
                                                   ?.millisecondsSinceEpoch
                                               : 0,
-                                          inventoryIdList:
-                                              ((_model.searchInventorySubmit
-                                                                  ?.jsonBody ??
-                                                              '')
-                                                          .toList()
-                                                          .map<InventoryStruct?>(
-                                                            InventoryStruct
-                                                                .maybeFromMap,
-                                                          )
-                                                          .toList()
-                                                      as Iterable<
-                                                          InventoryStruct?>)
-                                                  .withoutNulls
-                                                  ?.map((e) => e.id)
-                                                  .toList(),
+                                          inventoryIdList: inventoryIds,
+                                          page: 1,
+                                          perPage: _perPage,
                                         );
 
                                         if ((_model.listInventorySubmit
                                                 ?.succeeded ??
                                             true)) {
-                                          _model.inventoryItems = ((_model
-                                                              .listInventorySubmit
-                                                              ?.jsonBody ??
-                                                          '')
-                                                      .toList()
-                                                      .map<InventoryListingStruct?>(
-                                                        InventoryListingStruct
-                                                            .maybeFromMap,
-                                                      )
-                                                      .toList()
-                                                  as Iterable<
-                                                      InventoryListingStruct?>)
-                                              .withoutNulls
-                                              .toList()
-                                              .cast<InventoryListingStruct>();
+                                          _model.inventoryItems =
+                                              _parseInventoryListingItems(
+                                            _model.listInventorySubmit?.jsonBody,
+                                          );
+                                          _applyPagingState(
+                                            _model.listInventorySubmit?.jsonBody,
+                                          );
+                                          _activeInventoryIdList = inventoryIds;
                                           safeSetState(() {});
                                         } else {
                                           await showDialog(
@@ -590,35 +757,31 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
                                                           .call(
                                                     branchId:
                                                         FFAppState().branchId,
+                                                    inventoryIdList:
+                                                        _activeInventoryIdList,
                                                     expiryDate: _model
                                                                 .chosenDate !=
                                                             null
                                                         ? _model.chosenDate
                                                             ?.millisecondsSinceEpoch
                                                         : 0,
+                                                    page: 1,
+                                                    perPage: _perPage,
                                                   );
 
                                                   if ((_model.listInventory
                                                           ?.succeeded ??
                                                       true)) {
                                                     _model
-                                                        .inventoryItems = ((_model
-                                                                        .listInventory
-                                                                        ?.jsonBody ??
-                                                                    '')
-                                                                .toList()
-                                                                .map<
-                                                                    InventoryListingStruct?>(
-                                                                  InventoryListingStruct
-                                                                      .maybeFromMap,
-                                                                )
-                                                                .toList()
-                                                            as Iterable<
-                                                                InventoryListingStruct?>)
-                                                        .withoutNulls
-                                                        .toList()
-                                                        .cast<
-                                                            InventoryListingStruct>();
+                                                        .inventoryItems =
+                                                    _parseInventoryListingItems(
+                                                      _model
+                                                          .listInventory?.jsonBody,
+                                                    );
+                                                    _applyPagingState(
+                                                      _model
+                                                          .listInventory?.jsonBody,
+                                                    );
                                                     safeSetState(() {});
                                                   } else {
                                                     await showDialog(
@@ -1104,48 +1267,37 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
 
                                       if ((_model.searchInventory?.succeeded ??
                                           true)) {
+                                        _cacheInventoryLookup(
+                                          _model.searchInventory?.jsonBody,
+                                        );
+                                        final inventoryIds =
+                                            _parseInventoryIds(
+                                          _model.searchInventory?.jsonBody,
+                                        );
                                         _model.listInventory =
                                             await InventoryListingGroup
                                                 .inventoryListGetCall
                                                 .call(
                                           branchId: FFAppState().branchId,
-                                          inventoryIdList: ((_model
-                                                              .searchInventory
-                                                              ?.jsonBody ??
-                                                          '')
-                                                      .toList()
-                                                      .map<InventoryStruct?>(
-                                                        InventoryStruct
-                                                            .maybeFromMap,
-                                                      )
-                                                      .toList()
-                                                  as Iterable<InventoryStruct?>)
-                                              .withoutNulls
-                                              ?.map((e) => e.id)
-                                              .toList(),
+                                          inventoryIdList: inventoryIds,
                                           expiryDate: _model.chosenDate != null
                                               ? _model.chosenDate
                                                   ?.millisecondsSinceEpoch
                                               : 0,
+                                          page: 1,
+                                          perPage: _perPage,
                                         );
 
                                         if ((_model.listInventory?.succeeded ??
                                             true)) {
-                                          _model.inventoryItems = ((_model
-                                                              .listInventory
-                                                              ?.jsonBody ??
-                                                          '')
-                                                      .toList()
-                                                      .map<InventoryListingStruct?>(
-                                                        InventoryListingStruct
-                                                            .maybeFromMap,
-                                                      )
-                                                      .toList()
-                                                  as Iterable<
-                                                      InventoryListingStruct?>)
-                                              .withoutNulls
-                                              .toList()
-                                              .cast<InventoryListingStruct>();
+                                          _model.inventoryItems =
+                                              _parseInventoryListingItems(
+                                            _model.listInventory?.jsonBody,
+                                          );
+                                          _applyPagingState(
+                                            _model.listInventory?.jsonBody,
+                                          );
+                                          _activeInventoryIdList = inventoryIds;
                                           safeSetState(() {});
                                         } else {
                                           await showDialog(
@@ -1300,42 +1452,47 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
                                               hoverColor: Colors.transparent,
                                               highlightColor:
                                                   Colors.transparent,
-                                              onTap: () async {
+                                            onTap: () async {
+                                                final inventoryIds = [
+                                                  inventoryOptionsItem.id,
+                                                ];
+                                                if (inventoryOptionsItem.id != 0) {
+                                                  _inventoryLookup[
+                                                      inventoryOptionsItem.id] =
+                                                      inventoryOptionsItem;
+                                                }
                                                 _model.inventoryListing =
                                                     await InventoryListingGroup
                                                         .inventoryListGetCall
                                                         .call(
                                                   branchId:
                                                       FFAppState().branchId,
+                                                  inventoryIdList: inventoryIds,
                                                   expiryDate:
                                                       valueOrDefault<int>(
                                                     _model.chosenDate
                                                         ?.millisecondsSinceEpoch,
                                                     0,
                                                   ),
+                                                  page: 1,
+                                                  perPage: _perPage,
                                                 );
 
                                                 if ((_model.inventoryListing
                                                         ?.succeeded ??
                                                     true)) {
                                                   _model
-                                                      .inventoryItems = ((_model
-                                                                      .inventoryListing
-                                                                      ?.jsonBody ??
-                                                                  '')
-                                                              .toList()
-                                                              .map<
-                                                                  InventoryListingStruct?>(
-                                                                InventoryListingStruct
-                                                                    .maybeFromMap,
-                                                              )
-                                                              .toList()
-                                                          as Iterable<
-                                                              InventoryListingStruct?>)
-                                                      .withoutNulls
-                                                      .toList()
-                                                      .cast<
-                                                          InventoryListingStruct>();
+                                                      .inventoryItems =
+                                                  _parseInventoryListingItems(
+                                                    _model
+                                                        .inventoryListing?.jsonBody,
+                                                  );
+                                                  _applyPagingState(
+                                                    _model
+                                                        .inventoryListing?.jsonBody,
+                                                  );
+                                                  _activeInventoryIdList =
+                                                      inventoryIds;
                                                   safeSetState(() {});
                                                 } else {
                                                   await showDialog(
@@ -1449,11 +1606,11 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
                         ),
                       ),
                       if ((_model.inventoryItems.isNotEmpty) == true)
-                        Padding(
-                          padding: EdgeInsetsDirectional.fromSTEB(
-                            8.0,
-                            0.0,
-                            0.0,
+                      Padding(
+                        padding: EdgeInsetsDirectional.fromSTEB(
+                          8.0,
+                          0.0,
+                          0.0,
                             0.0,
                           ),
                           child: Text(
@@ -1475,9 +1632,21 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
                                       fontStyle: FlutterFlowTheme.of(
                                         context,
                                       ).bodyLarge.fontStyle,
-                                    ),
+                            ),
                           ),
                         ),
+                      Padding(
+                        padding: EdgeInsetsDirectional.fromSTEB(
+                          8.0,
+                          0.0,
+                          0.0,
+                          0.0,
+                        ),
+                        child: Text(
+                          'Tap any item card to view movement history.',
+                          style: FlutterFlowTheme.of(context).labelSmall,
+                        ),
+                      ),
                       if ((_model.inventoryItems.isNotEmpty) == false)
                         Padding(
                           padding: EdgeInsetsDirectional.fromSTEB(
@@ -1538,43 +1707,81 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
                                   8.0,
                                   6.0,
                                 ),
-                                child: Container(
-                                  width: double.infinity,
-                                  decoration: BoxDecoration(
-                                    color: FlutterFlowTheme.of(
-                                      context,
-                                    ).secondaryBackground,
-                                    boxShadow: [
-                                      BoxShadow(
-                                        blurRadius: 2.0,
-                                        color: Color(0x33000000),
-                                        offset: Offset(0.0, 1.0),
-                                      ),
-                                    ],
-                                    borderRadius: BorderRadius.circular(8.0),
-                                    border: Border.all(
+                                child: InkWell(
+                                  splashColor: Colors.transparent,
+                                  focusColor: Colors.transparent,
+                                  hoverColor: Colors.transparent,
+                                  highlightColor: Colors.transparent,
+                                  onTap: () async {
+                                    final branchLabel = FFAppState()
+                                            .branchLists
+                                            .where(
+                                              (e) =>
+                                                  e.id == inventoryItemItem.branchId,
+                                            )
+                                            .toList()
+                                            .firstOrNull
+                                            ?.label ??
+                                        FFAppState().branch;
+                                    await context.pushNamed(
+                                      ItemMovementHistoryWidget.routeName,
+                                      queryParameters: {
+                                        'inventoryId': serializeParam(
+                                          inventoryItemItem.inventoryId,
+                                          ParamType.int,
+                                        ),
+                                        'itemName': serializeParam(
+                                          inventoryItemItem.inventory.itemName,
+                                          ParamType.String,
+                                        ),
+                                        'branch': serializeParam(
+                                          branchLabel,
+                                          ParamType.String,
+                                        ),
+                                        'expiryDate': serializeParam(
+                                          inventoryItemItem.expiryDate,
+                                          ParamType.int,
+                                        ),
+                                      }.withoutNulls,
+                                    );
+                                  },
+                                  child: Container(
+                                    width: double.infinity,
+                                    decoration: BoxDecoration(
                                       color: FlutterFlowTheme.of(
                                         context,
-                                      ).alternate,
-                                      width: 1.0,
-                                    ),
-                                  ),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.max,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Container(
-                                        width: double.infinity,
-                                        decoration: BoxDecoration(
-                                          color: FlutterFlowTheme.of(
-                                            context,
-                                          ).secondaryBackground,
-                                          borderRadius: BorderRadius.circular(
-                                            8.0,
-                                          ),
+                                      ).secondaryBackground,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          blurRadius: 2.0,
+                                          color: Color(0x33000000),
+                                          offset: Offset(0.0, 1.0),
                                         ),
-                                        child: Row(
+                                      ],
+                                      borderRadius: BorderRadius.circular(8.0),
+                                      border: Border.all(
+                                        color: FlutterFlowTheme.of(
+                                          context,
+                                        ).alternate,
+                                        width: 1.0,
+                                      ),
+                                    ),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.max,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Container(
+                                          width: double.infinity,
+                                          decoration: BoxDecoration(
+                                            color: FlutterFlowTheme.of(
+                                              context,
+                                            ).secondaryBackground,
+                                            borderRadius: BorderRadius.circular(
+                                              8.0,
+                                            ),
+                                          ),
+                                          child: Row(
                                           mainAxisSize: MainAxisSize.max,
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,
@@ -2215,9 +2422,9 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
                                               ),
                                             ),
                                           ],
+                                          ),
                                         ),
-                                      ),
-                                      Row(
+                                        Row(
                                         mainAxisSize: MainAxisSize.max,
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
@@ -2230,8 +2437,9 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
                                             ),
                                           ),
                                         ],
-                                      ),
-                                    ].addToEnd(SizedBox(height: 10.0)),
+                                        ),
+                                      ].addToEnd(SizedBox(height: 10.0)),
+                                    ),
                                   ),
                                 ),
                               );
@@ -2239,6 +2447,164 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
                           );
                         },
                       ),
+                      if (showPaginationControls)
+                        Container(
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: FlutterFlowTheme.of(context).secondaryBackground,
+                            borderRadius: BorderRadius.circular(14.0),
+                            border: Border.all(
+                              color: FlutterFlowTheme.of(context).alternate,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                blurRadius: 10.0,
+                                color: Color(0x12000000),
+                                offset: Offset(0.0, 3.0),
+                              ),
+                            ],
+                          ),
+                          child: Padding(
+                            padding: EdgeInsetsDirectional.fromSTEB(
+                              12.0,
+                              12.0,
+                              12.0,
+                              12.0,
+                            ),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.max,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Page $_currentPage of $_pageTotal',
+                                          style: FlutterFlowTheme.of(context)
+                                              .titleSmall
+                                              .override(
+                                                font: GoogleFonts.interTight(
+                                                  fontWeight: FlutterFlowTheme.of(
+                                                    context,
+                                                  ).titleSmall.fontWeight,
+                                                  fontStyle: FlutterFlowTheme.of(
+                                                    context,
+                                                  ).titleSmall.fontStyle,
+                                                ),
+                                                letterSpacing: 0.0,
+                                                fontWeight:
+                                                    FlutterFlowTheme.of(context)
+                                                        .titleSmall
+                                                        .fontWeight,
+                                                fontStyle:
+                                                    FlutterFlowTheme.of(context)
+                                                        .titleSmall
+                                                        .fontStyle,
+                                              ),
+                                        ),
+                                        Text(
+                                          '$_itemsTotal items total • $_perPage per page',
+                                          style: FlutterFlowTheme.of(context)
+                                              .labelSmall,
+                                        ),
+                                      ],
+                                    ),
+                                    if (_isPaginationLoading)
+                                      SizedBox(
+                                        width: 18.0,
+                                        height: 18.0,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2.2,
+                                          color: FlutterFlowTheme.of(context)
+                                              .primary,
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: SizedBox(
+                                        height: 42.0,
+                                        child: TextButton.icon(
+                                          onPressed: canGoPrev
+                                              ? () async {
+                                                  await _loadInventoryPage(
+                                                    _prevPage ??
+                                                        (_currentPage - 1),
+                                                  );
+                                                }
+                                              : null,
+                                          icon: Icon(Icons.chevron_left_rounded),
+                                          label: Text('Previous'),
+                                          style: TextButton.styleFrom(
+                                            backgroundColor: canGoPrev
+                                                ? FlutterFlowTheme.of(context)
+                                                    .secondaryBackground
+                                                : FlutterFlowTheme.of(context)
+                                                    .alternate,
+                                            foregroundColor: canGoPrev
+                                                ? FlutterFlowTheme.of(context)
+                                                    .primaryText
+                                                : FlutterFlowTheme.of(context)
+                                                    .secondaryText,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(10.0),
+                                              side: BorderSide(
+                                                color:
+                                                    FlutterFlowTheme.of(context)
+                                                        .alternate,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(width: 10.0),
+                                    Expanded(
+                                      child: SizedBox(
+                                        height: 42.0,
+                                        child: TextButton.icon(
+                                          onPressed: canGoNext
+                                              ? () async {
+                                                  await _loadInventoryPage(
+                                                    _nextPage ??
+                                                        (_currentPage + 1),
+                                                  );
+                                                }
+                                              : null,
+                                          icon:
+                                              Icon(Icons.chevron_right_rounded),
+                                          label: Text('Next'),
+                                          style: TextButton.styleFrom(
+                                            backgroundColor: canGoNext
+                                                ? FlutterFlowTheme.of(context)
+                                                    .primary
+                                                : FlutterFlowTheme.of(context)
+                                                    .alternate,
+                                            foregroundColor: canGoNext
+                                                ? Colors.white
+                                                : FlutterFlowTheme.of(context)
+                                                    .secondaryText,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(10.0),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ].divide(SizedBox(height: 12.0)),
+                            ),
+                          ),
+                        ),
                     ].divide(SizedBox(height: 12.0)),
                   ),
                 ),

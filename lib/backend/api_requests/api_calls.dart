@@ -231,19 +231,22 @@ class InventoryListGetCall {
     int? branchId = 0,
     List<int>? inventoryIdList,
     int? expiryDate = 0,
+    int? page = 1,
+    int? perPage = 25,
   }) async {
-    final baseUrl = InventoryListingGroup.getBaseUrl();
     final inventoryId = _serializeList(inventoryIdList);
 
     return ApiManager.instance.makeApiCall(
       callName: 'inventoryListGet',
-      apiUrl: '${baseUrl}/inventory_listing',
+      apiUrl: 'https://xqoc-ewo0-x3u2.s2.xano.io/api:0o-ZhGP6/inventory_listing',
       callType: ApiCallType.GET,
       headers: {},
       params: {
         'branch_id': branchId,
         'inventory_id': inventoryId,
         'expiry_date': expiryDate,
+        'page': page,
+        'per_page': perPage,
       },
       returnBody: true,
       encodeBodyUtf8: false,
@@ -291,6 +294,9 @@ class InventoryMovementGroup {
       InventoryMovementGetCall();
   static InventoryMovementPostCall inventoryMovementPostCall =
       InventoryMovementPostCall();
+  static ItemHistoryCall itemHistoryCall = ItemHistoryCall();
+  static ItemMovementDeleteCall itemMovementDeleteCall =
+      ItemMovementDeleteCall();
 }
 
 class InventoryMovementGetCall {
@@ -378,6 +384,69 @@ class InventoryMovementPostCall {
       cache: false,
       isStreamingApi: false,
       alwaysAllowBody: false,
+    );
+  }
+}
+
+class ItemHistoryCall {
+  Future<ApiCallResponse> call({
+    String? inventoryId = '',
+    String? expiryDate = '',
+    String? branch = '',
+    int? page = 1,
+    int? perPage = 25,
+  }) async {
+    return ApiManager.instance.makeApiCall(
+      callName: 'itemHistory',
+      apiUrl: 'https://xqoc-ewo0-x3u2.s2.xano.io/api:0o-ZhGP6/item_history',
+      callType: ApiCallType.GET,
+      headers: {},
+      params: {
+        'inventory_id': inventoryId,
+        'expiry_date': expiryDate,
+        'branch': branch,
+        'page': page,
+        'per_page': perPage,
+      },
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: false,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
+    );
+  }
+}
+
+class ItemMovementDeleteCall {
+  Future<ApiCallResponse> call({
+    String? inventoryMovementId = '',
+    String? inventoryId = '',
+    String? branch = '',
+    String? expiryDate = '',
+  }) async {
+    final ffApiRequestBody = '''
+{
+  "inventory_movement_id": "${escapeStringForJson(inventoryMovementId)}",
+  "inventory_id": "${escapeStringForJson(inventoryId)}",
+  "branch": "${escapeStringForJson(branch)}",
+  "expiry_date": "${escapeStringForJson(expiryDate)}"
+}''';
+    return ApiManager.instance.makeApiCall(
+      callName: 'itemMovementDelete',
+      apiUrl:
+          'https://xqoc-ewo0-x3u2.s2.xano.io/api:0o-ZhGP6/item_movement_delete',
+      callType: ApiCallType.DELETE,
+      headers: {},
+      params: {},
+      body: ffApiRequestBody,
+      bodyType: BodyType.JSON,
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: false,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: true,
     );
   }
 }

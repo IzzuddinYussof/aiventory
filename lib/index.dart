@@ -14,3 +14,5 @@ export '/upload_carousell/upload_carousell_widget.dart'
 export '/carousell_update/carousell_update_widget.dart'
     show CarousellUpdateWidget;
 export '/cart/cart_widget.dart' show CartWidget;
+export '/item_movement_history/item_movement_history_widget.dart'
+    show ItemMovementHistoryWidget;

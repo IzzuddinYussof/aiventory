@@ -214,6 +214,28 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           builder: (context, params) => CarousellUpdateWidget(),
         ),
         FFRoute(
+          name: ItemMovementHistoryWidget.routeName,
+          path: ItemMovementHistoryWidget.routePath,
+          builder: (context, params) => ItemMovementHistoryWidget(
+            inventoryId: params.getParam(
+              'inventoryId',
+              ParamType.int,
+            ),
+            itemName: params.getParam(
+              'itemName',
+              ParamType.String,
+            ),
+            branch: params.getParam(
+              'branch',
+              ParamType.String,
+            ),
+            expiryDate: params.getParam(
+              'expiryDate',
+              ParamType.int,
+            ),
+          ),
+        ),
+        FFRoute(
           name: CartWidget.routeName,
           path: CartWidget.routePath,
           builder: (context, params) => CartWidget(
