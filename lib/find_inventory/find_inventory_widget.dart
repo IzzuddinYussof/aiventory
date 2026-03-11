@@ -41,9 +41,24 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
   int _itemsTotal = 0;
   int? _nextPage;
   int? _prevPage;
+  bool _isPageLoading = false;
   bool _isPaginationLoading = false;
   List<int>? _activeInventoryIdList;
   final Map<int, InventoryStruct> _inventoryLookup = {};
+
+  Future<void> _runWithPageLoading(Future<void> Function() action) async {
+    if (_isPageLoading) {
+      return;
+    }
+    _isPageLoading = true;
+    safeSetState(() {});
+    try {
+      await action();
+    } finally {
+      _isPageLoading = false;
+      safeSetState(() {});
+    }
+  }
 
   List<InventoryListingStruct> _parseInventoryListingItems(
     dynamic responseBody,
@@ -65,7 +80,8 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
             return null;
           }
 
-          final inlineInventory = InventoryStruct.maybeFromMap(itemMap['items']);
+          final inlineInventory =
+              InventoryStruct.maybeFromMap(itemMap['items']);
           final shouldHydrateInventory = !listing.hasInventory() ||
               listing.inventory.id == 0 ||
               listing.inventory.itemName.isEmpty;
@@ -74,7 +90,8 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
             listing.inventory = inlineInventory;
           }
 
-          if ((listing.inventory.id == 0 || listing.inventory.itemName.isEmpty) &&
+          if ((listing.inventory.id == 0 ||
+                  listing.inventory.itemName.isEmpty) &&
               _inventoryLookup.containsKey(listing.inventoryId)) {
             listing.inventory = _inventoryLookup[listing.inventoryId];
           }
@@ -165,7 +182,8 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
         : (_itemsTotal > 0 && _perPage > 0
             ? ((_itemsTotal + _perPage - 1) ~/ _perPage)
             : 1);
-    _nextPage = nextPage ?? (_currentPage < _pageTotal ? _currentPage + 1 : null);
+    _nextPage =
+        nextPage ?? (_currentPage < _pageTotal ? _currentPage + 1 : null);
     _prevPage = prevPage ?? (_currentPage > 1 ? _currentPage - 1 : null);
   }
 
@@ -180,8 +198,9 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
     final response = await InventoryListingGroup.inventoryListGetCall.call(
       branchId: FFAppState().branchId,
       inventoryIdList: _activeInventoryIdList,
-      expiryDate:
-          _model.chosenDate != null ? _model.chosenDate?.millisecondsSinceEpoch : 0,
+      expiryDate: _model.chosenDate != null
+          ? _model.chosenDate?.millisecondsSinceEpoch
+          : 0,
       page: page,
       perPage: _perPage,
     );
@@ -223,45 +242,69 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
 
     // On page load action.
     SchedulerBinding.instance.addPostFrameCallback((_) async {
-      FFAppState().branch = FFAppState().branch;
-      safeSetState(() {});
-      _model.chosenDate =
-          widget!.expiryDate != null ? widget!.expiryDate : null;
-      safeSetState(() {});
-      _model.searchInventory = await InventoryGroup.inventoryCall.call(
-        name: _model.searchItemTextController.text,
-        supplier: _model.searchSupplierTextController.text,
-      );
-
-      if ((_model.searchInventory?.succeeded ?? true)) {
-        _cacheInventoryLookup(_model.searchInventory?.jsonBody);
-        final inventoryIds = _parseInventoryIds(_model.searchInventory?.jsonBody);
-        _model.listInventoryLoad =
-            await InventoryListingGroup.inventoryListGetCall.call(
-          branchId: FFAppState().branchId,
-          inventoryIdList: inventoryIds,
-          expiryDate: _model.chosenDate != null
-              ? _model.chosenDate?.millisecondsSinceEpoch
-              : 0,
-          page: 1,
-          perPage: _perPage,
+      await _runWithPageLoading(() async {
+        FFAppState().branch = FFAppState().branch;
+        safeSetState(() {});
+        _model.chosenDate =
+            widget!.expiryDate != null ? widget!.expiryDate : null;
+        safeSetState(() {});
+        _model.searchInventory = await InventoryGroup.inventoryCall.call(
+          name: _model.searchItemTextController.text,
+          supplier: _model.searchSupplierTextController.text,
         );
 
-        if ((_model.listInventoryLoad?.succeeded ?? true)) {
-          _model.inventoryItems =
-              _parseInventoryListingItems(_model.listInventoryLoad?.jsonBody);
-          _applyPagingState(_model.listInventoryLoad?.jsonBody);
-          _activeInventoryIdList = inventoryIds;
-          safeSetState(() {});
+        if ((_model.searchInventory?.succeeded ?? true)) {
+          _cacheInventoryLookup(_model.searchInventory?.jsonBody);
+          final inventoryIds =
+              _parseInventoryIds(_model.searchInventory?.jsonBody);
+          _model.listInventoryLoad =
+              await InventoryListingGroup.inventoryListGetCall.call(
+            branchId: FFAppState().branchId,
+            inventoryIdList: inventoryIds,
+            expiryDate: _model.chosenDate != null
+                ? _model.chosenDate?.millisecondsSinceEpoch
+                : 0,
+            page: 1,
+            perPage: _perPage,
+          );
+
+          if ((_model.listInventoryLoad?.succeeded ?? true)) {
+            _model.inventoryItems =
+                _parseInventoryListingItems(_model.listInventoryLoad?.jsonBody);
+            _applyPagingState(_model.listInventoryLoad?.jsonBody);
+            _activeInventoryIdList = inventoryIds;
+            safeSetState(() {});
+          } else {
+            await showDialog(
+              context: context,
+              builder: (alertDialogContext) {
+                return AlertDialog(
+                  title: Text('Error (Inventory List Loading)'),
+                  content: Text(
+                    getJsonField(
+                      (_model.listInventoryLoad?.jsonBody ?? ''),
+                      r'''$.message''',
+                    ).toString(),
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(alertDialogContext),
+                      child: Text('Ok'),
+                    ),
+                  ],
+                );
+              },
+            );
+          }
         } else {
           await showDialog(
             context: context,
             builder: (alertDialogContext) {
               return AlertDialog(
-                title: Text('Error (Inventory List Loading)'),
+                title: Text('Error Search Inventory'),
                 content: Text(
                   getJsonField(
-                    (_model.listInventoryLoad?.jsonBody ?? ''),
+                    (_model.searchInventory?.jsonBody ?? ''),
                     r'''$.message''',
                   ).toString(),
                 ),
@@ -275,28 +318,7 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
             },
           );
         }
-      } else {
-        await showDialog(
-          context: context,
-          builder: (alertDialogContext) {
-            return AlertDialog(
-              title: Text('Error Search Inventory'),
-              content: Text(
-                getJsonField(
-                  (_model.searchInventory?.jsonBody ?? ''),
-                  r'''$.message''',
-                ).toString(),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(alertDialogContext),
-                  child: Text('Ok'),
-                ),
-              ],
-            );
-          },
-        );
-      }
+      });
     });
 
     _model.searchItemTextController ??= TextEditingController();
@@ -320,8 +342,8 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
     context.watch<FFAppState>();
     final canGoPrev =
         !_isPaginationLoading && (_prevPage != null || _currentPage > 1);
-    final canGoNext =
-        !_isPaginationLoading && (_nextPage != null || _currentPage < _pageTotal);
+    final canGoNext = !_isPaginationLoading &&
+        (_nextPage != null || _currentPage < _pageTotal);
     final showPaginationControls =
         _pageTotal > 1 || _nextPage != null || _prevPage != null;
 
@@ -394,62 +416,99 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
                                     controller: _model.searchItemTextController,
                                     focusNode: _model.searchItemFocusNode,
                                     onFieldSubmitted: (_) async {
-                                      _model.searchInventorySubmit =
-                                          await InventoryGroup.inventoryCall
-                                              .call(
-                                        name: _model
-                                            .searchItemTextController.text,
-                                        supplier: _model
-                                            .searchSupplierTextController.text,
-                                      );
-
-                                      if ((_model.searchInventorySubmit
-                                              ?.succeeded ??
-                                          true)) {
-                                        _cacheInventoryLookup(
-                                          _model.searchInventorySubmit?.jsonBody,
-                                        );
-                                        final inventoryIds =
-                                            _parseInventoryIds(
-                                          _model.searchInventorySubmit?.jsonBody,
-                                        );
-                                        _model.listInventorySubmit =
-                                            await InventoryListingGroup
-                                                .inventoryListGetCall
+                                      await _runWithPageLoading(() async {
+                                        _model.searchInventorySubmit =
+                                            await InventoryGroup.inventoryCall
                                                 .call(
-                                          branchId: FFAppState().branchId,
-                                          expiryDate: _model.chosenDate != null
-                                              ? _model.chosenDate
-                                                  ?.millisecondsSinceEpoch
-                                              : 0,
-                                          inventoryIdList: inventoryIds,
-                                          page: 1,
-                                          perPage: _perPage,
+                                          name: _model
+                                              .searchItemTextController.text,
+                                          supplier: _model
+                                              .searchSupplierTextController
+                                              .text,
                                         );
 
-                                        if ((_model.listInventorySubmit
+                                        if ((_model.searchInventorySubmit
                                                 ?.succeeded ??
                                             true)) {
-                                          _model.inventoryItems =
-                                              _parseInventoryListingItems(
-                                            _model.listInventorySubmit?.jsonBody,
+                                          _cacheInventoryLookup(
+                                            _model.searchInventorySubmit
+                                                ?.jsonBody,
                                           );
-                                          _applyPagingState(
-                                            _model.listInventorySubmit?.jsonBody,
+                                          final inventoryIds =
+                                              _parseInventoryIds(
+                                            _model.searchInventorySubmit
+                                                ?.jsonBody,
                                           );
-                                          _activeInventoryIdList = inventoryIds;
-                                          safeSetState(() {});
+                                          _model.listInventorySubmit =
+                                              await InventoryListingGroup
+                                                  .inventoryListGetCall
+                                                  .call(
+                                            branchId: FFAppState().branchId,
+                                            expiryDate:
+                                                _model.chosenDate != null
+                                                    ? _model.chosenDate
+                                                        ?.millisecondsSinceEpoch
+                                                    : 0,
+                                            inventoryIdList: inventoryIds,
+                                            page: 1,
+                                            perPage: _perPage,
+                                          );
+
+                                          if ((_model.listInventorySubmit
+                                                  ?.succeeded ??
+                                              true)) {
+                                            _model.inventoryItems =
+                                                _parseInventoryListingItems(
+                                              _model.listInventorySubmit
+                                                  ?.jsonBody,
+                                            );
+                                            _applyPagingState(
+                                              _model.listInventorySubmit
+                                                  ?.jsonBody,
+                                            );
+                                            _activeInventoryIdList =
+                                                inventoryIds;
+                                            safeSetState(() {});
+                                          } else {
+                                            await showDialog(
+                                              context: context,
+                                              builder: (alertDialogContext) {
+                                                return AlertDialog(
+                                                  title: Text(
+                                                    'Error (Inventory List Get Submit)',
+                                                  ),
+                                                  content: Text(
+                                                    getJsonField(
+                                                      (_model.listInventorySubmit
+                                                              ?.jsonBody ??
+                                                          ''),
+                                                      r'''$.message''',
+                                                    ).toString(),
+                                                  ),
+                                                  actions: [
+                                                    TextButton(
+                                                      onPressed: () =>
+                                                          Navigator.pop(
+                                                        alertDialogContext,
+                                                      ),
+                                                      child: Text('Ok'),
+                                                    ),
+                                                  ],
+                                                );
+                                              },
+                                            );
+                                          }
                                         } else {
                                           await showDialog(
                                             context: context,
                                             builder: (alertDialogContext) {
                                               return AlertDialog(
                                                 title: Text(
-                                                  'Error (Inventory List Get Submit)',
+                                                  'Error Search Inventory Submit',
                                                 ),
                                                 content: Text(
                                                   getJsonField(
-                                                    (_model.listInventorySubmit
+                                                    (_model.searchInventorySubmit
                                                             ?.jsonBody ??
                                                         ''),
                                                     r'''$.message''',
@@ -468,37 +527,9 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
                                             },
                                           );
                                         }
-                                      } else {
-                                        await showDialog(
-                                          context: context,
-                                          builder: (alertDialogContext) {
-                                            return AlertDialog(
-                                              title: Text(
-                                                'Error Search Inventory Submit',
-                                              ),
-                                              content: Text(
-                                                getJsonField(
-                                                  (_model.searchInventorySubmit
-                                                          ?.jsonBody ??
-                                                      ''),
-                                                  r'''$.message''',
-                                                ).toString(),
-                                              ),
-                                              actions: [
-                                                TextButton(
-                                                  onPressed: () =>
-                                                      Navigator.pop(
-                                                    alertDialogContext,
-                                                  ),
-                                                  child: Text('Ok'),
-                                                ),
-                                              ],
-                                            );
-                                          },
-                                        );
-                                      }
 
-                                      safeSetState(() {});
+                                        safeSetState(() {});
+                                      });
                                     },
                                     autofocus: false,
                                     textCapitalization:
@@ -751,68 +782,74 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
                                                               .firstOrNull
                                                               ?.label ??
                                                           '';
-                                                  _model.listInventory =
-                                                      await InventoryListingGroup
-                                                          .inventoryListGetCall
-                                                          .call(
-                                                    branchId:
-                                                        FFAppState().branchId,
-                                                    inventoryIdList:
-                                                        _activeInventoryIdList,
-                                                    expiryDate: _model
-                                                                .chosenDate !=
-                                                            null
-                                                        ? _model.chosenDate
-                                                            ?.millisecondsSinceEpoch
-                                                        : 0,
-                                                    page: 1,
-                                                    perPage: _perPage,
-                                                  );
+                                                  await _runWithPageLoading(
+                                                    () async {
+                                                      _model.listInventory =
+                                                          await InventoryListingGroup
+                                                              .inventoryListGetCall
+                                                              .call(
+                                                        branchId: FFAppState()
+                                                            .branchId,
+                                                        inventoryIdList:
+                                                            _activeInventoryIdList,
+                                                        expiryDate: _model
+                                                                    .chosenDate !=
+                                                                null
+                                                            ? _model.chosenDate
+                                                                ?.millisecondsSinceEpoch
+                                                            : 0,
+                                                        page: 1,
+                                                        perPage: _perPage,
+                                                      );
 
-                                                  if ((_model.listInventory
-                                                          ?.succeeded ??
-                                                      true)) {
-                                                    _model
-                                                        .inventoryItems =
-                                                    _parseInventoryListingItems(
-                                                      _model
-                                                          .listInventory?.jsonBody,
-                                                    );
-                                                    _applyPagingState(
-                                                      _model
-                                                          .listInventory?.jsonBody,
-                                                    );
-                                                    safeSetState(() {});
-                                                  } else {
-                                                    await showDialog(
-                                                      context: context,
-                                                      builder:
-                                                          (alertDialogContext) {
-                                                        return AlertDialog(
-                                                          title: Text(
-                                                            'Error (Inventory List Get Branch)',
-                                                          ),
-                                                          content: Text(
-                                                            getJsonField(
-                                                              (_model.listInventory
-                                                                      ?.jsonBody ??
-                                                                  ''),
-                                                              r'''$.message''',
-                                                            ).toString(),
-                                                          ),
-                                                          actions: [
-                                                            TextButton(
-                                                              onPressed: () =>
-                                                                  Navigator.pop(
-                                                                alertDialogContext,
-                                                              ),
-                                                              child: Text('Ok'),
-                                                            ),
-                                                          ],
+                                                      if ((_model.listInventory
+                                                              ?.succeeded ??
+                                                          true)) {
+                                                        _model.inventoryItems =
+                                                            _parseInventoryListingItems(
+                                                          _model.listInventory
+                                                              ?.jsonBody,
                                                         );
-                                                      },
-                                                    );
-                                                  }
+                                                        _applyPagingState(
+                                                          _model.listInventory
+                                                              ?.jsonBody,
+                                                        );
+                                                        safeSetState(() {});
+                                                      } else {
+                                                        await showDialog(
+                                                          context: context,
+                                                          builder:
+                                                              (alertDialogContext) {
+                                                            return AlertDialog(
+                                                              title: Text(
+                                                                'Error (Inventory List Get Branch)',
+                                                              ),
+                                                              content: Text(
+                                                                getJsonField(
+                                                                  (_model.listInventory
+                                                                          ?.jsonBody ??
+                                                                      ''),
+                                                                  r'''$.message''',
+                                                                ).toString(),
+                                                              ),
+                                                              actions: [
+                                                                TextButton(
+                                                                  onPressed: () =>
+                                                                      Navigator
+                                                                          .pop(
+                                                                    alertDialogContext,
+                                                                  ),
+                                                                  child: Text(
+                                                                    'Ok',
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            );
+                                                          },
+                                                        );
+                                                      }
+                                                    },
+                                                  );
                                                   safeSetState(() {});
                                                 },
                                                 width: double.infinity,
@@ -1256,60 +1293,95 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
                                   ),
                                   FFButtonWidget(
                                     onPressed: () async {
-                                      _model.searchInventory =
-                                          await InventoryGroup.inventoryCall
-                                              .call(
-                                        name: _model
-                                            .searchItemTextController.text,
-                                        supplier: _model
-                                            .searchSupplierTextController.text,
-                                      );
-
-                                      if ((_model.searchInventory?.succeeded ??
-                                          true)) {
-                                        _cacheInventoryLookup(
-                                          _model.searchInventory?.jsonBody,
-                                        );
-                                        final inventoryIds =
-                                            _parseInventoryIds(
-                                          _model.searchInventory?.jsonBody,
-                                        );
-                                        _model.listInventory =
-                                            await InventoryListingGroup
-                                                .inventoryListGetCall
+                                      await _runWithPageLoading(() async {
+                                        _model.searchInventory =
+                                            await InventoryGroup.inventoryCall
                                                 .call(
-                                          branchId: FFAppState().branchId,
-                                          inventoryIdList: inventoryIds,
-                                          expiryDate: _model.chosenDate != null
-                                              ? _model.chosenDate
-                                                  ?.millisecondsSinceEpoch
-                                              : 0,
-                                          page: 1,
-                                          perPage: _perPage,
+                                          name: _model
+                                              .searchItemTextController.text,
+                                          supplier: _model
+                                              .searchSupplierTextController
+                                              .text,
                                         );
 
-                                        if ((_model.listInventory?.succeeded ??
+                                        if ((_model
+                                                .searchInventory?.succeeded ??
                                             true)) {
-                                          _model.inventoryItems =
-                                              _parseInventoryListingItems(
-                                            _model.listInventory?.jsonBody,
+                                          _cacheInventoryLookup(
+                                            _model.searchInventory?.jsonBody,
                                           );
-                                          _applyPagingState(
-                                            _model.listInventory?.jsonBody,
+                                          final inventoryIds =
+                                              _parseInventoryIds(
+                                            _model.searchInventory?.jsonBody,
                                           );
-                                          _activeInventoryIdList = inventoryIds;
-                                          safeSetState(() {});
+                                          _model.listInventory =
+                                              await InventoryListingGroup
+                                                  .inventoryListGetCall
+                                                  .call(
+                                            branchId: FFAppState().branchId,
+                                            inventoryIdList: inventoryIds,
+                                            expiryDate:
+                                                _model.chosenDate != null
+                                                    ? _model.chosenDate
+                                                        ?.millisecondsSinceEpoch
+                                                    : 0,
+                                            page: 1,
+                                            perPage: _perPage,
+                                          );
+
+                                          if ((_model
+                                                  .listInventory?.succeeded ??
+                                              true)) {
+                                            _model.inventoryItems =
+                                                _parseInventoryListingItems(
+                                              _model.listInventory?.jsonBody,
+                                            );
+                                            _applyPagingState(
+                                              _model.listInventory?.jsonBody,
+                                            );
+                                            _activeInventoryIdList =
+                                                inventoryIds;
+                                            safeSetState(() {});
+                                          } else {
+                                            await showDialog(
+                                              context: context,
+                                              builder: (alertDialogContext) {
+                                                return AlertDialog(
+                                                  title: Text(
+                                                    'Error (Inventory List Get)',
+                                                  ),
+                                                  content: Text(
+                                                    getJsonField(
+                                                      (_model.listInventory
+                                                              ?.jsonBody ??
+                                                          ''),
+                                                      r'''$.message''',
+                                                    ).toString(),
+                                                  ),
+                                                  actions: [
+                                                    TextButton(
+                                                      onPressed: () =>
+                                                          Navigator.pop(
+                                                        alertDialogContext,
+                                                      ),
+                                                      child: Text('Ok'),
+                                                    ),
+                                                  ],
+                                                );
+                                              },
+                                            );
+                                          }
                                         } else {
                                           await showDialog(
                                             context: context,
                                             builder: (alertDialogContext) {
                                               return AlertDialog(
                                                 title: Text(
-                                                  'Error (Inventory List Get)',
+                                                  'Error Search Inventory',
                                                 ),
                                                 content: Text(
                                                   getJsonField(
-                                                    (_model.listInventory
+                                                    (_model.searchInventory
                                                             ?.jsonBody ??
                                                         ''),
                                                     r'''$.message''',
@@ -1328,37 +1400,9 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
                                             },
                                           );
                                         }
-                                      } else {
-                                        await showDialog(
-                                          context: context,
-                                          builder: (alertDialogContext) {
-                                            return AlertDialog(
-                                              title: Text(
-                                                'Error Search Inventory',
-                                              ),
-                                              content: Text(
-                                                getJsonField(
-                                                  (_model.searchInventory
-                                                          ?.jsonBody ??
-                                                      ''),
-                                                  r'''$.message''',
-                                                ).toString(),
-                                              ),
-                                              actions: [
-                                                TextButton(
-                                                  onPressed: () =>
-                                                      Navigator.pop(
-                                                    alertDialogContext,
-                                                  ),
-                                                  child: Text('Ok'),
-                                                ),
-                                              ],
-                                            );
-                                          },
-                                        );
-                                      }
 
-                                      safeSetState(() {});
+                                        safeSetState(() {});
+                                      });
                                     },
                                     text: 'Find Item',
                                     options: FFButtonOptions(
@@ -1452,83 +1496,93 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
                                               hoverColor: Colors.transparent,
                                               highlightColor:
                                                   Colors.transparent,
-                                            onTap: () async {
-                                                final inventoryIds = [
-                                                  inventoryOptionsItem.id,
-                                                ];
-                                                if (inventoryOptionsItem.id != 0) {
-                                                  _inventoryLookup[
-                                                      inventoryOptionsItem.id] =
-                                                      inventoryOptionsItem;
-                                                }
-                                                _model.inventoryListing =
-                                                    await InventoryListingGroup
-                                                        .inventoryListGetCall
-                                                        .call(
-                                                  branchId:
-                                                      FFAppState().branchId,
-                                                  inventoryIdList: inventoryIds,
-                                                  expiryDate:
-                                                      valueOrDefault<int>(
-                                                    _model.chosenDate
-                                                        ?.millisecondsSinceEpoch,
-                                                    0,
-                                                  ),
-                                                  page: 1,
-                                                  perPage: _perPage,
-                                                );
+                                              onTap: () async {
+                                                await _runWithPageLoading(
+                                                  () async {
+                                                    final inventoryIds = [
+                                                      inventoryOptionsItem.id,
+                                                    ];
+                                                    if (inventoryOptionsItem
+                                                            .id !=
+                                                        0) {
+                                                      _inventoryLookup[
+                                                              inventoryOptionsItem
+                                                                  .id] =
+                                                          inventoryOptionsItem;
+                                                    }
+                                                    _model.inventoryListing =
+                                                        await InventoryListingGroup
+                                                            .inventoryListGetCall
+                                                            .call(
+                                                      branchId:
+                                                          FFAppState().branchId,
+                                                      inventoryIdList:
+                                                          inventoryIds,
+                                                      expiryDate:
+                                                          valueOrDefault<int>(
+                                                        _model.chosenDate
+                                                            ?.millisecondsSinceEpoch,
+                                                        0,
+                                                      ),
+                                                      page: 1,
+                                                      perPage: _perPage,
+                                                    );
 
-                                                if ((_model.inventoryListing
-                                                        ?.succeeded ??
-                                                    true)) {
-                                                  _model
-                                                      .inventoryItems =
-                                                  _parseInventoryListingItems(
-                                                    _model
-                                                        .inventoryListing?.jsonBody,
-                                                  );
-                                                  _applyPagingState(
-                                                    _model
-                                                        .inventoryListing?.jsonBody,
-                                                  );
-                                                  _activeInventoryIdList =
-                                                      inventoryIds;
-                                                  safeSetState(() {});
-                                                } else {
-                                                  await showDialog(
-                                                    context: context,
-                                                    builder:
-                                                        (alertDialogContext) {
-                                                      return AlertDialog(
-                                                        title: Text(
-                                                          'Error retrieving inventory list',
-                                                        ),
-                                                        content: Text(
-                                                          getJsonField(
-                                                            (_model.inventoryListing
-                                                                    ?.jsonBody ??
-                                                                ''),
-                                                            r'''$.message''',
-                                                          ).toString(),
-                                                        ),
-                                                        actions: [
-                                                          TextButton(
-                                                            onPressed: () =>
-                                                                Navigator.pop(
-                                                              alertDialogContext,
-                                                            ),
-                                                            child: Text('Ok'),
-                                                          ),
-                                                        ],
+                                                    if ((_model.inventoryListing
+                                                            ?.succeeded ??
+                                                        true)) {
+                                                      _model.inventoryItems =
+                                                          _parseInventoryListingItems(
+                                                        _model.inventoryListing
+                                                            ?.jsonBody,
                                                       );
-                                                    },
-                                                  );
-                                                }
+                                                      _applyPagingState(
+                                                        _model.inventoryListing
+                                                            ?.jsonBody,
+                                                      );
+                                                      _activeInventoryIdList =
+                                                          inventoryIds;
+                                                      safeSetState(() {});
+                                                    } else {
+                                                      await showDialog(
+                                                        context: context,
+                                                        builder:
+                                                            (alertDialogContext) {
+                                                          return AlertDialog(
+                                                            title: Text(
+                                                              'Error retrieving inventory list',
+                                                            ),
+                                                            content: Text(
+                                                              getJsonField(
+                                                                (_model.inventoryListing
+                                                                        ?.jsonBody ??
+                                                                    ''),
+                                                                r'''$.message''',
+                                                              ).toString(),
+                                                            ),
+                                                            actions: [
+                                                              TextButton(
+                                                                onPressed: () =>
+                                                                    Navigator
+                                                                        .pop(
+                                                                  alertDialogContext,
+                                                                ),
+                                                                child: Text(
+                                                                  'Ok',
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          );
+                                                        },
+                                                      );
+                                                    }
 
-                                                _model.inventoryOption = [];
-                                                safeSetState(() {});
+                                                    _model.inventoryOption = [];
+                                                    safeSetState(() {});
 
-                                                safeSetState(() {});
+                                                    safeSetState(() {});
+                                                  },
+                                                );
                                               },
                                               child: Container(
                                                 width: double.infinity,
@@ -1606,11 +1660,11 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
                         ),
                       ),
                       if ((_model.inventoryItems.isNotEmpty) == true)
-                      Padding(
-                        padding: EdgeInsetsDirectional.fromSTEB(
-                          8.0,
-                          0.0,
-                          0.0,
+                        Padding(
+                          padding: EdgeInsetsDirectional.fromSTEB(
+                            8.0,
+                            0.0,
+                            0.0,
                             0.0,
                           ),
                           child: Text(
@@ -1632,7 +1686,7 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
                                       fontStyle: FlutterFlowTheme.of(
                                         context,
                                       ).bodyLarge.fontStyle,
-                            ),
+                                    ),
                           ),
                         ),
                       Padding(
@@ -1717,7 +1771,8 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
                                             .branchLists
                                             .where(
                                               (e) =>
-                                                  e.id == inventoryItemItem.branchId,
+                                                  e.id ==
+                                                  inventoryItemItem.branchId,
                                             )
                                             .toList()
                                             .firstOrNull
@@ -1782,29 +1837,43 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
                                             ),
                                           ),
                                           child: Row(
-                                          mainAxisSize: MainAxisSize.max,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Flexible(
-                                              child: Padding(
-                                                padding: EdgeInsets.all(10.0),
-                                                child: Column(
-                                                  mainAxisSize:
-                                                      MainAxisSize.max,
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      inventoryItemItem
-                                                          .inventory.itemName,
-                                                      maxLines: 3,
-                                                      style:
-                                                          FlutterFlowTheme.of(
-                                                        context,
-                                                      ).titleLarge.override(
-                                                                font: GoogleFonts
-                                                                    .interTight(
+                                            mainAxisSize: MainAxisSize.max,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Flexible(
+                                                child: Padding(
+                                                  padding: EdgeInsets.all(10.0),
+                                                  child: Column(
+                                                    mainAxisSize:
+                                                        MainAxisSize.max,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Text(
+                                                        inventoryItemItem
+                                                            .inventory.itemName,
+                                                        maxLines: 3,
+                                                        style:
+                                                            FlutterFlowTheme.of(
+                                                          context,
+                                                        ).titleLarge.override(
+                                                                  font: GoogleFonts
+                                                                      .interTight(
+                                                                    fontWeight:
+                                                                        FlutterFlowTheme
+                                                                            .of(
+                                                                      context,
+                                                                    ).titleLarge.fontWeight,
+                                                                    fontStyle:
+                                                                        FlutterFlowTheme
+                                                                            .of(
+                                                                      context,
+                                                                    ).titleLarge.fontStyle,
+                                                                  ),
+                                                                  letterSpacing:
+                                                                      0.0,
                                                                   fontWeight:
                                                                       FlutterFlowTheme
                                                                           .of(
@@ -1817,283 +1886,13 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
                                                                       .titleLarge
                                                                       .fontStyle,
                                                                 ),
-                                                                letterSpacing:
-                                                                    0.0,
-                                                                fontWeight:
-                                                                    FlutterFlowTheme
-                                                                            .of(
-                                                                  context,
-                                                                )
-                                                                        .titleLarge
-                                                                        .fontWeight,
-                                                                fontStyle:
-                                                                    FlutterFlowTheme
-                                                                            .of(
-                                                                  context,
-                                                                )
-                                                                        .titleLarge
-                                                                        .fontStyle,
-                                                              ),
-                                                    ),
-                                                    Text(
-                                                      'Branch: ${FFAppState().branchLists.where((e) => e.id == inventoryItemItem.branchId).toList().firstOrNull?.label}',
-                                                      style:
-                                                          FlutterFlowTheme.of(
-                                                        context,
-                                                      ).labelSmall.override(
-                                                                font:
-                                                                    GoogleFonts
-                                                                        .inter(
-                                                                  fontWeight:
-                                                                      FlutterFlowTheme
-                                                                          .of(
-                                                                    context,
-                                                                  ).labelSmall.fontWeight,
-                                                                  fontStyle: FlutterFlowTheme
-                                                                          .of(
-                                                                    context,
-                                                                  )
-                                                                      .labelSmall
-                                                                      .fontStyle,
-                                                                ),
-                                                                letterSpacing:
-                                                                    0.0,
-                                                                fontWeight:
-                                                                    FlutterFlowTheme
-                                                                            .of(
-                                                                  context,
-                                                                )
-                                                                        .labelSmall
-                                                                        .fontWeight,
-                                                                fontStyle:
-                                                                    FlutterFlowTheme
-                                                                            .of(
-                                                                  context,
-                                                                )
-                                                                        .labelSmall
-                                                                        .fontStyle,
-                                                              ),
-                                                    ),
-                                                    Text(
-                                                      'Last Updated: ${dateTimeFormat("d/M/y", functions.timestampToDateTime(inventoryItemItem.lastUpdated))}',
-                                                      style:
-                                                          FlutterFlowTheme.of(
-                                                        context,
-                                                      ).labelSmall.override(
-                                                                font:
-                                                                    GoogleFonts
-                                                                        .inter(
-                                                                  fontWeight:
-                                                                      FlutterFlowTheme
-                                                                          .of(
-                                                                    context,
-                                                                  ).labelSmall.fontWeight,
-                                                                  fontStyle: FlutterFlowTheme
-                                                                          .of(
-                                                                    context,
-                                                                  )
-                                                                      .labelSmall
-                                                                      .fontStyle,
-                                                                ),
-                                                                letterSpacing:
-                                                                    0.0,
-                                                                fontWeight:
-                                                                    FlutterFlowTheme
-                                                                            .of(
-                                                                  context,
-                                                                )
-                                                                        .labelSmall
-                                                                        .fontWeight,
-                                                                fontStyle:
-                                                                    FlutterFlowTheme
-                                                                            .of(
-                                                                  context,
-                                                                )
-                                                                        .labelSmall
-                                                                        .fontStyle,
-                                                              ),
-                                                    ),
-                                                    Text(
-                                                      'Supplier: ${inventoryItemItem.inventory.supplier}',
-                                                      style:
-                                                          FlutterFlowTheme.of(
-                                                        context,
-                                                      ).labelSmall.override(
-                                                                font:
-                                                                    GoogleFonts
-                                                                        .inter(
-                                                                  fontWeight:
-                                                                      FlutterFlowTheme
-                                                                          .of(
-                                                                    context,
-                                                                  ).labelSmall.fontWeight,
-                                                                  fontStyle: FlutterFlowTheme
-                                                                          .of(
-                                                                    context,
-                                                                  )
-                                                                      .labelSmall
-                                                                      .fontStyle,
-                                                                ),
-                                                                letterSpacing:
-                                                                    0.0,
-                                                                fontWeight:
-                                                                    FlutterFlowTheme
-                                                                            .of(
-                                                                  context,
-                                                                )
-                                                                        .labelSmall
-                                                                        .fontWeight,
-                                                                fontStyle:
-                                                                    FlutterFlowTheme
-                                                                            .of(
-                                                                  context,
-                                                                )
-                                                                        .labelSmall
-                                                                        .fontStyle,
-                                                              ),
-                                                    ),
-                                                    Text(
-                                                      'Stock: ${inventoryItemItem.quantityOnHand.toString()}${(String var1) {
-                                                        return " (" +
-                                                            var1 +
-                                                            ")";
-                                                      }(inventoryItemItem.inventory.quantityMinor)}',
-                                                      style:
-                                                          FlutterFlowTheme.of(
-                                                        context,
-                                                      ).labelSmall.override(
-                                                                font:
-                                                                    GoogleFonts
-                                                                        .inter(
-                                                                  fontWeight:
-                                                                      FlutterFlowTheme
-                                                                          .of(
-                                                                    context,
-                                                                  ).labelSmall.fontWeight,
-                                                                  fontStyle: FlutterFlowTheme
-                                                                          .of(
-                                                                    context,
-                                                                  )
-                                                                      .labelSmall
-                                                                      .fontStyle,
-                                                                ),
-                                                                letterSpacing:
-                                                                    0.0,
-                                                                fontWeight:
-                                                                    FlutterFlowTheme
-                                                                            .of(
-                                                                  context,
-                                                                )
-                                                                        .labelSmall
-                                                                        .fontWeight,
-                                                                fontStyle:
-                                                                    FlutterFlowTheme
-                                                                            .of(
-                                                                  context,
-                                                                )
-                                                                        .labelSmall
-                                                                        .fontStyle,
-                                                              ),
-                                                    ),
-                                                    Text(
-                                                      'Expiry Date: ${inventoryItemItem.hasExpiryDate() && (inventoryItemItem.expiryDate > 0) ? dateTimeFormat("d/M/y", functions.timestampToDateTime(inventoryItemItem.expiryDate)) : 'No expiry date'}',
-                                                      style:
-                                                          FlutterFlowTheme.of(
-                                                        context,
-                                                      ).labelSmall.override(
-                                                                font:
-                                                                    GoogleFonts
-                                                                        .inter(
-                                                                  fontWeight:
-                                                                      FlutterFlowTheme
-                                                                          .of(
-                                                                    context,
-                                                                  ).labelSmall.fontWeight,
-                                                                  fontStyle: FlutterFlowTheme
-                                                                          .of(
-                                                                    context,
-                                                                  )
-                                                                      .labelSmall
-                                                                      .fontStyle,
-                                                                ),
-                                                                letterSpacing:
-                                                                    0.0,
-                                                                fontWeight:
-                                                                    FlutterFlowTheme
-                                                                            .of(
-                                                                  context,
-                                                                )
-                                                                        .labelSmall
-                                                                        .fontWeight,
-                                                                fontStyle:
-                                                                    FlutterFlowTheme
-                                                                            .of(
-                                                                  context,
-                                                                )
-                                                                        .labelSmall
-                                                                        .fontStyle,
-                                                              ),
-                                                    ),
-                                                    RichText(
-                                                      textScaler: MediaQuery.of(
-                                                        context,
-                                                      ).textScaler,
-                                                      text: TextSpan(
-                                                        children: [
-                                                          TextSpan(
-                                                            text: 'Status : ',
-                                                            style: FlutterFlowTheme
-                                                                    .of(context)
-                                                                .labelSmall
-                                                                .override(
-                                                                  font:
-                                                                      GoogleFonts
-                                                                          .inter(
-                                                                    fontWeight:
-                                                                        FlutterFlowTheme
-                                                                            .of(
-                                                                      context,
-                                                                    ).labelSmall.fontWeight,
-                                                                    fontStyle:
-                                                                        FlutterFlowTheme
-                                                                            .of(
-                                                                      context,
-                                                                    ).labelSmall.fontStyle,
-                                                                  ),
-                                                                  letterSpacing:
-                                                                      0.0,
-                                                                  fontWeight:
-                                                                      FlutterFlowTheme
-                                                                          .of(
-                                                                    context,
-                                                                  ).labelSmall.fontWeight,
-                                                                  fontStyle: FlutterFlowTheme
-                                                                          .of(
-                                                                    context,
-                                                                  )
-                                                                      .labelSmall
-                                                                      .fontStyle,
-                                                                ),
-                                                          ),
-                                                          TextSpan(
-                                                            text: 'In Stock',
-                                                            style: TextStyle(
-                                                              color:
-                                                                  FlutterFlowTheme
-                                                                      .of(
-                                                                context,
-                                                              ).success,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w600,
-                                                            ),
-                                                          ),
-                                                        ],
+                                                      ),
+                                                      Text(
+                                                        'Branch: ${FFAppState().branchLists.where((e) => e.id == inventoryItemItem.branchId).toList().firstOrNull?.label}',
                                                         style:
                                                             FlutterFlowTheme.of(
-                                                                    context)
-                                                                .labelSmall
-                                                                .override(
+                                                          context,
+                                                        ).labelSmall.override(
                                                                   font:
                                                                       GoogleFonts
                                                                           .inter(
@@ -2123,231 +1922,318 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
                                                                       .fontStyle,
                                                                 ),
                                                       ),
-                                                    ),
-                                                  ].divide(
-                                                      SizedBox(height: 4.0)),
+                                                      Text(
+                                                        'Last Updated: ${dateTimeFormat("d/M/y", functions.timestampToDateTime(inventoryItemItem.lastUpdated))}',
+                                                        style:
+                                                            FlutterFlowTheme.of(
+                                                          context,
+                                                        ).labelSmall.override(
+                                                                  font:
+                                                                      GoogleFonts
+                                                                          .inter(
+                                                                    fontWeight:
+                                                                        FlutterFlowTheme
+                                                                            .of(
+                                                                      context,
+                                                                    ).labelSmall.fontWeight,
+                                                                    fontStyle:
+                                                                        FlutterFlowTheme
+                                                                            .of(
+                                                                      context,
+                                                                    ).labelSmall.fontStyle,
+                                                                  ),
+                                                                  letterSpacing:
+                                                                      0.0,
+                                                                  fontWeight:
+                                                                      FlutterFlowTheme
+                                                                          .of(
+                                                                    context,
+                                                                  ).labelSmall.fontWeight,
+                                                                  fontStyle: FlutterFlowTheme
+                                                                          .of(
+                                                                    context,
+                                                                  )
+                                                                      .labelSmall
+                                                                      .fontStyle,
+                                                                ),
+                                                      ),
+                                                      Text(
+                                                        'Supplier: ${inventoryItemItem.inventory.supplier}',
+                                                        style:
+                                                            FlutterFlowTheme.of(
+                                                          context,
+                                                        ).labelSmall.override(
+                                                                  font:
+                                                                      GoogleFonts
+                                                                          .inter(
+                                                                    fontWeight:
+                                                                        FlutterFlowTheme
+                                                                            .of(
+                                                                      context,
+                                                                    ).labelSmall.fontWeight,
+                                                                    fontStyle:
+                                                                        FlutterFlowTheme
+                                                                            .of(
+                                                                      context,
+                                                                    ).labelSmall.fontStyle,
+                                                                  ),
+                                                                  letterSpacing:
+                                                                      0.0,
+                                                                  fontWeight:
+                                                                      FlutterFlowTheme
+                                                                          .of(
+                                                                    context,
+                                                                  ).labelSmall.fontWeight,
+                                                                  fontStyle: FlutterFlowTheme
+                                                                          .of(
+                                                                    context,
+                                                                  )
+                                                                      .labelSmall
+                                                                      .fontStyle,
+                                                                ),
+                                                      ),
+                                                      Text(
+                                                        'Stock: ${inventoryItemItem.quantityOnHand.toString()}${(String var1) {
+                                                          return " (" +
+                                                              var1 +
+                                                              ")";
+                                                        }(inventoryItemItem.inventory.quantityMinor)}',
+                                                        style:
+                                                            FlutterFlowTheme.of(
+                                                          context,
+                                                        ).labelSmall.override(
+                                                                  font:
+                                                                      GoogleFonts
+                                                                          .inter(
+                                                                    fontWeight:
+                                                                        FlutterFlowTheme
+                                                                            .of(
+                                                                      context,
+                                                                    ).labelSmall.fontWeight,
+                                                                    fontStyle:
+                                                                        FlutterFlowTheme
+                                                                            .of(
+                                                                      context,
+                                                                    ).labelSmall.fontStyle,
+                                                                  ),
+                                                                  letterSpacing:
+                                                                      0.0,
+                                                                  fontWeight:
+                                                                      FlutterFlowTheme
+                                                                          .of(
+                                                                    context,
+                                                                  ).labelSmall.fontWeight,
+                                                                  fontStyle: FlutterFlowTheme
+                                                                          .of(
+                                                                    context,
+                                                                  )
+                                                                      .labelSmall
+                                                                      .fontStyle,
+                                                                ),
+                                                      ),
+                                                      Text(
+                                                        'Expiry Date: ${inventoryItemItem.hasExpiryDate() && (inventoryItemItem.expiryDate > 0) ? dateTimeFormat("d/M/y", functions.timestampToDateTime(inventoryItemItem.expiryDate)) : 'No expiry date'}',
+                                                        style:
+                                                            FlutterFlowTheme.of(
+                                                          context,
+                                                        ).labelSmall.override(
+                                                                  font:
+                                                                      GoogleFonts
+                                                                          .inter(
+                                                                    fontWeight:
+                                                                        FlutterFlowTheme
+                                                                            .of(
+                                                                      context,
+                                                                    ).labelSmall.fontWeight,
+                                                                    fontStyle:
+                                                                        FlutterFlowTheme
+                                                                            .of(
+                                                                      context,
+                                                                    ).labelSmall.fontStyle,
+                                                                  ),
+                                                                  letterSpacing:
+                                                                      0.0,
+                                                                  fontWeight:
+                                                                      FlutterFlowTheme
+                                                                          .of(
+                                                                    context,
+                                                                  ).labelSmall.fontWeight,
+                                                                  fontStyle: FlutterFlowTheme
+                                                                          .of(
+                                                                    context,
+                                                                  )
+                                                                      .labelSmall
+                                                                      .fontStyle,
+                                                                ),
+                                                      ),
+                                                      RichText(
+                                                        textScaler:
+                                                            MediaQuery.of(
+                                                          context,
+                                                        ).textScaler,
+                                                        text: TextSpan(
+                                                          children: [
+                                                            TextSpan(
+                                                              text: 'Status : ',
+                                                              style: FlutterFlowTheme
+                                                                      .of(context)
+                                                                  .labelSmall
+                                                                  .override(
+                                                                    font: GoogleFonts
+                                                                        .inter(
+                                                                      fontWeight:
+                                                                          FlutterFlowTheme
+                                                                              .of(
+                                                                        context,
+                                                                      ).labelSmall.fontWeight,
+                                                                      fontStyle:
+                                                                          FlutterFlowTheme
+                                                                              .of(
+                                                                        context,
+                                                                      ).labelSmall.fontStyle,
+                                                                    ),
+                                                                    letterSpacing:
+                                                                        0.0,
+                                                                    fontWeight:
+                                                                        FlutterFlowTheme
+                                                                            .of(
+                                                                      context,
+                                                                    ).labelSmall.fontWeight,
+                                                                    fontStyle:
+                                                                        FlutterFlowTheme
+                                                                            .of(
+                                                                      context,
+                                                                    ).labelSmall.fontStyle,
+                                                                  ),
+                                                            ),
+                                                            TextSpan(
+                                                              text: 'In Stock',
+                                                              style: TextStyle(
+                                                                color:
+                                                                    FlutterFlowTheme
+                                                                        .of(
+                                                                  context,
+                                                                ).success,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w600,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                          style: FlutterFlowTheme
+                                                                  .of(context)
+                                                              .labelSmall
+                                                              .override(
+                                                                font:
+                                                                    GoogleFonts
+                                                                        .inter(
+                                                                  fontWeight:
+                                                                      FlutterFlowTheme
+                                                                          .of(
+                                                                    context,
+                                                                  ).labelSmall.fontWeight,
+                                                                  fontStyle: FlutterFlowTheme
+                                                                          .of(
+                                                                    context,
+                                                                  )
+                                                                      .labelSmall
+                                                                      .fontStyle,
+                                                                ),
+                                                                letterSpacing:
+                                                                    0.0,
+                                                                fontWeight:
+                                                                    FlutterFlowTheme
+                                                                            .of(
+                                                                  context,
+                                                                )
+                                                                        .labelSmall
+                                                                        .fontWeight,
+                                                                fontStyle:
+                                                                    FlutterFlowTheme
+                                                                            .of(
+                                                                  context,
+                                                                )
+                                                                        .labelSmall
+                                                                        .fontStyle,
+                                                              ),
+                                                        ),
+                                                      ),
+                                                    ].divide(
+                                                        SizedBox(height: 4.0)),
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                            Padding(
-                                              padding: EdgeInsetsDirectional
-                                                  .fromSTEB(
-                                                0.0,
-                                                0.0,
-                                                8.0,
-                                                0.0,
-                                              ),
-                                              child: Column(
-                                                mainAxisSize: MainAxisSize.max,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.end,
-                                                children: [
-                                                  Card(
-                                                    clipBehavior: Clip
-                                                        .antiAliasWithSaveLayer,
-                                                    color: FlutterFlowTheme.of(
-                                                      context,
-                                                    ).primary,
-                                                    shape:
-                                                        RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                        40.0,
-                                                      ),
-                                                    ),
-                                                    child: Visibility(
-                                                      visible: inventoryItemItem
-                                                                  .inventory
-                                                                  .image
-                                                                  .url !=
-                                                              null &&
-                                                          inventoryItemItem
-                                                                  .inventory
-                                                                  .image
-                                                                  .url !=
-                                                              '',
-                                                      child: Padding(
-                                                        padding: EdgeInsets.all(
-                                                          2.0,
-                                                        ),
-                                                        child: ClipRRect(
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(
-                                                            40.0,
-                                                          ),
-                                                          child: Image.network(
-                                                            inventoryItemItem
-                                                                .inventory
-                                                                .image
-                                                                .url,
-                                                            width: 60.0,
-                                                            height: 60.0,
-                                                            fit: BoxFit.cover,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  FFButtonWidget(
-                                                    onPressed: () async {
-                                                      context.pushNamed(
-                                                        OrderWidget.routeName,
-                                                        queryParameters: {
-                                                          'inventoryId':
-                                                              serializeParam(
-                                                            inventoryItemItem
-                                                                .inventoryId,
-                                                            ParamType.int,
-                                                          ),
-                                                          'category':
-                                                              serializeParam(
-                                                            inventoryItemItem
-                                                                .inventory
-                                                                .category,
-                                                            ParamType.String,
-                                                          ),
-                                                        }.withoutNulls,
-                                                      );
-                                                    },
-                                                    text: 'Add Order',
-                                                    icon: Icon(
-                                                      Icons.add,
-                                                      size: 15.0,
-                                                    ),
-                                                    options: FFButtonOptions(
-                                                      height: 25.0,
-                                                      padding: EdgeInsets.all(
-                                                        8.0,
-                                                      ),
-                                                      iconPadding:
-                                                          EdgeInsetsDirectional
-                                                              .fromSTEB(
-                                                        0.0,
-                                                        0.0,
-                                                        0.0,
-                                                        0.0,
-                                                      ),
+                                              Padding(
+                                                padding: EdgeInsetsDirectional
+                                                    .fromSTEB(
+                                                  0.0,
+                                                  0.0,
+                                                  8.0,
+                                                  0.0,
+                                                ),
+                                                child: Column(
+                                                  mainAxisSize:
+                                                      MainAxisSize.max,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.end,
+                                                  children: [
+                                                    Card(
+                                                      clipBehavior: Clip
+                                                          .antiAliasWithSaveLayer,
                                                       color:
                                                           FlutterFlowTheme.of(
                                                         context,
-                                                      ).accent2,
-                                                      textStyle:
-                                                          FlutterFlowTheme.of(
-                                                        context,
-                                                      ).bodySmall.override(
-                                                                font:
-                                                                    GoogleFonts
-                                                                        .inter(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w600,
-                                                                  fontStyle: FlutterFlowTheme
-                                                                          .of(
-                                                                    context,
-                                                                  )
-                                                                      .bodySmall
-                                                                      .fontStyle,
-                                                                ),
-                                                                fontSize: 10.0,
-                                                                letterSpacing:
-                                                                    0.0,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w600,
-                                                                fontStyle:
-                                                                    FlutterFlowTheme
-                                                                            .of(
-                                                                  context,
-                                                                )
-                                                                        .bodySmall
-                                                                        .fontStyle,
-                                                              ),
-                                                      elevation: 0.0,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                        8.0,
+                                                      ).primary,
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(
+                                                          40.0,
+                                                        ),
+                                                      ),
+                                                      child: Visibility(
+                                                        visible: inventoryItemItem
+                                                                    .inventory
+                                                                    .image
+                                                                    .url !=
+                                                                null &&
+                                                            inventoryItemItem
+                                                                    .inventory
+                                                                    .image
+                                                                    .url !=
+                                                                '',
+                                                        child: Padding(
+                                                          padding:
+                                                              EdgeInsets.all(
+                                                            2.0,
+                                                          ),
+                                                          child: ClipRRect(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                              40.0,
+                                                            ),
+                                                            child:
+                                                                Image.network(
+                                                              inventoryItemItem
+                                                                  .inventory
+                                                                  .image
+                                                                  .url,
+                                                              width: 60.0,
+                                                              height: 60.0,
+                                                              fit: BoxFit.cover,
+                                                            ),
+                                                          ),
+                                                        ),
                                                       ),
                                                     ),
-                                                  ),
-                                                  FFButtonWidget(
-                                                    onPressed: () async {
-                                                      FFAppState()
-                                                              .chosenInventory =
-                                                          inventoryItemItem;
-                                                      safeSetState(() {});
-                                                    },
-                                                    text: 'Stock Out',
-                                                    icon: Icon(
-                                                      Icons.fmd_bad,
-                                                      size: 15.0,
-                                                    ),
-                                                    options: FFButtonOptions(
-                                                      height: 25.0,
-                                                      padding: EdgeInsets.all(
-                                                        8.0,
-                                                      ),
-                                                      iconPadding:
-                                                          EdgeInsetsDirectional
-                                                              .fromSTEB(
-                                                        0.0,
-                                                        0.0,
-                                                        0.0,
-                                                        0.0,
-                                                      ),
-                                                      color:
-                                                          FlutterFlowTheme.of(
-                                                        context,
-                                                      ).warning,
-                                                      textStyle:
-                                                          FlutterFlowTheme.of(
-                                                        context,
-                                                      ).bodySmall.override(
-                                                                font:
-                                                                    GoogleFonts
-                                                                        .inter(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w600,
-                                                                  fontStyle: FlutterFlowTheme
-                                                                          .of(
-                                                                    context,
-                                                                  )
-                                                                      .bodySmall
-                                                                      .fontStyle,
-                                                                ),
-                                                                fontSize: 10.0,
-                                                                letterSpacing:
-                                                                    0.0,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w600,
-                                                                fontStyle:
-                                                                    FlutterFlowTheme
-                                                                            .of(
-                                                                  context,
-                                                                )
-                                                                        .bodySmall
-                                                                        .fontStyle,
-                                                              ),
-                                                      elevation: 0.0,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                        8.0,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  if (FFAppState()
-                                                          .user
-                                                          .branch ==
-                                                      'AI Venture')
                                                     FFButtonWidget(
                                                       onPressed: () async {
-                                                        context.goNamed(
-                                                          EditInventoryWidget
-                                                              .routeName,
+                                                        context.pushNamed(
+                                                          OrderWidget.routeName,
                                                           queryParameters: {
                                                             'inventoryId':
                                                                 serializeParam(
@@ -2355,12 +2241,19 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
                                                                   .inventoryId,
                                                               ParamType.int,
                                                             ),
+                                                            'category':
+                                                                serializeParam(
+                                                              inventoryItemItem
+                                                                  .inventory
+                                                                  .category,
+                                                              ParamType.String,
+                                                            ),
                                                           }.withoutNulls,
                                                         );
                                                       },
-                                                      text: 'Edit Inventory',
+                                                      text: 'Add Order',
                                                       icon: Icon(
-                                                        Icons.edit,
+                                                        Icons.add,
                                                         size: 15.0,
                                                       ),
                                                       options: FFButtonOptions(
@@ -2379,7 +2272,7 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
                                                         color:
                                                             FlutterFlowTheme.of(
                                                           context,
-                                                        ).accent1,
+                                                        ).accent2,
                                                         textStyle:
                                                             FlutterFlowTheme.of(
                                                           context,
@@ -2418,25 +2311,174 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
                                                         ),
                                                       ),
                                                     ),
-                                                ].divide(SizedBox(height: 6.0)),
+                                                    FFButtonWidget(
+                                                      onPressed: () async {
+                                                        FFAppState()
+                                                                .chosenInventory =
+                                                            inventoryItemItem;
+                                                        safeSetState(() {});
+                                                      },
+                                                      text: 'Stock Out',
+                                                      icon: Icon(
+                                                        Icons.fmd_bad,
+                                                        size: 15.0,
+                                                      ),
+                                                      options: FFButtonOptions(
+                                                        height: 25.0,
+                                                        padding: EdgeInsets.all(
+                                                          8.0,
+                                                        ),
+                                                        iconPadding:
+                                                            EdgeInsetsDirectional
+                                                                .fromSTEB(
+                                                          0.0,
+                                                          0.0,
+                                                          0.0,
+                                                          0.0,
+                                                        ),
+                                                        color:
+                                                            FlutterFlowTheme.of(
+                                                          context,
+                                                        ).warning,
+                                                        textStyle:
+                                                            FlutterFlowTheme.of(
+                                                          context,
+                                                        ).bodySmall.override(
+                                                                  font:
+                                                                      GoogleFonts
+                                                                          .inter(
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w600,
+                                                                    fontStyle:
+                                                                        FlutterFlowTheme
+                                                                            .of(
+                                                                      context,
+                                                                    ).bodySmall.fontStyle,
+                                                                  ),
+                                                                  fontSize:
+                                                                      10.0,
+                                                                  letterSpacing:
+                                                                      0.0,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w600,
+                                                                  fontStyle: FlutterFlowTheme
+                                                                          .of(
+                                                                    context,
+                                                                  )
+                                                                      .bodySmall
+                                                                      .fontStyle,
+                                                                ),
+                                                        elevation: 0.0,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(
+                                                          8.0,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    if (FFAppState()
+                                                            .user
+                                                            .branch ==
+                                                        'AI Venture')
+                                                      FFButtonWidget(
+                                                        onPressed: () async {
+                                                          context.goNamed(
+                                                            EditInventoryWidget
+                                                                .routeName,
+                                                            queryParameters: {
+                                                              'inventoryId':
+                                                                  serializeParam(
+                                                                inventoryItemItem
+                                                                    .inventoryId,
+                                                                ParamType.int,
+                                                              ),
+                                                            }.withoutNulls,
+                                                          );
+                                                        },
+                                                        text: 'Edit Inventory',
+                                                        icon: Icon(
+                                                          Icons.edit,
+                                                          size: 15.0,
+                                                        ),
+                                                        options:
+                                                            FFButtonOptions(
+                                                          height: 25.0,
+                                                          padding:
+                                                              EdgeInsets.all(
+                                                            8.0,
+                                                          ),
+                                                          iconPadding:
+                                                              EdgeInsetsDirectional
+                                                                  .fromSTEB(
+                                                            0.0,
+                                                            0.0,
+                                                            0.0,
+                                                            0.0,
+                                                          ),
+                                                          color:
+                                                              FlutterFlowTheme
+                                                                  .of(
+                                                            context,
+                                                          ).accent1,
+                                                          textStyle:
+                                                              FlutterFlowTheme
+                                                                      .of(
+                                                            context,
+                                                          ).bodySmall.override(
+                                                                    font: GoogleFonts
+                                                                        .inter(
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w600,
+                                                                      fontStyle:
+                                                                          FlutterFlowTheme
+                                                                              .of(
+                                                                        context,
+                                                                      ).bodySmall.fontStyle,
+                                                                    ),
+                                                                    fontSize:
+                                                                        10.0,
+                                                                    letterSpacing:
+                                                                        0.0,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w600,
+                                                                    fontStyle:
+                                                                        FlutterFlowTheme
+                                                                            .of(
+                                                                      context,
+                                                                    ).bodySmall.fontStyle,
+                                                                  ),
+                                                          elevation: 0.0,
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                            8.0,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                  ].divide(
+                                                      SizedBox(height: 6.0)),
+                                                ),
                                               ),
-                                            ),
-                                          ],
+                                            ],
                                           ),
                                         ),
                                         Row(
-                                        mainAxisSize: MainAxisSize.max,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Container(
-                                            decoration: BoxDecoration(
-                                              color: FlutterFlowTheme.of(
-                                                context,
-                                              ).secondaryBackground,
+                                          mainAxisSize: MainAxisSize.max,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                color: FlutterFlowTheme.of(
+                                                  context,
+                                                ).secondaryBackground,
+                                              ),
                                             ),
-                                          ),
-                                        ],
+                                          ],
                                         ),
                                       ].addToEnd(SizedBox(height: 10.0)),
                                     ),
@@ -2451,7 +2493,8 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
                         Container(
                           width: double.infinity,
                           decoration: BoxDecoration(
-                            color: FlutterFlowTheme.of(context).secondaryBackground,
+                            color: FlutterFlowTheme.of(context)
+                                .secondaryBackground,
                             borderRadius: BorderRadius.circular(14.0),
                             border: Border.all(
                               color: FlutterFlowTheme.of(context).alternate,
@@ -2488,10 +2531,12 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
                                               .titleSmall
                                               .override(
                                                 font: GoogleFonts.interTight(
-                                                  fontWeight: FlutterFlowTheme.of(
+                                                  fontWeight:
+                                                      FlutterFlowTheme.of(
                                                     context,
                                                   ).titleSmall.fontWeight,
-                                                  fontStyle: FlutterFlowTheme.of(
+                                                  fontStyle:
+                                                      FlutterFlowTheme.of(
                                                     context,
                                                   ).titleSmall.fontStyle,
                                                 ),
@@ -2539,7 +2584,8 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
                                                   );
                                                 }
                                               : null,
-                                          icon: Icon(Icons.chevron_left_rounded),
+                                          icon:
+                                              Icon(Icons.chevron_left_rounded),
                                           label: Text('Previous'),
                                           style: TextButton.styleFrom(
                                             backgroundColor: canGoPrev
@@ -2617,6 +2663,15 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
                     updateCallback: () => safeSetState(() {}),
                     child: StockOutWindowWidget(
                       inventoryData: FFAppState().chosenInventory,
+                    ),
+                  ),
+                ),
+              if (_isPageLoading)
+                Positioned.fill(
+                  child: ColoredBox(
+                    color: Color(0x33000000),
+                    child: Center(
+                      child: CircularProgressIndicator(),
                     ),
                   ),
                 ),

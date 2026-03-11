@@ -41,6 +41,24 @@ class _OrderListWidgetState extends State<OrderListWidget>
   late OrderListModel _model;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
+  bool _isLoading = false;
+
+  void _setLoading(bool value) {
+    _isLoading = value;
+    safeSetState(() {});
+  }
+
+  Future<void> _runWithLoading(Future<void> Function() action) async {
+    if (_isLoading) {
+      return;
+    }
+    _setLoading(true);
+    try {
+      await action();
+    } finally {
+      _setLoading(false);
+    }
+  }
 
   @override
   void initState() {
@@ -49,57 +67,59 @@ class _OrderListWidgetState extends State<OrderListWidget>
 
     // On page load action.
     SchedulerBinding.instance.addPostFrameCallback((_) async {
-      safeSetState(() {
-        _model.noOfDaysValueController?.value = valueOrDefault<String>(
-          widget!.days,
-          '0',
+      await _runWithLoading(() async {
+        safeSetState(() {
+          _model.noOfDaysValueController?.value = valueOrDefault<String>(
+            widget!.days,
+            '0',
+          );
+          _model.noOfDaysValue = valueOrDefault<String>(
+            widget!.days,
+            '0',
+          );
+        });
+        _model.orderLists = await OrderGroup.orderListsCall.call(
+          statusList: [
+            "submitted",
+            "ordered",
+            "approved",
+            "pending",
+            "pending_payment",
+            "processed"
+          ],
+          branch: FFAppState().branch,
         );
-        _model.noOfDaysValue = valueOrDefault<String>(
-          widget!.days,
-          '0',
-        );
-      });
-      _model.orderLists = await OrderGroup.orderListsCall.call(
-        statusList: [
-          "submitted",
-          "ordered",
-          "approved",
-          "pending",
-          "pending_payment",
-          "processed"
-        ],
-        branch: FFAppState().branch,
-      );
 
-      if ((_model.orderLists?.succeeded ?? true)) {
-        FFAppState().orderLists = ((_model.orderLists?.jsonBody ?? '')
-                .toList()
-                .map<OrderListsStruct?>(OrderListsStruct.maybeFromMap)
-                .toList() as Iterable<OrderListsStruct?>)
-            .withoutNulls
-            .toList()
-            .cast<OrderListsStruct>();
-        safeSetState(() {});
-      } else {
-        await showDialog(
-          context: context,
-          builder: (alertDialogContext) {
-            return AlertDialog(
-              title: Text('Error Order List'),
-              content: Text(getJsonField(
-                (_model.orderLists?.jsonBody ?? ''),
-                r'''$.message''',
-              ).toString()),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(alertDialogContext),
-                  child: Text('Ok'),
-                ),
-              ],
-            );
-          },
-        );
-      }
+        if ((_model.orderLists?.succeeded ?? true)) {
+          FFAppState().orderLists = ((_model.orderLists?.jsonBody ?? '')
+                  .toList()
+                  .map<OrderListsStruct?>(OrderListsStruct.maybeFromMap)
+                  .toList() as Iterable<OrderListsStruct?>)
+              .withoutNulls
+              .toList()
+              .cast<OrderListsStruct>();
+          safeSetState(() {});
+        } else {
+          await showDialog(
+            context: context,
+            builder: (alertDialogContext) {
+              return AlertDialog(
+                title: Text('Error Order List'),
+                content: Text(getJsonField(
+                  (_model.orderLists?.jsonBody ?? ''),
+                  r'''$.message''',
+                ).toString()),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(alertDialogContext),
+                    child: Text('Ok'),
+                  ),
+                ],
+              );
+            },
+          );
+        }
+      });
     });
 
     _model.tabBarController = TabController(
@@ -257,56 +277,62 @@ class _OrderListWidgetState extends State<OrderListWidget>
                                     safeSetState(() {});
                                     FFAppState().branch = _model.branchValue!;
                                     safeSetState(() {});
-                                    _model.orderLists2 =
-                                        await OrderGroup.orderListsCall.call(
-                                      branch: FFAppState().branch,
-                                      statusList: [
-                                        "submitted",
-                                        "ordered",
-                                        "approved",
-                                        "pending",
-                                        "pending_payment",
-                                        "processed"
-                                      ],
-                                    );
-
-                                    if ((_model.orderLists2?.succeeded ??
-                                        true)) {
-                                      FFAppState().orderLists =
-                                          ((_model.orderLists2?.jsonBody ?? '')
-                                                      .toList()
-                                                      .map<OrderListsStruct?>(
-                                                          OrderListsStruct
-                                                              .maybeFromMap)
-                                                      .toList()
-                                                  as Iterable<
-                                                      OrderListsStruct?>)
-                                              .withoutNulls
-                                              .toList()
-                                              .cast<OrderListsStruct>();
-                                      safeSetState(() {});
-                                    } else {
-                                      await showDialog(
-                                        context: context,
-                                        builder: (alertDialogContext) {
-                                          return AlertDialog(
-                                            title: Text('Error Order List'),
-                                            content: Text(getJsonField(
-                                              (_model.orderLists2?.jsonBody ??
-                                                  ''),
-                                              r'''$.message''',
-                                            ).toString()),
-                                            actions: [
-                                              TextButton(
-                                                onPressed: () => Navigator.pop(
-                                                    alertDialogContext),
-                                                child: Text('Ok'),
-                                              ),
-                                            ],
-                                          );
-                                        },
+                                    await _runWithLoading(() async {
+                                      _model.orderLists2 =
+                                          await OrderGroup.orderListsCall.call(
+                                        branch: FFAppState().branch,
+                                        statusList: [
+                                          "submitted",
+                                          "ordered",
+                                          "approved",
+                                          "pending",
+                                          "pending_payment",
+                                          "processed"
+                                        ],
                                       );
-                                    }
+
+                                      if ((_model.orderLists2?.succeeded ??
+                                          true)) {
+                                        FFAppState().orderLists = ((_model
+                                                            .orderLists2
+                                                            ?.jsonBody ??
+                                                        '')
+                                                    .toList()
+                                                    .map<OrderListsStruct?>(
+                                                      OrderListsStruct
+                                                          .maybeFromMap,
+                                                    )
+                                                    .toList()
+                                                as Iterable<OrderListsStruct?>)
+                                            .withoutNulls
+                                            .toList()
+                                            .cast<OrderListsStruct>();
+                                        safeSetState(() {});
+                                      } else {
+                                        await showDialog(
+                                          context: context,
+                                          builder: (alertDialogContext) {
+                                            return AlertDialog(
+                                              title: Text('Error Order List'),
+                                              content: Text(getJsonField(
+                                                (_model.orderLists2?.jsonBody ??
+                                                    ''),
+                                                r'''$.message''',
+                                              ).toString()),
+                                              actions: [
+                                                TextButton(
+                                                  onPressed: () =>
+                                                      Navigator.pop(
+                                                    alertDialogContext,
+                                                  ),
+                                                  child: Text('Ok'),
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                      }
+                                    });
 
                                     safeSetState(() {});
                                   },
@@ -2813,6 +2839,15 @@ class _OrderListWidgetState extends State<OrderListWidget>
                     updateCallback: () => safeSetState(() {}),
                     child: EditStatusWidget(
                       orderListing: FFAppState().chosenOrder,
+                    ),
+                  ),
+                ),
+              if (_isLoading)
+                Positioned.fill(
+                  child: ColoredBox(
+                    color: Color(0x33000000),
+                    child: Center(
+                      child: CircularProgressIndicator(),
                     ),
                   ),
                 ),
