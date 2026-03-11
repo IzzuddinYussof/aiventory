@@ -37,6 +37,60 @@ class _StockInWidgetState extends State<StockInWidget> {
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
+  List<String> _unitOptionsForInventory(InventoryStruct? inventory) {
+    if (inventory == null) {
+      return const [];
+    }
+
+    final options = <String>[];
+    for (final unit in [inventory.quantityMinor, inventory.quantityMajor]) {
+      if (unit.isNotEmpty && !options.contains(unit)) {
+        options.add(unit);
+      }
+    }
+    return options;
+  }
+
+  void _applyInventorySelection(InventoryStruct? inventory) {
+    _model.inventoryChosen = inventory;
+    _model.inventoryOptionLists = [];
+    _model.unitOptions = _unitOptionsForInventory(inventory);
+    _model.dropDownUnitValue =
+        _model.unitOptions.isNotEmpty ? _model.unitOptions.first : null;
+
+    if (_model.dropDownUnitValue != null) {
+      _model.dropDownUnitValueController ??=
+          FormFieldController<String>(_model.dropDownUnitValue);
+      _model.dropDownUnitValueController?.value = _model.dropDownUnitValue;
+    } else {
+      _model.dropDownUnitValueController?.reset();
+    }
+
+    safeSetState(() {});
+  }
+
+  Future<void> _showUnitRequiredDialog() async {
+    final message = _model.unitOptions.isEmpty
+        ? 'The selected inventory has no configured unit. Set up the inventory unit first.'
+        : 'Please choose a unit before saving stock in.';
+
+    await showDialog(
+      context: context,
+      builder: (alertDialogContext) {
+        return AlertDialog(
+          title: Text('Unit Required'),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(alertDialogContext),
+              child: Text('Ok'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -44,28 +98,16 @@ class _StockInWidgetState extends State<StockInWidget> {
 
     // On page load action.
     SchedulerBinding.instance.addPostFrameCallback((_) async {
-      _model.inventoryChosen = widget!.orderData?.inventory;
-      safeSetState(() {});
-      _model.inventoryOptionLists = [];
-      _model.unitOptions = _model.inventoryChosen?.quantityMajor !=
-              _model.inventoryChosen?.quantityMinor
-          ? ((String var1, String var2) {
-              return [var1, var2];
-            }(_model.inventoryChosen!.quantityMinor,
-              _model.inventoryChosen!.quantityMajor))
-          : ((String var1) {
-              return [var1];
-            }(_model.inventoryChosen!.quantityMajor))
-              .toList()
-              .cast<String>();
-      safeSetState(() {});
+      _applyInventorySelection(widget.orderData?.inventory);
       safeSetState(() {
         _model.typeTextController?.text = 'Stock In';
       });
-      safeSetState(() {
-        _model.quantityTextController?.text =
-            widget!.orderData!.quantityOrdered.toString();
-      });
+      if (widget.orderData != null) {
+        safeSetState(() {
+          _model.quantityTextController?.text =
+              widget.orderData!.quantityOrdered.toString();
+        });
+      }
     });
 
     _model.searchTextController ??= TextEditingController();
@@ -447,7 +489,8 @@ class _StockInWidgetState extends State<StockInWidget> {
                                       InventoryStruct.maybeFromMap(
                                           (_model.findBarcode?.jsonBody ??
                                               ''))!;
-                                  safeSetState(() {});
+                                  _applyInventorySelection(
+                                      FFAppState().inventoryCurrent);
                                 } else {
                                   await showDialog(
                                     context: context,
@@ -521,25 +564,8 @@ class _StockInWidgetState extends State<StockInWidget> {
                                 hoverColor: Colors.transparent,
                                 highlightColor: Colors.transparent,
                                 onTap: () async {
-                                  _model.inventoryChosen = inventoryOptionsItem;
-                                  safeSetState(() {});
-                                  _model.inventoryOptionLists = [];
-                                  _model.unitOptions = _model
-                                              .inventoryChosen?.quantityMajor !=
-                                          _model.inventoryChosen?.quantityMinor
-                                      ? ((String var1, String var2) {
-                                          return [var1, var2];
-                                        }(
-                                          _model.inventoryChosen!.quantityMinor,
-                                          _model
-                                              .inventoryChosen!.quantityMajor))
-                                      : ((String var1) {
-                                          return [var1];
-                                        }(_model
-                                              .inventoryChosen!.quantityMajor))
-                                          .toList()
-                                          .cast<String>();
-                                  safeSetState(() {});
+                                  _applyInventorySelection(
+                                      inventoryOptionsItem);
                                 },
                                 child: Container(
                                   decoration: BoxDecoration(),
@@ -998,7 +1024,7 @@ class _StockInWidgetState extends State<StockInWidget> {
                                       .bodyMedium
                                       .fontStyle,
                                 ),
-                        hintText: 'Unit',
+                        hintText: 'Choose unit',
                         icon: Icon(
                           Icons.keyboard_arrow_down_rounded,
                           color: FlutterFlowTheme.of(context).secondaryText,
@@ -1580,9 +1606,16 @@ class _StockInWidgetState extends State<StockInWidget> {
                         EdgeInsetsDirectional.fromSTEB(0.0, 12.0, 0.0, 0.0),
                     child: FFButtonWidget(
                       onPressed: () async {
+                        final selectedUnit = _model.dropDownUnitValue;
+
                         if ((_model.inventoryChosen != null) &&
                             (_model.quantityTextController.text != null &&
                                 _model.quantityTextController.text != '')) {
+                          if (selectedUnit == null || selectedUnit.isEmpty) {
+                            await _showUnitRequiredDialog();
+                            return;
+                          }
+
                           await Future.wait([
                             Future(() async {
                               if (_model.uploadedImage != null &&
@@ -1630,7 +1663,7 @@ class _StockInWidgetState extends State<StockInWidget> {
                                 expiryDate: _model.expiryDate,
                                 quantity: double.tryParse(
                                     _model.quantityTextController.text),
-                                unit: _model.dropDownUnitValue,
+                                unit: selectedUnit,
                                 note: _model.remarkTextController.text,
                                 orderListId: valueOrDefault<int>(
                                   widget!.orderData?.id,
