@@ -443,7 +443,7 @@ class _DashboardHQWidgetState extends State<DashboardHQWidget>
                       ],
                     ),
                   ),
-                  if (FFAppState().user.branch == 'AI Venture')
+                  if (FFAppState().branchLists.isNotEmpty)
                     Padding(
                       padding: EdgeInsetsDirectional.fromSTEB(
                         16.0,
