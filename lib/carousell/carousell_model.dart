@@ -19,6 +19,9 @@ class CarousellModel extends FlutterFlowModel<CarousellWidget> {
 
   // Stores action output result for [Backend Call - API (carousellGet)] action in Carousell widget.
   ApiCallResponse? carousellGetBack;
+  // State field(s) for branch widget.
+  String? branchValue;
+  FormFieldController<String>? branchValueController;
   // Stores action output result for [Backend Call - API (carousellGet)] action in Column widget.
   ApiCallResponse? carousellGetRefresh;
   // State field(s) for serachInventory widget.

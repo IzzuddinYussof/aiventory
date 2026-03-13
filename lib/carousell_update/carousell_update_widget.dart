@@ -28,6 +28,63 @@ class _CarousellUpdateWidgetState extends State<CarousellUpdateWidget> {
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
+  Future<void> _loadCarousellMovementList() async {
+    final branchFilterId = FFAppState().activeBranchFilterId;
+    final isAllBranches = branchFilterId == null;
+    _model.getCarousellList =
+        await CarousellGroup.carousellMovementGetCall.call(
+      branchId: branchFilterId,
+      status: 'In Progress',
+    );
+
+    if ((_model.getCarousellList?.succeeded ?? true)) {
+      FFAppState().carousellStatusUpdate =
+          ((_model.getCarousellList?.jsonBody ?? '')
+                  .toList()
+                  .map<CarousellMovementStruct?>(
+                      CarousellMovementStruct.maybeFromMap)
+                  .toList() as Iterable<CarousellMovementStruct?>)
+              .withoutNulls
+              .toList()
+              .cast<CarousellMovementStruct>();
+      FFAppState().carousellBuyList = FFAppState()
+          .carousellStatusUpdate
+          .where((e) =>
+              (isAllBranches || (e.branchIdTo == branchFilterId)) &&
+              (e.buyer == false))
+          .toList()
+          .cast<CarousellMovementStruct>();
+      FFAppState().carousellSellList = FFAppState()
+          .carousellStatusUpdate
+          .where((e) =>
+              (isAllBranches || (e.branchIdFrom == branchFilterId)) &&
+              (e.seller == false))
+          .toList()
+          .cast<CarousellMovementStruct>();
+      safeSetState(() {});
+      return;
+    }
+
+    await showDialog(
+      context: context,
+      builder: (alertDialogContext) {
+        return AlertDialog(
+          title: Text('Error gettting Carousell list'),
+          content: Text(getJsonField(
+            (_model.getCarousellList?.jsonBody ?? ''),
+            r'''$.message''',
+          ).toString()),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(alertDialogContext),
+              child: Text('Ok'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -35,59 +92,7 @@ class _CarousellUpdateWidgetState extends State<CarousellUpdateWidget> {
 
     // On page load action.
     SchedulerBinding.instance.addPostFrameCallback((_) async {
-      _model.getCarousellList =
-          await CarousellGroup.carousellMovementGetCall.call(
-        branchId: FFAppState().branchIdUser,
-        status: 'In Progress',
-      );
-
-      if ((_model.getCarousellList?.succeeded ?? true)) {
-        FFAppState().carousellStatusUpdate =
-            ((_model.getCarousellList?.jsonBody ?? '')
-                    .toList()
-                    .map<CarousellMovementStruct?>(
-                        CarousellMovementStruct.maybeFromMap)
-                    .toList() as Iterable<CarousellMovementStruct?>)
-                .withoutNulls
-                .toList()
-                .cast<CarousellMovementStruct>();
-        safeSetState(() {});
-        FFAppState().carousellBuyList = FFAppState()
-            .carousellStatusUpdate
-            .where((e) =>
-                (e.branchIdTo == FFAppState().branchId) && (e.buyer == false))
-            .toList()
-            .toList()
-            .cast<CarousellMovementStruct>();
-        FFAppState().carousellSellList = FFAppState()
-            .carousellStatusUpdate
-            .where((e) =>
-                (e.branchIdFrom == FFAppState().branchId) &&
-                (e.seller == false))
-            .toList()
-            .toList()
-            .cast<CarousellMovementStruct>();
-        safeSetState(() {});
-      } else {
-        await showDialog(
-          context: context,
-          builder: (alertDialogContext) {
-            return AlertDialog(
-              title: Text('Error gettting Carousell list'),
-              content: Text(getJsonField(
-                (_model.getCarousellList?.jsonBody ?? ''),
-                r'''$.message''',
-              ).toString()),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(alertDialogContext),
-                  child: Text('Ok'),
-                ),
-              ],
-            );
-          },
-        );
-      }
+      await _loadCarousellMovementList();
     });
 
     WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
@@ -161,7 +166,7 @@ class _CarousellUpdateWidgetState extends State<CarousellUpdateWidget> {
                               mainAxisSize: MainAxisSize.max,
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
-                                if (FFAppState().user.branch == 'AI Venture')
+                                if (FFAppState().isHQUser)
                                   Align(
                                     alignment: AlignmentDirectional(1.0, 0.0),
                                     child: FlutterFlowDropDown<String>(
@@ -169,7 +174,7 @@ class _CarousellUpdateWidgetState extends State<CarousellUpdateWidget> {
                                           _model.branchValueController ??=
                                               FormFieldController<String>(
                                         _model.branchValue ??=
-                                            FFAppState().branch,
+                                            FFAppState().activeBranch,
                                       ),
                                       options: FFAppState()
                                           .branchLists
@@ -178,89 +183,12 @@ class _CarousellUpdateWidgetState extends State<CarousellUpdateWidget> {
                                       onChanged: (val) async {
                                         safeSetState(
                                             () => _model.branchValue = val);
-                                        FFAppState().branchId = FFAppState()
-                                            .branchLists
-                                            .where((e) =>
-                                                e.label == _model.branchValue)
-                                            .toList()
-                                            .firstOrNull!
-                                            .id;
-                                        safeSetState(() {});
-                                        FFAppState().branch =
-                                            _model.branchValue!;
-                                        safeSetState(() {});
-                                        _model.getCarousellList2 =
-                                            await CarousellGroup
-                                                .carousellMovementGetCall
-                                                .call(
-                                          branchId: FFAppState().branchId,
-                                          status: 'In Progress',
-                                        );
-
-                                        if ((_model
-                                                .getCarousellList2?.succeeded ??
-                                            true)) {
-                                          FFAppState()
-                                              .carousellStatusUpdate = ((_model
-                                                              .getCarousellList2
-                                                              ?.jsonBody ??
-                                                          '')
-                                                      .toList()
-                                                      .map<CarousellMovementStruct?>(
-                                                          CarousellMovementStruct
-                                                              .maybeFromMap)
-                                                      .toList()
-                                                  as Iterable<
-                                                      CarousellMovementStruct?>)
-                                              .withoutNulls
-                                              .toList()
-                                              .cast<CarousellMovementStruct>();
-                                          safeSetState(() {});
-                                          FFAppState().carousellBuyList =
-                                              FFAppState()
-                                                  .carousellStatusUpdate
-                                                  .where((e) =>
-                                                      e.branchIdTo ==
-                                                      FFAppState().branchId)
-                                                  .toList()
-                                                  .cast<
-                                                      CarousellMovementStruct>();
-                                          FFAppState().carousellSellList =
-                                              FFAppState()
-                                                  .carousellStatusUpdate
-                                                  .where((e) =>
-                                                      e.branchIdFrom ==
-                                                      FFAppState().branchId)
-                                                  .toList()
-                                                  .cast<
-                                                      CarousellMovementStruct>();
-                                          safeSetState(() {});
-                                        } else {
-                                          await showDialog(
-                                            context: context,
-                                            builder: (alertDialogContext) {
-                                              return AlertDialog(
-                                                title: Text(
-                                                    'Error gettting Carousell list'),
-                                                content: Text(getJsonField(
-                                                  (_model.getCarousellList2
-                                                          ?.jsonBody ??
-                                                      ''),
-                                                  r'''$.message''',
-                                                ).toString()),
-                                                actions: [
-                                                  TextButton(
-                                                    onPressed: () =>
-                                                        Navigator.pop(
-                                                            alertDialogContext),
-                                                    child: Text('Ok'),
-                                                  ),
-                                                ],
-                                              );
-                                            },
-                                          );
+                                        if (val == null || val.isEmpty) {
+                                          return;
                                         }
-
+                                        FFAppState()
+                                            .setActiveBranchByLabel(val);
+                                        await _loadCarousellMovementList();
                                         safeSetState(() {});
                                       },
                                       width: 150.0,
@@ -683,11 +611,10 @@ class _CarousellUpdateWidgetState extends State<CarousellUpdateWidget> {
                                                               context,
                                                               status:
                                                                   'Delivered',
-                                                              id: buyListItem
-                                                                  .id,
+                                                              movement:
+                                                                  buyListItem,
                                                               index:
                                                                   buyListIndex,
-                                                              type: 'Buy',
                                                               side: 'buyer',
                                                             );
                                                             safeSetState(() {});
@@ -721,11 +648,10 @@ class _CarousellUpdateWidgetState extends State<CarousellUpdateWidget> {
                                                               context,
                                                               status:
                                                                   'Cancelled',
-                                                              id: buyListItem
-                                                                  .id,
+                                                              movement:
+                                                                  buyListItem,
                                                               index:
                                                                   buyListIndex,
-                                                              type: 'Buy',
                                                             );
                                                             safeSetState(() {});
                                                           },
@@ -1136,11 +1062,10 @@ class _CarousellUpdateWidgetState extends State<CarousellUpdateWidget> {
                                                               context,
                                                               status:
                                                                   'Received',
-                                                              id: sellListItem
-                                                                  .id,
+                                                              movement:
+                                                                  sellListItem,
                                                               index:
                                                                   sellListIndex,
-                                                              type: 'Sell',
                                                               side: 'seller',
                                                             );
                                                             safeSetState(() {});
@@ -1174,11 +1099,10 @@ class _CarousellUpdateWidgetState extends State<CarousellUpdateWidget> {
                                                               context,
                                                               status:
                                                                   'Cancelled',
-                                                              id: sellListItem
-                                                                  .id,
+                                                              movement:
+                                                                  sellListItem,
                                                               index:
                                                                   sellListIndex,
-                                                              type: 'Sell',
                                                             );
                                                             safeSetState(() {});
                                                           },

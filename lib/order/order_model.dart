@@ -36,6 +36,9 @@ class OrderModel extends FlutterFlowModel<OrderWidget> {
   ///  State fields for stateful widgets in this page.
 
   final formKey = GlobalKey<FormState>();
+  // State field(s) for branch widget.
+  String? branchValue;
+  FormFieldController<String>? branchValueController;
   // State field(s) for orderChannel widget.
   String? orderChannelValue;
   FormFieldController<String>? orderChannelValueController;

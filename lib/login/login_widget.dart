@@ -31,15 +31,22 @@ class _LoginWidgetState extends State<LoginWidget> {
     safeSetState(() {});
   }
 
-  Future<void> _runWithLoading(Future<void> Function() action) async {
-    if (_isLoading) {
+  Future<void> _runWithLoading(
+    Future<void> Function() action, {
+    bool showOverlay = true,
+  }) async {
+    if (showOverlay && _isLoading) {
       return;
     }
-    _setLoading(true);
+    if (showOverlay) {
+      _setLoading(true);
+    }
     try {
       await action();
     } finally {
-      _setLoading(false);
+      if (showOverlay) {
+        _setLoading(false);
+      }
     }
   }
 
@@ -536,7 +543,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                                             }
 
                                             safeSetState(() {});
-                                          });
+                                          }, showOverlay: false);
                                         },
                                         text: 'Sign In',
                                         options: FFButtonOptions(

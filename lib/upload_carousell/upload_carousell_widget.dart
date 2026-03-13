@@ -6,6 +6,7 @@ import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import '/flutter_flow/form_field_controller.dart';
+import '/utils/branch_selection_guard.dart';
 import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -43,6 +44,66 @@ class _UploadCarousellWidgetState extends State<UploadCarousellWidget> {
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
+  List<String> _buildUnitList(InventoryStruct inventory) {
+    if (inventory.quantityMajor == inventory.quantityMinor) {
+      return [inventory.quantityMajor];
+    }
+    return [inventory.quantityMinor, inventory.quantityMajor]
+        .where((unit) => unit.isNotEmpty)
+        .toList();
+  }
+
+  void _setFilteredItems(String? category) {
+    _model.itemList = (category != null && category.isNotEmpty)
+        ? FFAppState()
+            .allInventory
+            .where((e) => e.category == category)
+            .toList()
+            .cast<InventoryStruct>()
+        : FFAppState().allInventory.toList().cast<InventoryStruct>();
+  }
+
+  void _syncSelectedInventory(
+    InventoryStruct? inventory, {
+    bool syncCategory = false,
+  }) {
+    if (syncCategory) {
+      _model.categoryValue = inventory?.category;
+      _model.categoryValueController?.value = inventory?.category;
+      _setFilteredItems(_model.categoryValue);
+    }
+
+    _model.inventoryChosen = inventory;
+    _model.itemValue = inventory?.id;
+    _model.itemValueController?.value = inventory?.id;
+    _model.unitList = inventory != null ? _buildUnitList(inventory) : [];
+    final selectedUnit = _model.unitList.contains(_model.unitValue)
+        ? _model.unitValue
+        : _model.unitList.firstOrNull;
+    _model.unitValue = selectedUnit;
+    _model.unitValueController?.value = selectedUnit;
+    _model.typeValue ??= 'Selling';
+    _model.typeValueController?.value = _model.typeValue;
+  }
+
+  void _applyInitialSelection() {
+    final initialInventory = FFAppState()
+        .allInventory
+        .where((e) => e.id == widget.inventoryId)
+        .toList()
+        .firstOrNull;
+
+    if (initialInventory != null) {
+      _syncSelectedInventory(initialInventory, syncCategory: true);
+      return;
+    }
+
+    _model.categoryValue = widget.category;
+    _model.categoryValueController?.value = widget.category;
+    _setFilteredItems(widget.category);
+    _syncSelectedInventory(null);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -50,18 +111,8 @@ class _UploadCarousellWidgetState extends State<UploadCarousellWidget> {
 
     // On page load action.
     SchedulerBinding.instance.addPostFrameCallback((_) async {
-      _model.itemList =
-          FFAppState().allInventory.toList().cast<InventoryStruct>();
-      safeSetState(() {});
-      safeSetState(() {
-        _model.itemValueController?.value = widget!.inventoryId!;
-        _model.itemValue = widget!.inventoryId!;
-      });
-      _model.inventoryChosen = FFAppState()
-          .allInventory
-          .where((e) => _model.itemValue == e.id)
-          .toList()
-          .firstOrNull;
+      _setFilteredItems(null);
+      _applyInitialSelection();
       safeSetState(() {});
     });
 
@@ -173,6 +224,83 @@ class _UploadCarousellWidgetState extends State<UploadCarousellWidget> {
                                                   .fontStyle,
                                         ),
                                   ),
+                                  if (FFAppState().isHQUser)
+                                    Padding(
+                                      padding: EdgeInsetsDirectional.fromSTEB(
+                                          0.0, 24.0, 0.0, 0.0),
+                                      child: FlutterFlowDropDown<String>(
+                                        controller:
+                                            _model.branchValueController ??=
+                                                FormFieldController<String>(
+                                          _model.branchValue ??=
+                                              FFAppState().activeBranch,
+                                        ),
+                                        options: FFAppState()
+                                            .branchLists
+                                            .map((e) => e.label)
+                                            .toList(),
+                                        onChanged: (val) {
+                                          safeSetState(
+                                              () => _model.branchValue = val);
+                                          if (val == null || val.isEmpty) {
+                                            return;
+                                          }
+                                          FFAppState()
+                                              .setActiveBranchByLabel(val);
+                                        },
+                                        width: double.infinity,
+                                        height: 52.0,
+                                        textStyle: FlutterFlowTheme.of(context)
+                                            .bodyLarge
+                                            .override(
+                                              font: GoogleFonts.inter(
+                                                fontWeight:
+                                                    FlutterFlowTheme.of(context)
+                                                        .bodyLarge
+                                                        .fontWeight,
+                                                fontStyle:
+                                                    FlutterFlowTheme.of(context)
+                                                        .bodyLarge
+                                                        .fontStyle,
+                                              ),
+                                              letterSpacing: 0.0,
+                                              fontWeight:
+                                                  FlutterFlowTheme.of(context)
+                                                      .bodyLarge
+                                                      .fontWeight,
+                                              fontStyle:
+                                                  FlutterFlowTheme.of(context)
+                                                      .bodyLarge
+                                                      .fontStyle,
+                                            ),
+                                        hintText: 'Select Branch ...',
+                                        searchHintText:
+                                            'Search for a branch...',
+                                        searchCursorColor:
+                                            FlutterFlowTheme.of(context)
+                                                .primary,
+                                        icon: Icon(
+                                          Icons.keyboard_arrow_down_rounded,
+                                          color: FlutterFlowTheme.of(context)
+                                              .secondaryText,
+                                          size: 24.0,
+                                        ),
+                                        fillColor: FlutterFlowTheme.of(context)
+                                            .secondaryBackground,
+                                        elevation: 2.0,
+                                        borderColor:
+                                            FlutterFlowTheme.of(context)
+                                                .alternate,
+                                        borderWidth: 2.0,
+                                        borderRadius: 12.0,
+                                        margin: EdgeInsetsDirectional.fromSTEB(
+                                            12.0, 4.0, 8.0, 4.0),
+                                        hidesUnderline: true,
+                                        isOverButton: true,
+                                        isSearchable: true,
+                                        isMultiSelect: false,
+                                      ),
+                                    ),
                                   Padding(
                                     padding: EdgeInsetsDirectional.fromSTEB(
                                         0.0, 24.0, 0.0, 0.0),
@@ -190,13 +318,15 @@ class _UploadCarousellWidgetState extends State<UploadCarousellWidget> {
                                       onChanged: (val) async {
                                         safeSetState(
                                             () => _model.categoryValue = val);
-                                        _model.itemList = FFAppState()
-                                            .allInventory
-                                            .where((e) =>
-                                                e.category ==
-                                                _model.categoryValue)
+                                        _setFilteredItems(val);
+                                        final selectedInventory = _model
+                                            .itemList
+                                            .where(
+                                                (e) => e.id == _model.itemValue)
                                             .toList()
-                                            .cast<InventoryStruct>();
+                                            .firstOrNull;
+                                        _syncSelectedInventory(
+                                            selectedInventory);
                                         safeSetState(() {});
                                       },
                                       width: double.infinity,
@@ -315,7 +445,7 @@ class _UploadCarousellWidgetState extends State<UploadCarousellWidget> {
                                             controller:
                                                 _model.itemValueController ??=
                                                     FormFieldController<int>(
-                                              _model.itemValue ??= 0,
+                                              _model.itemValue,
                                             ),
                                             options: List<int>.from(_model
                                                 .itemList
@@ -327,44 +457,15 @@ class _UploadCarousellWidgetState extends State<UploadCarousellWidget> {
                                             onChanged: (val) async {
                                               safeSetState(
                                                   () => _model.itemValue = val);
-                                              _model.inventoryChosen =
+                                              final selectedInventory =
                                                   FFAppState()
                                                       .allInventory
-                                                      .where((e) =>
-                                                          _model.itemValue ==
-                                                          e.id)
+                                                      .where((e) => val == e.id)
                                                       .toList()
                                                       .firstOrNull;
+                                              _syncSelectedInventory(
+                                                  selectedInventory);
                                               safeSetState(() {});
-                                              _model.unitList = _model
-                                                          .inventoryChosen
-                                                          ?.quantityMajor !=
-                                                      _model.inventoryChosen
-                                                          ?.quantityMinor
-                                                  ? ((String var1,
-                                                          String var2) {
-                                                      return [var1, var2];
-                                                    }(
-                                                      _model.inventoryChosen!
-                                                          .quantityMinor,
-                                                      _model.inventoryChosen!
-                                                          .quantityMajor))
-                                                  : ((String var1) {
-                                                      return [var1];
-                                                    }(_model.inventoryChosen!
-                                                          .quantityMajor))
-                                                      .toList()
-                                                      .cast<String>();
-                                              safeSetState(() {});
-                                              safeSetState(() {
-                                                _model.typeValueController
-                                                        ?.value =
-                                                    _model.inventoryChosen!
-                                                        .quantityMajor;
-                                                _model.typeValue = _model
-                                                    .inventoryChosen!
-                                                    .quantityMajor;
-                                              });
                                             },
                                             width: double.infinity,
                                             height: 52.0,
@@ -1349,6 +1450,14 @@ class _UploadCarousellWidgetState extends State<UploadCarousellWidget> {
                                           safeSetState(() {});
                                           return;
                                         }
+                                        if (!await ensureConcreteBranchSelected(
+                                          context,
+                                          actionLabel: 'uploading to Carousell',
+                                        )) {
+                                          _model.formFilled = false;
+                                          safeSetState(() {});
+                                          return;
+                                        }
                                         if (_model.uploadImageModel
                                                     .uploadedLocalFile_uploadData4ah !=
                                                 null &&
@@ -1360,7 +1469,8 @@ class _UploadCarousellWidgetState extends State<UploadCarousellWidget> {
                                                 false)) {
                                           _model.uploadedFile =
                                               await UploadFileCall.call(
-                                            mainFolder: FFAppState().branch,
+                                            mainFolder:
+                                                FFAppState().activeBranch,
                                             subFolder: dateTimeFormat(
                                                 "MM-yyyy", getCurrentTimestamp),
                                             file: _model.uploadImageModel
@@ -1412,8 +1522,8 @@ class _UploadCarousellWidgetState extends State<UploadCarousellWidget> {
                                                 .carousellPostCall
                                                 .call(
                                           inventoryId: _model.itemValue,
-                                          branch: FFAppState().user.branch,
-                                          branchId: FFAppState().branchIdUser,
+                                          branch: FFAppState().activeBranch,
+                                          branchId: FFAppState().activeBranchId,
                                           initialQuantity: double.tryParse(
                                               _model
                                                   .quantityTextController.text),
@@ -1463,8 +1573,9 @@ class _UploadCarousellWidgetState extends State<UploadCarousellWidget> {
                                             _model.categoryValue = null;
                                             _model.itemValueController?.reset();
                                             _model.itemValue = null;
-                                            _model.typeValueController?.reset();
-                                            _model.typeValue = null;
+                                            _model.typeValue = 'Selling';
+                                            _model.typeValueController?.value =
+                                                'Selling';
                                           });
                                           safeSetState(() {
                                             _model.quantityTextController
@@ -1476,9 +1587,8 @@ class _UploadCarousellWidgetState extends State<UploadCarousellWidget> {
                                           _model.expiryDate = null;
                                           _model.file = null;
                                           _model.uploadedImage = null;
-                                          _model.inventoryChosen = null;
-                                          _model.unitList = [];
-                                          _model.itemList = [];
+                                          _setFilteredItems(null);
+                                          _syncSelectedInventory(null);
                                           safeSetState(() {});
                                           _model.carousellRefreshUpload =
                                               await CarousellGroup

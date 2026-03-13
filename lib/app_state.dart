@@ -200,6 +200,47 @@ class FFAppState extends ChangeNotifier {
     prefs.setInt('ff_branchId', value);
   }
 
+  bool get isHQUser => user.branch == 'AI Venture';
+  bool get isAllBranchesSelection =>
+      isHQUser && (branchId == 0 || branch == 'All Dentabay');
+  String get activeBranch => branch;
+  int get activeBranchId => branchId;
+  String? get activeBranchFilter => isAllBranchesSelection ? null : branch;
+  int? get activeBranchFilterId => isAllBranchesSelection ? null : branchId;
+  String? get activeBranchFilterIdString => activeBranchFilterId?.toString();
+
+  void setActiveBranch({
+    required int id,
+    required String label,
+    bool notify = true,
+  }) {
+    branchId = id;
+    branch = label;
+    if (notify) {
+      notifyListeners();
+    }
+  }
+
+  void setActiveBranchById(int id, {bool notify = true}) {
+    final selectedBranch =
+        branchLists.where((e) => e.id == id).toList().firstOrNull;
+    if (selectedBranch == null) {
+      return;
+    }
+    setActiveBranch(
+        id: selectedBranch.id, label: selectedBranch.label, notify: notify);
+  }
+
+  void setActiveBranchByLabel(String label, {bool notify = true}) {
+    final selectedBranch =
+        branchLists.where((e) => e.label == label).toList().firstOrNull;
+    if (selectedBranch == null) {
+      return;
+    }
+    setActiveBranch(
+        id: selectedBranch.id, label: selectedBranch.label, notify: notify);
+  }
+
   List<InventoryCategoryStruct> _inventoryCategoryLists = [];
   List<InventoryCategoryStruct> get inventoryCategoryLists =>
       _inventoryCategoryLists;

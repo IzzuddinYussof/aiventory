@@ -6,6 +6,7 @@ import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import '/flutter_flow/form_field_controller.dart';
+import '/utils/branch_selection_guard.dart';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -37,6 +38,48 @@ class _OrderWidgetState extends State<OrderWidget> {
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
+  void _setFilteredItems(String? category) {
+    _model.itemList = (category != null && category.isNotEmpty)
+        ? FFAppState()
+            .allInventory
+            .where((e) => e.category == category)
+            .toList()
+            .cast<InventoryStruct>()
+        : FFAppState().allInventory.toList().cast<InventoryStruct>();
+  }
+
+  void _syncSelectedInventory(
+    InventoryStruct? inventory, {
+    bool syncCategory = false,
+  }) {
+    if (syncCategory) {
+      _model.categoryValue = inventory?.category;
+      _model.categoryValueController?.value = inventory?.category;
+      _setFilteredItems(_model.categoryValue);
+    }
+
+    _model.itemValue = inventory?.id;
+    _model.itemValueController?.value = inventory?.id;
+  }
+
+  void _applyInitialSelection() {
+    final initialInventory = FFAppState()
+        .allInventory
+        .where((e) => e.id == widget.inventoryId)
+        .toList()
+        .firstOrNull;
+
+    if (initialInventory != null) {
+      _syncSelectedInventory(initialInventory, syncCategory: true);
+      return;
+    }
+
+    _model.categoryValue = widget.category;
+    _model.categoryValueController?.value = widget.category;
+    _setFilteredItems(widget.category);
+    _syncSelectedInventory(null);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -44,13 +87,9 @@ class _OrderWidgetState extends State<OrderWidget> {
 
     // On page load action.
     SchedulerBinding.instance.addPostFrameCallback((_) async {
-      _model.itemList =
-          FFAppState().allInventory.toList().cast<InventoryStruct>();
+      _setFilteredItems(null);
+      _applyInitialSelection();
       safeSetState(() {});
-      safeSetState(() {
-        _model.itemValueController?.value = widget!.inventoryId!;
-        _model.itemValue = widget!.inventoryId!;
-      });
     });
 
     _model.quantityTextController ??= TextEditingController();
@@ -158,6 +197,83 @@ class _OrderWidgetState extends State<OrderWidget> {
                                                   .fontStyle,
                                         ),
                                   ),
+                                  if (FFAppState().isHQUser)
+                                    Padding(
+                                      padding: EdgeInsetsDirectional.fromSTEB(
+                                          0.0, 24.0, 0.0, 0.0),
+                                      child: FlutterFlowDropDown<String>(
+                                        controller:
+                                            _model.branchValueController ??=
+                                                FormFieldController<String>(
+                                          _model.branchValue ??=
+                                              FFAppState().activeBranch,
+                                        ),
+                                        options: FFAppState()
+                                            .branchLists
+                                            .map((e) => e.label)
+                                            .toList(),
+                                        onChanged: (val) {
+                                          safeSetState(
+                                              () => _model.branchValue = val);
+                                          if (val == null || val.isEmpty) {
+                                            return;
+                                          }
+                                          FFAppState()
+                                              .setActiveBranchByLabel(val);
+                                        },
+                                        width: double.infinity,
+                                        height: 52.0,
+                                        textStyle: FlutterFlowTheme.of(context)
+                                            .bodyLarge
+                                            .override(
+                                              font: GoogleFonts.inter(
+                                                fontWeight:
+                                                    FlutterFlowTheme.of(context)
+                                                        .bodyLarge
+                                                        .fontWeight,
+                                                fontStyle:
+                                                    FlutterFlowTheme.of(context)
+                                                        .bodyLarge
+                                                        .fontStyle,
+                                              ),
+                                              letterSpacing: 0.0,
+                                              fontWeight:
+                                                  FlutterFlowTheme.of(context)
+                                                      .bodyLarge
+                                                      .fontWeight,
+                                              fontStyle:
+                                                  FlutterFlowTheme.of(context)
+                                                      .bodyLarge
+                                                      .fontStyle,
+                                            ),
+                                        hintText: 'Select Branch ...',
+                                        searchHintText:
+                                            'Search for a branch...',
+                                        searchCursorColor:
+                                            FlutterFlowTheme.of(context)
+                                                .primary,
+                                        icon: Icon(
+                                          Icons.keyboard_arrow_down_rounded,
+                                          color: FlutterFlowTheme.of(context)
+                                              .secondaryText,
+                                          size: 24.0,
+                                        ),
+                                        fillColor: FlutterFlowTheme.of(context)
+                                            .secondaryBackground,
+                                        elevation: 2.0,
+                                        borderColor:
+                                            FlutterFlowTheme.of(context)
+                                                .alternate,
+                                        borderWidth: 2.0,
+                                        borderRadius: 12.0,
+                                        margin: EdgeInsetsDirectional.fromSTEB(
+                                            12.0, 4.0, 8.0, 4.0),
+                                        hidesUnderline: true,
+                                        isOverButton: true,
+                                        isSearchable: true,
+                                        isMultiSelect: false,
+                                      ),
+                                    ),
                                   Padding(
                                     padding: EdgeInsetsDirectional.fromSTEB(
                                         0.0, 24.0, 0.0, 0.0),
@@ -283,13 +399,13 @@ class _OrderWidgetState extends State<OrderWidget> {
                                     onChanged: (val) async {
                                       safeSetState(
                                           () => _model.categoryValue = val);
-                                      _model.itemList = FFAppState()
-                                          .allInventory
-                                          .where((e) =>
-                                              e.category ==
-                                              _model.categoryValue)
+                                      _setFilteredItems(val);
+                                      final selectedInventory = _model.itemList
+                                          .where(
+                                              (e) => e.id == _model.itemValue)
                                           .toList()
-                                          .cast<InventoryStruct>();
+                                          .firstOrNull;
+                                      _syncSelectedInventory(selectedInventory);
                                       safeSetState(() {});
                                     },
                                     width: double.infinity,
@@ -396,7 +512,7 @@ class _OrderWidgetState extends State<OrderWidget> {
                                   FlutterFlowDropDown<int>(
                                     controller: _model.itemValueController ??=
                                         FormFieldController<int>(
-                                      _model.itemValue ??= 0,
+                                      _model.itemValue,
                                     ),
                                     options: List<int>.from(_model.itemList
                                         .map((e) => e.id)
@@ -404,8 +520,15 @@ class _OrderWidgetState extends State<OrderWidget> {
                                     optionLabels: _model.itemList
                                         .map((e) => e.itemName)
                                         .toList(),
-                                    onChanged: (val) => safeSetState(
-                                        () => _model.itemValue = val),
+                                    onChanged: (val) {
+                                      final selectedInventory = FFAppState()
+                                          .allInventory
+                                          .where((e) => e.id == val)
+                                          .toList()
+                                          .firstOrNull;
+                                      _syncSelectedInventory(selectedInventory);
+                                      safeSetState(() {});
+                                    },
                                     width: double.infinity,
                                     height: 52.0,
                                     searchHintTextStyle:
@@ -868,6 +991,12 @@ class _OrderWidgetState extends State<OrderWidget> {
                                         if (_model.itemValue == null) {
                                           return;
                                         }
+                                        if (!await ensureConcreteBranchSelected(
+                                          context,
+                                          actionLabel: 'submitting an order',
+                                        )) {
+                                          return;
+                                        }
                                         if (_model.uploadImageModel
                                                     .uploadedLocalFile_uploadData4ah !=
                                                 null &&
@@ -879,7 +1008,8 @@ class _OrderWidgetState extends State<OrderWidget> {
                                                 false)) {
                                           _model.uploadedFile =
                                               await UploadFileCall.call(
-                                            mainFolder: FFAppState().branch,
+                                            mainFolder:
+                                                FFAppState().activeBranch,
                                             subFolder: dateTimeFormat(
                                                 "MM-yyyy", getCurrentTimestamp),
                                             file: _model.uploadImageModel
@@ -934,14 +1064,14 @@ class _OrderWidgetState extends State<OrderWidget> {
                                               ? 'submitted'
                                               : 'ordered',
                                           name: FFAppState().user.name,
-                                          branch: FFAppState().branch,
+                                          branch: FFAppState().activeBranch,
                                           amount: double.tryParse(_model
                                               .quantityTextController.text),
                                           inventoryId: _model.itemValue,
                                           remark:
                                               _model.remarkTextController.text,
                                           imageUrl: _model.file?.viewUrl,
-                                          branchId: FFAppState().branchId,
+                                          branchId: FFAppState().activeBranchId,
                                           channel: _model.orderChannelValue,
                                         );
 
@@ -981,7 +1111,7 @@ class _OrderWidgetState extends State<OrderWidget> {
                                             _model.remarkTextController
                                                 ?.clear();
                                           });
-                                          _model.itemList = [];
+                                          _setFilteredItems(null);
                                           _model.file = null;
                                           _model.uploadedImage = null;
                                           safeSetState(() {});

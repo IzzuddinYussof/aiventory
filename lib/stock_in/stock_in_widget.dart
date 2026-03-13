@@ -6,6 +6,7 @@ import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import '/flutter_flow/form_field_controller.dart';
 import '/flutter_flow/upload_data.dart';
+import '/utils/branch_selection_guard.dart';
 import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -43,15 +44,22 @@ class _StockInWidgetState extends State<StockInWidget> {
     safeSetState(() {});
   }
 
-  Future<void> _runWithLoading(Future<void> Function() action) async {
-    if (_isLoading) {
+  Future<void> _runWithLoading(
+    Future<void> Function() action, {
+    bool showOverlay = true,
+  }) async {
+    if (showOverlay && _isLoading) {
       return;
     }
-    _setLoading(true);
+    if (showOverlay) {
+      _setLoading(true);
+    }
     try {
       await action();
     } finally {
-      _setLoading(false);
+      if (showOverlay) {
+        _setLoading(false);
+      }
     }
   }
 
@@ -205,6 +213,73 @@ class _StockInWidgetState extends State<StockInWidget> {
                       Column(
                         mainAxisSize: MainAxisSize.max,
                         children: [
+                          if (FFAppState().isHQUser)
+                            Padding(
+                              padding: EdgeInsetsDirectional.fromSTEB(
+                                  0.0, 4.0, 0.0, 8.0),
+                              child: FlutterFlowDropDown<String>(
+                                controller: _model.branchValueController ??=
+                                    FormFieldController<String>(
+                                  _model.branchValue ??=
+                                      FFAppState().activeBranch,
+                                ),
+                                options: FFAppState()
+                                    .branchLists
+                                    .map((e) => e.label)
+                                    .toList(),
+                                onChanged: (val) {
+                                  safeSetState(() => _model.branchValue = val);
+                                  if (val == null || val.isEmpty) {
+                                    return;
+                                  }
+                                  FFAppState().setActiveBranchByLabel(val);
+                                },
+                                width: double.infinity,
+                                height: 52.0,
+                                textStyle: FlutterFlowTheme.of(context)
+                                    .bodyLarge
+                                    .override(
+                                      font: GoogleFonts.inter(
+                                        fontWeight: FlutterFlowTheme.of(context)
+                                            .bodyLarge
+                                            .fontWeight,
+                                        fontStyle: FlutterFlowTheme.of(context)
+                                            .bodyLarge
+                                            .fontStyle,
+                                      ),
+                                      letterSpacing: 0.0,
+                                      fontWeight: FlutterFlowTheme.of(context)
+                                          .bodyLarge
+                                          .fontWeight,
+                                      fontStyle: FlutterFlowTheme.of(context)
+                                          .bodyLarge
+                                          .fontStyle,
+                                    ),
+                                hintText: 'Select Branch ...',
+                                searchHintText: 'Search for a branch...',
+                                searchCursorColor:
+                                    FlutterFlowTheme.of(context).primary,
+                                icon: Icon(
+                                  Icons.keyboard_arrow_down_rounded,
+                                  color: FlutterFlowTheme.of(context)
+                                      .secondaryText,
+                                  size: 24.0,
+                                ),
+                                fillColor: FlutterFlowTheme.of(context)
+                                    .secondaryBackground,
+                                elevation: 2.0,
+                                borderColor:
+                                    FlutterFlowTheme.of(context).alternate,
+                                borderWidth: 2.0,
+                                borderRadius: 12.0,
+                                margin: EdgeInsetsDirectional.fromSTEB(
+                                    12.0, 4.0, 8.0, 4.0),
+                                hidesUnderline: true,
+                                isOverButton: true,
+                                isSearchable: true,
+                                isMultiSelect: false,
+                              ),
+                            ),
                           Padding(
                             padding: EdgeInsetsDirectional.fromSTEB(
                                 0.0, 4.0, 0.0, 0.0),
@@ -1709,6 +1784,12 @@ class _StockInWidgetState extends State<StockInWidget> {
                                 await _showUnitRequiredDialog();
                                 return;
                               }
+                              if (!await ensureConcreteBranchSelected(
+                                context,
+                                actionLabel: 'submitting stock in',
+                              )) {
+                                return;
+                              }
 
                               await _runWithLoading(() async {
                                 await Future.wait([
@@ -1719,7 +1800,7 @@ class _StockInWidgetState extends State<StockInWidget> {
                                             false)) {
                                       _model.uploadedFile =
                                           await UploadFileCall.call(
-                                        mainFolder: FFAppState().branch,
+                                        mainFolder: FFAppState().activeBranch,
                                         subFolder:
                                             _model.inventoryChosen?.itemName,
                                         file: _model.uploadedImage,
@@ -1766,7 +1847,7 @@ class _StockInWidgetState extends State<StockInWidget> {
                                             .inventoryMovementPostCall
                                             .call(
                                       inventoryId: _model.inventoryChosen?.id,
-                                      branch: FFAppState().user.branch,
+                                      branch: FFAppState().activeBranch,
                                       expiryDate: _model.expiryDate,
                                       quantity: double.tryParse(
                                           _model.quantityTextController.text),
@@ -1784,7 +1865,7 @@ class _StockInWidgetState extends State<StockInWidget> {
                                       totalCost: double.tryParse(
                                           _model.totalCostTextController.text),
                                       txType: _model.typeTextController.text,
-                                      updateBranch: FFAppState().branch,
+                                      updateBranch: FFAppState().activeBranch,
                                       doc: _model.fileURL,
                                     );
 
@@ -1896,7 +1977,7 @@ class _StockInWidgetState extends State<StockInWidget> {
                                     }
                                   }),
                                 ]);
-                              });
+                              }, showOverlay: false);
                             } else {
                               await showDialog(
                                 context: context,

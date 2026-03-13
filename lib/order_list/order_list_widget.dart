@@ -87,7 +87,8 @@ class _OrderListWidgetState extends State<OrderListWidget>
             "pending_payment",
             "processed"
           ],
-          branch: FFAppState().branch,
+          branch: FFAppState().activeBranchFilter,
+          branchId: FFAppState().activeBranchFilterId,
         );
 
         if ((_model.orderLists?.succeeded ?? true)) {
@@ -267,20 +268,19 @@ class _OrderListWidgetState extends State<OrderListWidget>
                                   onChanged: (val) async {
                                     safeSetState(
                                         () => _model.branchValue = val);
-                                    FFAppState().branchId = FFAppState()
-                                        .branchLists
-                                        .where((e) =>
-                                            e.label == _model.branchValue)
-                                        .toList()
-                                        .firstOrNull!
-                                        .id;
-                                    safeSetState(() {});
-                                    FFAppState().branch = _model.branchValue!;
-                                    safeSetState(() {});
+                                    if (val == null || val.isEmpty) {
+                                      return;
+                                    }
+                                    FFAppState().setActiveBranchByLabel(
+                                      val,
+                                      notify: false,
+                                    );
                                     await _runWithLoading(() async {
                                       _model.orderLists2 =
                                           await OrderGroup.orderListsCall.call(
-                                        branch: FFAppState().branch,
+                                        branch: FFAppState().activeBranchFilter,
+                                        branchId:
+                                            FFAppState().activeBranchFilterId,
                                         statusList: [
                                           "submitted",
                                           "ordered",

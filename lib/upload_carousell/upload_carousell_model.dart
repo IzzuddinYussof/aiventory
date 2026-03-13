@@ -54,6 +54,9 @@ class UploadCarousellModel extends FlutterFlowModel<UploadCarousellWidget> {
   ///  State fields for stateful widgets in this page.
 
   final formKey = GlobalKey<FormState>();
+  // State field(s) for branch widget.
+  String? branchValue;
+  FormFieldController<String>? branchValueController;
   // State field(s) for category widget.
   String? categoryValue;
   FormFieldController<String>? categoryValueController;

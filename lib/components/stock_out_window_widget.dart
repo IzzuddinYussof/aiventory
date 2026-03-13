@@ -4,6 +4,7 @@ import '/flutter_flow/flutter_flow_count_controller.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
+import '/utils/branch_selection_guard.dart';
 import 'dart:ui';
 import '/flutter_flow/custom_functions.dart' as functions;
 import 'package:flutter/gestures.dart';
@@ -530,11 +531,17 @@ class _StockOutWindowWidgetState extends State<StockOutWindowWidget> {
                       onPressed: () async {
                         if (_model.countControllerValue! <=
                             (widget!.inventoryData!.quantityOnHand.toInt())) {
+                          if (!await ensureConcreteBranchSelected(
+                            context,
+                            actionLabel: 'submitting stock out',
+                          )) {
+                            return;
+                          }
                           _model.apiResultcbi = await InventoryMovementGroup
                               .inventoryMovementPostCall
                               .call(
                             inventoryId: widget!.inventoryData?.inventoryId,
-                            branch: FFAppState().user.branch,
+                            branch: FFAppState().activeBranch,
                             expiryDate: dateTimeFormat(
                                 "y-MM-dd",
                                 functions.timestampToDateTime(

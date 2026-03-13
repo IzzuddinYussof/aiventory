@@ -47,10 +47,10 @@ class _DashboardHQWidgetState extends State<DashboardHQWidget>
   Future<void> _loadDashboard() async {
     _setLoading(true);
     try {
-      if (FFAppState().branch != 'AI Venture') {
+      if (FFAppState().activeBranchFilterId != null) {
         _model.dashboardDataBranch = await DashboardGroup.dashboardHQCall.call(
           access: FFAppState().user.access,
-          branchId: FFAppState().branchId.toString(),
+          branchId: FFAppState().activeBranchFilterIdString,
         );
 
         if ((_model.dashboardDataBranch?.succeeded ?? true)) {
@@ -480,16 +480,13 @@ class _DashboardHQWidgetState extends State<DashboardHQWidget>
                                     .toList(),
                                 onChanged: (val) async {
                                   safeSetState(() => _model.branchValue = val);
-                                  FFAppState().branchId = _model.branchValue!;
-                                  safeSetState(() {});
-                                  FFAppState().branch = FFAppState()
-                                      .branchLists
-                                      .where(
-                                          (e) => e.id == FFAppState().branchId)
-                                      .toList()
-                                      .firstOrNull!
-                                      .label;
-                                  safeSetState(() {});
+                                  if (val == null) {
+                                    return;
+                                  }
+                                  FFAppState().setActiveBranchById(
+                                    val,
+                                    notify: false,
+                                  );
                                   await _loadDashboard();
                                   safeSetState(() {});
                                 },

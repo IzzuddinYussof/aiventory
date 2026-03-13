@@ -5,6 +5,7 @@ import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import '/flutter_flow/form_field_controller.dart';
+import '/utils/branch_selection_guard.dart';
 import 'dart:ui';
 import 'carousell_update_widget.dart' show CarousellUpdateWidget;
 import 'package:flutter/material.dart';
@@ -33,20 +34,30 @@ class CarousellUpdateModel extends FlutterFlowModel<CarousellUpdateWidget> {
   Future updateCarousellMovement(
     BuildContext context, {
     required String? status,
-    required int? id,
+    required CarousellMovementStruct movement,
     required int? index,
-    required String? type,
     String? side,
   }) async {
     ApiCallResponse? updateCarousellMovement;
 
+    if (!await ensureConcreteBranchSelected(
+      context,
+      actionLabel: 'updating Carousell status',
+    )) {
+      return;
+    }
+
     updateCarousellMovement =
-        await CarousellGroup.carousellMovementPutCall.call(
-      id: id,
-      status: status,
-      side: side,
+        await CarousellAdminGroup.carousellMovementUpdateCall.call(
+      id: movement.id,
+      status: status ?? movement.status,
+      type: movement.type,
       name: FFAppState().user.name,
       doneBool: true,
+      clearSideMetadata: false,
+      delivery: movement.delivery,
+      quantity: movement.quantity,
+      totalCost: movement.totalCost,
     );
 
     if ((updateCarousellMovement?.succeeded ?? true)) {

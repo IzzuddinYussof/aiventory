@@ -1,6 +1,7 @@
 import '/backend/api_requests/api_calls.dart';
 import '/backend/schema/structs/index.dart';
 import '/flutter_flow/flutter_flow_choice_chips.dart';
+import '/flutter_flow/flutter_flow_drop_down.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_toggle_icon.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -231,6 +232,78 @@ class _CarousellWidgetState extends State<CarousellWidget> {
                                           .fontStyle,
                                     ),
                               ),
+                              if (FFAppState().isHQUser)
+                                Padding(
+                                  padding: EdgeInsetsDirectional.fromSTEB(
+                                      0.0, 16.0, 0.0, 0.0),
+                                  child: FlutterFlowDropDown<String>(
+                                    controller: _model.branchValueController ??=
+                                        FormFieldController<String>(
+                                      _model.branchValue ??=
+                                          FFAppState().activeBranch,
+                                    ),
+                                    options: FFAppState()
+                                        .branchLists
+                                        .map((e) => e.label)
+                                        .toList(),
+                                    onChanged: (val) {
+                                      safeSetState(
+                                          () => _model.branchValue = val);
+                                      if (val == null || val.isEmpty) {
+                                        return;
+                                      }
+                                      FFAppState().setActiveBranchByLabel(val);
+                                    },
+                                    width: double.infinity,
+                                    height: 52.0,
+                                    textStyle: FlutterFlowTheme.of(context)
+                                        .bodyLarge
+                                        .override(
+                                          font: GoogleFonts.inter(
+                                            fontWeight:
+                                                FlutterFlowTheme.of(context)
+                                                    .bodyLarge
+                                                    .fontWeight,
+                                            fontStyle:
+                                                FlutterFlowTheme.of(context)
+                                                    .bodyLarge
+                                                    .fontStyle,
+                                          ),
+                                          letterSpacing: 0.0,
+                                          fontWeight:
+                                              FlutterFlowTheme.of(context)
+                                                  .bodyLarge
+                                                  .fontWeight,
+                                          fontStyle:
+                                              FlutterFlowTheme.of(context)
+                                                  .bodyLarge
+                                                  .fontStyle,
+                                        ),
+                                    hintText: 'Select Branch ...',
+                                    searchHintText: 'Search for a branch...',
+                                    searchCursorColor:
+                                        FlutterFlowTheme.of(context).primary,
+                                    icon: Icon(
+                                      Icons.keyboard_arrow_down_rounded,
+                                      color: FlutterFlowTheme.of(context)
+                                          .secondaryText,
+                                      size: 24.0,
+                                    ),
+                                    fillColor: FlutterFlowTheme.of(context)
+                                        .secondaryBackground,
+                                    elevation: 2.0,
+                                    borderColor:
+                                        FlutterFlowTheme.of(context).alternate,
+                                    borderWidth: 2.0,
+                                    borderRadius: 12.0,
+                                    margin: EdgeInsetsDirectional.fromSTEB(
+                                        12.0, 4.0, 8.0, 4.0),
+                                    hidesUnderline: true,
+                                    isOverButton: true,
+                                    isSearchable: true,
+                                    isMultiSelect: false,
+                                  ),
+                                ),
                               Padding(
                                 padding: EdgeInsetsDirectional.fromSTEB(
                                     0.0, 16.0, 0.0, 8.0),
@@ -614,7 +687,19 @@ class _CarousellWidgetState extends State<CarousellWidget> {
                                     highlightColor: Colors.transparent,
                                     onTap: () async {
                                       context.pushNamed(
-                                          UploadCarousellWidget.routeName);
+                                        UploadCarousellWidget.routeName,
+                                        queryParameters: {
+                                          'search': serializeParam(
+                                            _model.serachInventoryTextController
+                                                .text,
+                                            ParamType.String,
+                                          ),
+                                          'searchCategory': serializeParam(
+                                            _model.choiceChipsValue,
+                                            ParamType.String,
+                                          ),
+                                        }.withoutNulls,
+                                      );
                                     },
                                     child: Container(
                                       width: 125.0,

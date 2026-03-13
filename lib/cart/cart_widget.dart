@@ -7,6 +7,7 @@ import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import '/flutter_flow/form_field_controller.dart';
+import '/utils/branch_selection_guard.dart';
 import 'dart:ui';
 import '/index.dart';
 import 'package:flutter/material.dart';
@@ -604,15 +605,21 @@ class _CartWidgetState extends State<CartWidget> {
                               if ((_model.countControllerValue! > 0) &&
                                   (_model.deliveryValue != null &&
                                       _model.deliveryValue != '')) {
+                                if (!await ensureConcreteBranchSelected(
+                                  context,
+                                  actionLabel: 'submitting this cart request',
+                                )) {
+                                  return;
+                                }
                                 _model.carousellMovementPost =
                                     await CarousellGroup
                                         .carousellMovementPostCall
                                         .call(
                                   branchIdFrom: widget!.type == 'Selling'
                                       ? widget!.branchID
-                                      : FFAppState().branchIdUser,
+                                      : FFAppState().activeBranchId,
                                   branchIdTo: widget!.type == 'Selling'
-                                      ? FFAppState().branchIdUser
+                                      ? FFAppState().activeBranchId
                                       : widget!.branchID,
                                   inventoryCarousellId: widget!.carousellID,
                                   inventoryId: widget!.inventoryId,

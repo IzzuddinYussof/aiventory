@@ -196,7 +196,7 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
     safeSetState(() {});
 
     final response = await InventoryListingGroup.inventoryListGetCall.call(
-      branchId: FFAppState().branchId,
+      branchId: FFAppState().activeBranchFilterId,
       inventoryIdList: _activeInventoryIdList,
       expiryDate: _model.chosenDate != null
           ? _model.chosenDate?.millisecondsSinceEpoch
@@ -259,7 +259,7 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
               _parseInventoryIds(_model.searchInventory?.jsonBody);
           _model.listInventoryLoad =
               await InventoryListingGroup.inventoryListGetCall.call(
-            branchId: FFAppState().branchId,
+            branchId: FFAppState().activeBranchFilterId,
             inventoryIdList: inventoryIds,
             expiryDate: _model.chosenDate != null
                 ? _model.chosenDate?.millisecondsSinceEpoch
@@ -443,7 +443,8 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
                                               await InventoryListingGroup
                                                   .inventoryListGetCall
                                                   .call(
-                                            branchId: FFAppState().branchId,
+                                            branchId: FFAppState()
+                                                .activeBranchFilterId,
                                             expiryDate:
                                                 _model.chosenDate != null
                                                     ? _model.chosenDate
@@ -762,26 +763,14 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
                                                     () => _model.branchValue =
                                                         val,
                                                   );
-                                                  if (_model.branchValue ==
-                                                      null) {
+                                                  if (val == null) {
                                                     return;
                                                   }
-                                                  FFAppState().branchId =
-                                                      _model.branchValue!;
-                                                  safeSetState(() {});
-                                                  FFAppState().branch =
-                                                      FFAppState()
-                                                              .branchLists
-                                                              .where(
-                                                                (e) =>
-                                                                    e.id ==
-                                                                    FFAppState()
-                                                                        .branchId,
-                                                              )
-                                                              .toList()
-                                                              .firstOrNull
-                                                              ?.label ??
-                                                          '';
+                                                  FFAppState()
+                                                      .setActiveBranchById(
+                                                    val,
+                                                    notify: false,
+                                                  );
                                                   await _runWithPageLoading(
                                                     () async {
                                                       _model.listInventory =
@@ -789,7 +778,7 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
                                                               .inventoryListGetCall
                                                               .call(
                                                         branchId: FFAppState()
-                                                            .branchId,
+                                                            .activeBranchFilterId,
                                                         inventoryIdList:
                                                             _activeInventoryIdList,
                                                         expiryDate: _model
@@ -1318,7 +1307,8 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
                                               await InventoryListingGroup
                                                   .inventoryListGetCall
                                                   .call(
-                                            branchId: FFAppState().branchId,
+                                            branchId: FFAppState()
+                                                .activeBranchFilterId,
                                             inventoryIdList: inventoryIds,
                                             expiryDate:
                                                 _model.chosenDate != null
@@ -1404,6 +1394,7 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
                                         safeSetState(() {});
                                       });
                                     },
+                                    showLoadingIndicator: false,
                                     text: 'Find Item',
                                     options: FFButtonOptions(
                                       width: double.infinity,
@@ -1514,8 +1505,8 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
                                                         await InventoryListingGroup
                                                             .inventoryListGetCall
                                                             .call(
-                                                      branchId:
-                                                          FFAppState().branchId,
+                                                      branchId: FFAppState()
+                                                          .activeBranchFilterId,
                                                       inventoryIdList:
                                                           inventoryIds,
                                                       expiryDate:

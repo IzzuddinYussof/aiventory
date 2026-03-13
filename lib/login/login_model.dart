@@ -101,16 +101,6 @@ class LoginModel extends FlutterFlowModel<LoginWidget> {
               id: 0,
               label: 'All Dentabay',
             ));
-            FFAppState().branch = FFAppState().user.branch;
-            FFAppState().branchId = valueOrDefault<int>(
-              FFAppState()
-                  .branchLists
-                  .where((e) => e.label == FFAppState().user.branch)
-                  .toList()
-                  .firstOrNull
-                  ?.id,
-              0,
-            );
             FFAppState().branchIdUser = valueOrDefault<int>(
               FFAppState()
                   .branchLists
@@ -119,6 +109,13 @@ class LoginModel extends FlutterFlowModel<LoginWidget> {
                   .firstOrNull
                   ?.id,
               0,
+            );
+            FFAppState().setActiveBranch(
+              id: FFAppState().isHQUser ? 0 : FFAppState().branchIdUser,
+              label: FFAppState().isHQUser
+                  ? 'All Dentabay'
+                  : FFAppState().user.branch,
+              notify: false,
             );
             FFAppState().update(() {});
 

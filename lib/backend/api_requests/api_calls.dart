@@ -228,7 +228,7 @@ class InventoryListingGroup {
 
 class InventoryListGetCall {
   Future<ApiCallResponse> call({
-    int? branchId = 0,
+    int? branchId,
     List<int>? inventoryIdList,
     int? expiryDate = 0,
     int? page = 1,
@@ -238,7 +238,8 @@ class InventoryListGetCall {
 
     return ApiManager.instance.makeApiCall(
       callName: 'inventoryListGet',
-      apiUrl: 'https://xqoc-ewo0-x3u2.s2.xano.io/api:0o-ZhGP6/inventory_listing',
+      apiUrl:
+          'https://xqoc-ewo0-x3u2.s2.xano.io/api:0o-ZhGP6/inventory_listing',
       callType: ApiCallType.GET,
       headers: {},
       params: {
@@ -247,7 +248,7 @@ class InventoryListGetCall {
         'expiry_date': expiryDate,
         'page': page,
         'per_page': perPage,
-      },
+      }.withoutNulls,
       returnBody: true,
       encodeBodyUtf8: false,
       decodeUtf8: false,
@@ -271,7 +272,7 @@ class InventoryListingExpiringCall {
       headers: {},
       params: {
         'branch_id': branchId,
-      },
+      }.withoutNulls,
       returnBody: true,
       encodeBodyUtf8: false,
       decodeUtf8: false,
@@ -488,18 +489,21 @@ class OrderGetCall {
 
 class OrderListsCall {
   Future<ApiCallResponse> call({
-    String? branch = '',
+    String? branch,
     List<String>? statusList,
-    int? branchId = 0,
+    int? branchId,
   }) async {
     final baseUrl = OrderGroup.getBaseUrl();
     final status = _serializeList(statusList);
+    final branchValue =
+        branch != null ? '"${escapeStringForJson(branch)}"' : 'null';
+    final branchIdValue = branchId?.toString() ?? 'null';
 
     final ffApiRequestBody = '''
 {
-  "branch": "${escapeStringForJson(branch)}",
+  "branch": ${branchValue},
   "status": ${status},
-  "branch_id": ${branchId}
+  "branch_id": ${branchIdValue}
 }''';
     return ApiManager.instance.makeApiCall(
       callName: 'orderLists',
@@ -642,7 +646,7 @@ class DashboardGroup {
 class DashboardHQCall {
   Future<ApiCallResponse> call({
     String? access = '',
-    String? branchId = '',
+    String? branchId,
   }) async {
     final baseUrl = DashboardGroup.getBaseUrl();
 
@@ -654,7 +658,7 @@ class DashboardHQCall {
       params: {
         'access': access,
         'branch_id': branchId,
-      },
+      }.withoutNulls,
       returnBody: true,
       encodeBodyUtf8: false,
       decodeUtf8: false,
@@ -823,7 +827,7 @@ class CarousellMovementGetCall {
       params: {
         'branch_id': branchId,
         'status': status,
-      },
+      }.withoutNulls,
       returnBody: true,
       encodeBodyUtf8: false,
       decodeUtf8: false,
@@ -868,6 +872,121 @@ class CarousellMovementPutCall {
 }
 
 /// End carousell Group Code
+
+/// Start carousellAdmin Group Code
+
+class CarousellAdminGroup {
+  static String getBaseUrl() =>
+      'https://xqoc-ewo0-x3u2.s2.xano.io/api:0o-ZhGP6';
+  static Map<String, String> headers = {};
+  static CarousellDeleteCall carousellDeleteCall = CarousellDeleteCall();
+  static CarousellMovementDeleteCall carousellMovementDeleteCall =
+      CarousellMovementDeleteCall();
+  static CarousellMovementUpdateCall carousellMovementUpdateCall =
+      CarousellMovementUpdateCall();
+}
+
+class CarousellDeleteCall {
+  Future<ApiCallResponse> call({
+    int? id,
+  }) async {
+    final baseUrl = CarousellAdminGroup.getBaseUrl();
+
+    final ffApiRequestBody = '''
+{
+  "id": ${id}
+}''';
+    return ApiManager.instance.makeApiCall(
+      callName: 'carousellDelete',
+      apiUrl: '${baseUrl}/carousell_delete',
+      callType: ApiCallType.DELETE,
+      headers: {},
+      params: {},
+      body: ffApiRequestBody,
+      bodyType: BodyType.JSON,
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: false,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: true,
+    );
+  }
+}
+
+class CarousellMovementDeleteCall {
+  Future<ApiCallResponse> call({
+    int? id,
+  }) async {
+    final baseUrl = CarousellAdminGroup.getBaseUrl();
+
+    final ffApiRequestBody = '''
+{
+  "id": ${id}
+}''';
+    return ApiManager.instance.makeApiCall(
+      callName: 'carousellMovementDelete',
+      apiUrl: '${baseUrl}/carousell_movement_delete',
+      callType: ApiCallType.DELETE,
+      headers: {},
+      params: {},
+      body: ffApiRequestBody,
+      bodyType: BodyType.JSON,
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: false,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: true,
+    );
+  }
+}
+
+class CarousellMovementUpdateCall {
+  Future<ApiCallResponse> call({
+    required String status,
+    required String type,
+    required bool doneBool,
+    required String name,
+    required bool clearSideMetadata,
+    required int id,
+    required String delivery,
+    required double quantity,
+    required double totalCost,
+  }) async {
+    final baseUrl = CarousellAdminGroup.getBaseUrl();
+
+    final ffApiRequestBody = '''
+{
+  "status": "${escapeStringForJson(status)}",
+  "type": "${escapeStringForJson(type)}",
+  "done_bool": ${doneBool},
+  "name": "${escapeStringForJson(name)}",
+  "clear_side_metadata": ${clearSideMetadata},
+  "id": ${id},
+  "delivery": "${escapeStringForJson(delivery)}",
+  "quantity": ${quantity},
+  "total_cost": ${totalCost}
+}''';
+    return ApiManager.instance.makeApiCall(
+      callName: 'carousellMovementUpdate',
+      apiUrl: '${baseUrl}/carousell_movement_update',
+      callType: ApiCallType.PUT,
+      headers: {},
+      params: {},
+      body: ffApiRequestBody,
+      bodyType: BodyType.JSON,
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: false,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
+    );
+  }
+}
+
+/// End carousellAdmin Group Code
 
 /// Start notifyAlert Group Code
 

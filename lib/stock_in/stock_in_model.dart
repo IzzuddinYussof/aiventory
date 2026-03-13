@@ -54,6 +54,9 @@ class StockInModel extends FlutterFlowModel<StockInWidget> {
 
   ///  State fields for stateful widgets in this page.
 
+  // State field(s) for branch widget.
+  String? branchValue;
+  FormFieldController<String>? branchValueController;
   // State field(s) for search widget.
   FocusNode? searchFocusNode;
   TextEditingController? searchTextController;

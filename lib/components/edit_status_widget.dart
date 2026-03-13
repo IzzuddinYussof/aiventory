@@ -5,6 +5,7 @@ import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import '/flutter_flow/form_field_controller.dart';
+import '/utils/branch_selection_guard.dart';
 import 'dart:ui';
 import '/flutter_flow/custom_functions.dart' as functions;
 import 'package:flutter/material.dart';
@@ -259,6 +260,12 @@ class _EditStatusWidgetState extends State<EditStatusWidget> {
                   padding: EdgeInsetsDirectional.fromSTEB(0.0, 20.0, 0.0, 0.0),
                   child: FFButtonWidget(
                     onPressed: () async {
+                      if (!await ensureConcreteBranchSelected(
+                        context,
+                        actionLabel: 'updating order status',
+                      )) {
+                        return;
+                      }
                       _model.apiResultioq =
                           await OrderGroup.orderStatusUpdateCall.call(
                         id: widget!.orderListing?.id,
@@ -280,7 +287,8 @@ class _EditStatusWidgetState extends State<EditStatusWidget> {
                             "pending_payment",
                             "processed"
                           ],
-                          branch: FFAppState().branch,
+                          branch: FFAppState().activeBranchFilter,
+                          branchId: FFAppState().activeBranchFilterId,
                         );
 
                         if ((_model.orderLists?.succeeded ?? true)) {

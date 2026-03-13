@@ -120,15 +120,24 @@ class _TrackingOrderWidgetState extends State<TrackingOrderWidget> {
                               ),
                               child: Padding(
                                 padding: EdgeInsets.all(2.0),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(40.0),
-                                  child: Image.network(
-                                    widget!.url!,
-                                    width: 60.0,
-                                    height: 60.0,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
+                                child: (widget.url != null &&
+                                        widget.url!.isNotEmpty)
+                                    ? ClipRRect(
+                                        borderRadius:
+                                            BorderRadius.circular(40.0),
+                                        child: Image.network(
+                                          widget.url!,
+                                          width: 60.0,
+                                          height: 60.0,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      )
+                                    : Icon(
+                                        Icons.inventory_2_outlined,
+                                        color: FlutterFlowTheme.of(context)
+                                            .primary,
+                                        size: 20.0,
+                                      ),
                               ),
                             ),
                             Padding(
