@@ -135,24 +135,108 @@ class _NavBarPageState extends State<NavBarPage> {
 
   @override
   Widget build(BuildContext context) {
-    final tabs = {
-      'dashboardHQ': DashboardHQWidget(),
-      'findInventory': FindInventoryWidget(),
-      'StockIn': StockInWidget(),
-      'Order': OrderWidget(),
-      'orderList': OrderListWidget(),
-      'Carousell': CarousellWidget(),
-    };
-    final currentIndex = tabs.keys.toList().indexOf(_currentPageName);
+    final tabs = <_NavBarTab>[
+      _NavBarTab(
+        pageName: 'dashboardHQ',
+        page: DashboardHQWidget(),
+        item: const BottomNavigationBarItem(
+          icon: Icon(
+            Icons.home_outlined,
+            size: 24.0,
+          ),
+          label: 'Home',
+          tooltip: '',
+        ),
+      ),
+      _NavBarTab(
+        pageName: 'findInventory',
+        page: FindInventoryWidget(),
+        item: const BottomNavigationBarItem(
+          icon: Icon(
+            Icons.search,
+            size: 24.0,
+          ),
+          label: 'Search',
+          tooltip: '',
+        ),
+      ),
+      if (FFAppState().isHQUser)
+        _NavBarTab(
+          pageName: 'editInventory',
+          page: EditInventoryWidget(),
+          item: const BottomNavigationBarItem(
+            icon: Icon(
+              Icons.inventory_2_outlined,
+              size: 24.0,
+            ),
+            label: 'Inventory',
+            tooltip: '',
+          ),
+        ),
+      _NavBarTab(
+        pageName: 'StockIn',
+        page: StockInWidget(),
+        item: const BottomNavigationBarItem(
+          icon: Icon(
+            Icons.qr_code_scanner_outlined,
+            size: 24.0,
+          ),
+          label: 'Stock ',
+          tooltip: '',
+        ),
+      ),
+      _NavBarTab(
+        pageName: 'Order',
+        page: OrderWidget(),
+        item: const BottomNavigationBarItem(
+          icon: Icon(
+            Icons.shopping_cart,
+            size: 24.0,
+          ),
+          label: 'Order ',
+          tooltip: '',
+        ),
+      ),
+      _NavBarTab(
+        pageName: 'orderList',
+        page: OrderListWidget(),
+        item: const BottomNavigationBarItem(
+          icon: Icon(
+            Icons.library_books_rounded,
+            size: 24.0,
+          ),
+          label: 'Order List',
+          tooltip: '',
+        ),
+      ),
+      _NavBarTab(
+        pageName: 'Carousell',
+        page: CarousellWidget(),
+        item: const BottomNavigationBarItem(
+          icon: Icon(
+            Icons.storefront_sharp,
+            size: 24.0,
+          ),
+          label: 'Carousell',
+          tooltip: '',
+        ),
+      ),
+    ];
+    final tabNames = tabs.map((e) => e.pageName).toList();
+    if (!tabNames.contains(_currentPageName)) {
+      _currentPageName = tabs.first.pageName;
+      _currentPage = null;
+    }
+    final currentIndex = tabNames.indexOf(_currentPageName);
 
     return Scaffold(
       resizeToAvoidBottomInset: !widget.disableResizeToAvoidBottomInset,
-      body: _currentPage ?? tabs[_currentPageName],
+      body: _currentPage ?? tabs[currentIndex].page,
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: currentIndex,
         onTap: (i) => safeSetState(() {
           _currentPage = null;
-          _currentPageName = tabs.keys.toList()[i];
+          _currentPageName = tabs[i].pageName;
         }),
         backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
         selectedItemColor: FlutterFlowTheme.of(context).primary,
@@ -160,57 +244,20 @@ class _NavBarPageState extends State<NavBarPage> {
         showSelectedLabels: true,
         showUnselectedLabels: false,
         type: BottomNavigationBarType.fixed,
-        items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.home_outlined,
-              size: 24.0,
-            ),
-            label: 'Home',
-            tooltip: '',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.search,
-              size: 24.0,
-            ),
-            label: 'Search',
-            tooltip: '',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.qr_code_scanner_outlined,
-              size: 24.0,
-            ),
-            label: 'Stock ',
-            tooltip: '',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.shopping_cart,
-              size: 24.0,
-            ),
-            label: 'Order ',
-            tooltip: '',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.library_books_rounded,
-              size: 24.0,
-            ),
-            label: 'Order List',
-            tooltip: '',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.storefront_sharp,
-              size: 24.0,
-            ),
-            label: 'Carousell',
-            tooltip: '',
-          )
-        ],
+        items: tabs.map((e) => e.item).toList(),
       ),
     );
   }
+}
+
+class _NavBarTab {
+  const _NavBarTab({
+    required this.pageName,
+    required this.page,
+    required this.item,
+  });
+
+  final String pageName;
+  final Widget page;
+  final BottomNavigationBarItem item;
 }
