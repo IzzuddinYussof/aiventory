@@ -1,0 +1,47 @@
+{
+  "timestamp": "2026-03-13T01:22:00+08:00",
+  "fixId": "F04",
+  "status": "blocked-final",
+  "workflow": {
+    "sequential": true,
+    "phases": [
+      {
+        "role": "shiro",
+        "attempts": 3,
+        "result": "failed-timeout",
+        "notes": "Repeated subagent instability/context drift; no usable frontend patch produced in target repo."
+      },
+      {
+        "role": "kuro",
+        "attempts": 0,
+        "result": "not-started",
+        "notes": "Skipped to avoid cascading low-confidence backend change without stable frontend baseline."
+      },
+      {
+        "role": "hitokiri",
+        "attempts": 0,
+        "result": "not-started",
+        "notes": "Skipped because implementation phase did not complete."
+      }
+    ],
+    "retryCycleUsed": 1,
+    "retryLimit": 1
+  },
+  "xanoCredentialPolicy": {
+    "credentialsDoc": "C:\\Users\\User\\.openclaw\\workspace\\.secrets\\xano_access.md",
+    "used": false,
+    "reason": "No backend phase executed."
+  },
+  "mutations": {
+    "frontend": [],
+    "backend": [],
+    "revertRequired": false,
+    "revertPatch": "docs/revert_patches/F04.patch"
+  },
+  "blocker": {
+    "type": "orchestration-execution",
+    "summary": "Same blocker repeated (subagent timeout/fail before usable output).",
+    "decision": "blocked-final"
+  },
+  "nextFix": "F05"
+}

@@ -1,0 +1,518 @@
+{
+  "summary": {
+    "generatedAt": "2026-03-12T19:13:53.470608+08:00",
+    "section": "13) Carousell Update flow (deferred retry)",
+    "mode": "read-only blocker revalidation",
+    "calls": {
+      "inProgress": {
+        "status": 200,
+        "url": "https://xqoc-ewo0-x3u2.s2.xano.io/api:s4bMNy03/inventory_carousell_movement?branch_id=2&status=In+Progress",
+        "count": 7
+      },
+      "delivered": {
+        "status": 200,
+        "url": "https://xqoc-ewo0-x3u2.s2.xano.io/api:s4bMNy03/inventory_carousell_movement?branch_id=2&status=Delivered",
+        "count": 5
+      }
+    },
+    "extracted": {
+      "inProgressTopIds": [
+        19,
+        24,
+        25,
+        26,
+        3,
+        9,
+        10
+      ],
+      "deliveredTopIds": [
+        19,
+        25,
+        26,
+        3,
+        9
+      ],
+      "persistedBuyerSideWithBuyerFalse": [
+        {
+          "id": 3,
+          "status": "Delivered",
+          "buyer": false,
+          "buyer_side": {
+            "name": "Izzuddin bin Yussof",
+            "date": 1773307201991
+          }
+        },
+        {
+          "id": 9,
+          "status": "Delivered",
+          "buyer": false,
+          "buyer_side": {
+            "name": "Izzuddin bin Yussof",
+            "date": 1773307530738
+          }
+        },
+        {
+          "id": 10,
+          "status": "Received",
+          "buyer": false,
+          "buyer_side": {
+            "name": "Izzuddin bin Yussof",
+            "date": 1773307743188
+          }
+        }
+      ]
+    },
+    "navigationValidation": {
+      "sourceRoutes": [
+        "/carousell",
+        "/cart"
+      ],
+      "targetRoute": "/carousellUpdate",
+      "requiredParams": [],
+      "paramPresenceValidated": true,
+      "downstreamApiConsistency": true,
+      "result": "BLOCKED-DEFERRED-RETRY (buyer_side metadata persistence remains unrevertable via app PUT contract)"
+    },
+    "directVsParam": {
+      "directEntrySupported": true,
+      "paramEntrySupported": false,
+      "mismatch": false,
+      "note": "Route is direct-only by design in nav.dart; no paramized branch exists."
+    },
+    "blocker": "Exact pre-state revert remains impossible: PUT /inventory_carousell_movement contract cannot clear buyer_side.name/date once set."
+  },
+  "raw": {
+    "inProgress": {
+      "url": "https://xqoc-ewo0-x3u2.s2.xano.io/api:s4bMNy03/inventory_carousell_movement?branch_id=2&status=In+Progress",
+      "status": 200,
+      "json": [
+        {
+          "id": 19,
+          "created_at": 1758791301420,
+          "branch_id_from": 15,
+          "branch_id_to": 2,
+          "inventory_carousell_id": 1,
+          "inventory_id": 1655,
+          "user_id": 228,
+          "quantity": 2,
+          "total_cost": 200,
+          "name": "Sheyra test",
+          "delivery": "Self Collect",
+          "type": "Request",
+          "status": "Delivered",
+          "seller": true,
+          "buyer": false,
+          "seller_side": {
+            "name": "Sheyra test",
+            "date": 1759215716971
+          },
+          "buyer_side": {
+            "name": "",
+            "date": null
+          },
+          "branch_from": "Dentabay Kota Warisan",
+          "branch_to": "Dentabay Bangi",
+          "item_name": "012 NITI LOWER",
+          "image_url": "https://lh3.googleusercontent.com/d/1XO6zCiL0M7vl29bFW7-ZKRASvsa-tNPs",
+          "expiry_date": "2025-08-31",
+          "initial_quantity": 10,
+          "unit_cost": 100,
+          "unit": "bracket",
+          "available_quantity": 0,
+          "remark": "Test"
+        },
+        {
+          "id": 24,
+          "created_at": 1759214550683,
+          "branch_id_from": 15,
+          "branch_id_to": 2,
+          "inventory_carousell_id": 1,
+          "inventory_id": 1655,
+          "user_id": 228,
+          "quantity": 2,
+          "total_cost": 200,
+          "name": "Sheyra test",
+          "delivery": "COD",
+          "type": "Request",
+          "status": "In Progress",
+          "seller": false,
+          "buyer": false,
+          "seller_side": {
+            "name": "",
+            "date": null
+          },
+          "buyer_side": {
+            "name": "",
+            "date": null
+          },
+          "branch_from": "Dentabay Kota Warisan",
+          "branch_to": "Dentabay Bangi",
+          "item_name": "012 NITI LOWER",
+          "image_url": "https://lh3.googleusercontent.com/d/1XO6zCiL0M7vl29bFW7-ZKRASvsa-tNPs",
+          "expiry_date": "2025-08-31",
+          "initial_quantity": 10,
+          "unit_cost": 100,
+          "unit": "bracket",
+          "available_quantity": 0,
+          "remark": "Test"
+        },
+        {
+          "id": 25,
+          "created_at": 1759218133068,
+          "branch_id_from": 2,
+          "branch_id_to": 15,
+          "inventory_carousell_id": 15,
+          "inventory_id": 1357,
+          "user_id": 228,
+          "quantity": 1,
+          "total_cost": 25,
+          "name": "Sheyra test",
+          "delivery": "COD",
+          "type": "Selling",
+          "status": "Delivered",
+          "seller": false,
+          "buyer": true,
+          "seller_side": {
+            "name": "",
+            "date": null
+          },
+          "buyer_side": {
+            "name": "Sheyra test",
+            "date": 1759218164021
+          },
+          "branch_from": "Dentabay Bangi",
+          "branch_to": "Dentabay Kota Warisan",
+          "item_name": "DICLORAN 50mg",
+          "image_url": "https://lh3.googleusercontent.com/d/1PmkR5LMJnXGxZTBvBNrwur1GJ-JaS8E6",
+          "expiry_date": "2025-09-30",
+          "initial_quantity": 150,
+          "unit_cost": 25,
+          "unit": "Selling",
+          "available_quantity": 151,
+          "remark": "Test"
+        },
+        {
+          "id": 26,
+          "created_at": 1759219700331,
+          "branch_id_from": 2,
+          "branch_id_to": 15,
+          "inventory_carousell_id": 16,
+          "inventory_id": 1763,
+          "user_id": 228,
+          "quantity": 1,
+          "total_cost": 200,
+          "name": "Sheyra test",
+          "delivery": "COD",
+          "type": "Selling",
+          "status": "Delivered",
+          "seller": false,
+          "buyer": true,
+          "seller_side": {
+            "name": "",
+            "date": null
+          },
+          "buyer_side": {
+            "name": "Sheyra test",
+            "date": 1759219737270
+          },
+          "branch_from": "Dentabay Bangi",
+          "branch_to": "Dentabay Kota Warisan",
+          "item_name": "ACRYLIC BUR",
+          "image_url": "https://lh3.googleusercontent.com/d/1R1nQ3Pojmiu3EJwlUJnrdKqdqy382D0r",
+          "expiry_date": null,
+          "initial_quantity": 1,
+          "unit_cost": 200,
+          "unit": "Selling",
+          "available_quantity": 0,
+          "remark": "Test"
+        },
+        {
+          "id": 3,
+          "created_at": 1756284854399,
+          "branch_id_from": 26,
+          "branch_id_to": 2,
+          "inventory_carousell_id": 7,
+          "inventory_id": 1655,
+          "user_id": 1,
+          "quantity": 3,
+          "total_cost": 30,
+          "name": "Izzuddin bin Yussof",
+          "delivery": "Self Collect",
+          "type": "Selling",
+          "status": "Delivered",
+          "seller": false,
+          "buyer": false,
+          "seller_side": {
+            "name": "",
+            "date": null
+          },
+          "buyer_side": {
+            "name": "Izzuddin bin Yussof",
+            "date": 1773307201991
+          },
+          "branch_from": "Dentabay Georgetown",
+          "branch_to": "Dentabay Bangi",
+          "item_name": "012 NITI LOWER",
+          "image_url": "https://lh3.googleusercontent.com/d/1wgjMXBoBAfqCyuu8UphIM2LodLuupp52",
+          "expiry_date": null,
+          "initial_quantity": 20,
+          "unit_cost": 10,
+          "unit": "PACK",
+          "available_quantity": 2,
+          "remark": "Test je"
+        },
+        {
+          "id": 9,
+          "created_at": 1758690065212,
+          "branch_id_from": 15,
+          "branch_id_to": 2,
+          "inventory_carousell_id": 1,
+          "inventory_id": 1655,
+          "user_id": 89,
+          "quantity": 2,
+          "total_cost": 200,
+          "name": "Syahirah Shawalil",
+          "delivery": "COD",
+          "type": "Request",
+          "status": "Delivered",
+          "seller": false,
+          "buyer": false,
+          "seller_side": {
+            "name": "",
+            "date": null
+          },
+          "buyer_side": {
+            "name": "Izzuddin bin Yussof",
+            "date": 1773307530738
+          },
+          "branch_from": "Dentabay Kota Warisan",
+          "branch_to": "Dentabay Bangi",
+          "item_name": "012 NITI LOWER",
+          "image_url": "https://lh3.googleusercontent.com/d/1XO6zCiL0M7vl29bFW7-ZKRASvsa-tNPs",
+          "expiry_date": "2025-08-31",
+          "initial_quantity": 10,
+          "unit_cost": 100,
+          "unit": "bracket",
+          "available_quantity": 0,
+          "remark": "Test"
+        },
+        {
+          "id": 10,
+          "created_at": 1758691151995,
+          "branch_id_from": 15,
+          "branch_id_to": 2,
+          "inventory_carousell_id": 1,
+          "inventory_id": 1655,
+          "user_id": 89,
+          "quantity": 3,
+          "total_cost": 300,
+          "name": "Syahirah Shawalil",
+          "delivery": "COD",
+          "type": "Request",
+          "status": "Received",
+          "seller": true,
+          "buyer": false,
+          "seller_side": {
+            "name": "Sheyra test",
+            "date": 1759217453425
+          },
+          "buyer_side": {
+            "name": "Izzuddin bin Yussof",
+            "date": 1773307743188
+          },
+          "branch_from": "Dentabay Kota Warisan",
+          "branch_to": "Dentabay Bangi",
+          "item_name": "012 NITI LOWER",
+          "image_url": "https://lh3.googleusercontent.com/d/1XO6zCiL0M7vl29bFW7-ZKRASvsa-tNPs",
+          "expiry_date": "2025-08-31",
+          "initial_quantity": 10,
+          "unit_cost": 100,
+          "unit": "bracket",
+          "available_quantity": 0,
+          "remark": "Test"
+        }
+      ]
+    },
+    "delivered": {
+      "url": "https://xqoc-ewo0-x3u2.s2.xano.io/api:s4bMNy03/inventory_carousell_movement?branch_id=2&status=Delivered",
+      "status": 200,
+      "json": [
+        {
+          "id": 19,
+          "created_at": 1758791301420,
+          "branch_id_from": 15,
+          "branch_id_to": 2,
+          "inventory_carousell_id": 1,
+          "inventory_id": 1655,
+          "user_id": 228,
+          "quantity": 2,
+          "total_cost": 200,
+          "name": "Sheyra test",
+          "delivery": "Self Collect",
+          "type": "Request",
+          "status": "Delivered",
+          "seller": true,
+          "buyer": false,
+          "seller_side": {
+            "name": "Sheyra test",
+            "date": 1759215716971
+          },
+          "buyer_side": {
+            "name": "",
+            "date": null
+          },
+          "branch_from": "Dentabay Kota Warisan",
+          "branch_to": "Dentabay Bangi",
+          "item_name": "012 NITI LOWER",
+          "image_url": "https://lh3.googleusercontent.com/d/1XO6zCiL0M7vl29bFW7-ZKRASvsa-tNPs",
+          "expiry_date": "2025-08-31",
+          "initial_quantity": 10,
+          "unit_cost": 100,
+          "unit": "bracket",
+          "available_quantity": 0,
+          "remark": "Test"
+        },
+        {
+          "id": 25,
+          "created_at": 1759218133068,
+          "branch_id_from": 2,
+          "branch_id_to": 15,
+          "inventory_carousell_id": 15,
+          "inventory_id": 1357,
+          "user_id": 228,
+          "quantity": 1,
+          "total_cost": 25,
+          "name": "Sheyra test",
+          "delivery": "COD",
+          "type": "Selling",
+          "status": "Delivered",
+          "seller": false,
+          "buyer": true,
+          "seller_side": {
+            "name": "",
+            "date": null
+          },
+          "buyer_side": {
+            "name": "Sheyra test",
+            "date": 1759218164021
+          },
+          "branch_from": "Dentabay Bangi",
+          "branch_to": "Dentabay Kota Warisan",
+          "item_name": "DICLORAN 50mg",
+          "image_url": "https://lh3.googleusercontent.com/d/1PmkR5LMJnXGxZTBvBNrwur1GJ-JaS8E6",
+          "expiry_date": "2025-09-30",
+          "initial_quantity": 150,
+          "unit_cost": 25,
+          "unit": "Selling",
+          "available_quantity": 151,
+          "remark": "Test"
+        },
+        {
+          "id": 26,
+          "created_at": 1759219700331,
+          "branch_id_from": 2,
+          "branch_id_to": 15,
+          "inventory_carousell_id": 16,
+          "inventory_id": 1763,
+          "user_id": 228,
+          "quantity": 1,
+          "total_cost": 200,
+          "name": "Sheyra test",
+          "delivery": "COD",
+          "type": "Selling",
+          "status": "Delivered",
+          "seller": false,
+          "buyer": true,
+          "seller_side": {
+            "name": "",
+            "date": null
+          },
+          "buyer_side": {
+            "name": "Sheyra test",
+            "date": 1759219737270
+          },
+          "branch_from": "Dentabay Bangi",
+          "branch_to": "Dentabay Kota Warisan",
+          "item_name": "ACRYLIC BUR",
+          "image_url": "https://lh3.googleusercontent.com/d/1R1nQ3Pojmiu3EJwlUJnrdKqdqy382D0r",
+          "expiry_date": null,
+          "initial_quantity": 1,
+          "unit_cost": 200,
+          "unit": "Selling",
+          "available_quantity": 0,
+          "remark": "Test"
+        },
+        {
+          "id": 3,
+          "created_at": 1756284854399,
+          "branch_id_from": 26,
+          "branch_id_to": 2,
+          "inventory_carousell_id": 7,
+          "inventory_id": 1655,
+          "user_id": 1,
+          "quantity": 3,
+          "total_cost": 30,
+          "name": "Izzuddin bin Yussof",
+          "delivery": "Self Collect",
+          "type": "Selling",
+          "status": "Delivered",
+          "seller": false,
+          "buyer": false,
+          "seller_side": {
+            "name": "",
+            "date": null
+          },
+          "buyer_side": {
+            "name": "Izzuddin bin Yussof",
+            "date": 1773307201991
+          },
+          "branch_from": "Dentabay Georgetown",
+          "branch_to": "Dentabay Bangi",
+          "item_name": "012 NITI LOWER",
+          "image_url": "https://lh3.googleusercontent.com/d/1wgjMXBoBAfqCyuu8UphIM2LodLuupp52",
+          "expiry_date": null,
+          "initial_quantity": 20,
+          "unit_cost": 10,
+          "unit": "PACK",
+          "available_quantity": 2,
+          "remark": "Test je"
+        },
+        {
+          "id": 9,
+          "created_at": 1758690065212,
+          "branch_id_from": 15,
+          "branch_id_to": 2,
+          "inventory_carousell_id": 1,
+          "inventory_id": 1655,
+          "user_id": 89,
+          "quantity": 2,
+          "total_cost": 200,
+          "name": "Syahirah Shawalil",
+          "delivery": "COD",
+          "type": "Request",
+          "status": "Delivered",
+          "seller": false,
+          "buyer": false,
+          "seller_side": {
+            "name": "",
+            "date": null
+          },
+          "buyer_side": {
+            "name": "Izzuddin bin Yussof",
+            "date": 1773307530738
+          },
+          "branch_from": "Dentabay Kota Warisan",
+          "branch_to": "Dentabay Bangi",
+          "item_name": "012 NITI LOWER",
+          "image_url": "https://lh3.googleusercontent.com/d/1XO6zCiL0M7vl29bFW7-ZKRASvsa-tNPs",
+          "expiry_date": "2025-08-31",
+          "initial_quantity": 10,
+          "unit_cost": 100,
+          "unit": "bracket",
+          "available_quantity": 0,
+          "remark": "Test"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,77 @@
+﻿{
+    "timestamp":  "2026-03-12T19:38:02+08:00",
+    "section":  "11) Upload Carousell flow (deferred retry)",
+    "mutation":  {
+                     "reason":  "Skipped (blocker persists, deferred retry).",
+                     "executed":  false
+                 },
+    "apiCalls":  [
+                     {
+                         "status":  200,
+                         "name":  "GET /inventory_carousell default",
+                         "count":  8
+                     },
+                     {
+                         "query":  {
+                                       "category":  "BUR",
+                                       "name":  "DICLO"
+                                   },
+                         "status":  200,
+                         "name":  "GET /inventory_carousell filtered",
+                         "count":  8
+                     },
+                     {
+                         "query":  {
+                                       "inventory_ids":  "[1357]"
+                                   },
+                         "status":  200,
+                         "name":  "GET /inventory_carousell inventory probe",
+                         "count":  8
+                     },
+                     {
+                         "query":  {
+                                       "category":  "BUR"
+                                   },
+                         "status":  200,
+                         "name":  "GET /inventory_carousell category probe",
+                         "count":  4
+                     }
+                 ],
+    "navigationValidation":  {
+                                 "targetRoute":  "/uploadCarousell",
+                                 "sourceRoute":  "/carousell",
+                                 "paramToApiConsistency":  true,
+                                 "directRouteNullSafety":  false,
+                                 "result":  "BLOCKED-DEFERRED-RETRY (direct /carousell path omits runtime-required inventoryId)",
+                                 "sourcePushNamedWithoutParams":  true,
+                                 "targetRequiredParams":  [
+                                                              "inventoryId:int",
+                                                              "category:String",
+                                                              "search:String",
+                                                              "searchCategory:String"
+                                                          ]
+                             },
+    "directVsParam":  {
+                          "paramEntrySupported":  true,
+                          "directEntrySupported":  false,
+                          "note":  "Deferred retry confirms direct path still omits params while target force-unwraps inventoryId; param mode remains payload-consistent.",
+                          "mismatch":  true
+                      },
+    "blocker":  "Revert impossible with app-exposed contracts: no delete/update endpoint for inventory_carousell rows; exact pre-state restoration not achievable.",
+    "revalidation":  {
+                         "inventoryProbeCount":  8,
+                         "filteredCount":  8,
+                         "topIds":  [
+                                        18,
+                                        17,
+                                        15,
+                                        14,
+                                        12,
+                                        11,
+                                        9,
+                                        7
+                                    ],
+                         "categoryOnlyCount":  4,
+                         "defaultCount":  8
+                     }
+}

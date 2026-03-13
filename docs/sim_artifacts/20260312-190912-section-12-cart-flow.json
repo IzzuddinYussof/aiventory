@@ -1,0 +1,56 @@
+﻿{
+    "generatedAt":  "2026-03-12T19:09:12.9324940+08:00",
+    "section":  "12) Cart flow (deferred retry)",
+    "calls":  {
+                  "inventoryCarousell":  {
+                                             "status":  200,
+                                             "ok":  true
+                                         },
+                  "inventoryCarousellMovement":  {
+                                                     "status":  200,
+                                                     "ok":  true
+                                                 }
+              },
+    "extracted":  {
+                      "carousellCount":  0,
+                      "movementInProgressCount":  0,
+                      "topIds":  [
+
+                                 ],
+                      "selectedRow":  null,
+                      "intendedPostPayloadTemplate":  null
+                  },
+    "navigationValidation":  {
+                                 "sourceRoute":  "/carousell",
+                                 "targetRoute":  "/cart",
+                                 "requiredParams":  [
+                                                        "itemName:String",
+                                                        "branch:String",
+                                                        "image:String",
+                                                        "itemID:String",
+                                                        "branchID:int",
+                                                        "carousellID:int",
+                                                        "unit:String",
+                                                        "price:double",
+                                                        "availableQuantity:double",
+                                                        "remark:String",
+                                                        "inventoryId:int",
+                                                        "type:String",
+                                                        "search:String",
+                                                        "category:String"
+                                                    ],
+                                 "paramPresenceValidated":  true,
+                                 "downstreamApiConsistency":  true,
+                                 "result":  "BLOCKED-DEFERRED-RETRY (mutation skipped: no delete endpoint for exact pre-state restoration)"
+                             },
+    "directVsParam":  {
+                          "directEntrySupported":  false,
+                          "paramEntrySupported":  true,
+                          "mismatch":  false,
+                          "note":  "Route /cart is param-required-only by design; source /carousell pushes full param set."
+                      },
+    "blocker":  {
+                    "mutationSkipped":  true,
+                    "reason":  "No app-exposed delete endpoint for inventory_carousell_movement; exact pre-state restoration after POST is impossible."
+                }
+}

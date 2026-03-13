@@ -177,6 +177,61 @@ class _ItemMovementHistoryWidgetState extends State<ItemMovementHistoryWidget> {
     return msg.isEmpty ? fallback : msg;
   }
 
+  String? _responseField(dynamic body, String path) {
+    final value = getJsonField(body, path);
+    if (value == null) {
+      return null;
+    }
+    final text = value.toString().trim();
+    return text.isEmpty ? null : text;
+  }
+
+  ({String title, String message, String primaryLabel, bool refreshOnClose})
+      _deleteErrorUiModel(dynamic body) {
+    final code = _responseField(body, r'''$.code''') ?? '';
+    final param = _responseField(body, r'''$.param''') ?? '';
+    final requestId = _responseField(body, r'''$.request_id''');
+    final backendMessage =
+        _responseMessage(body, 'Gagal padam pergerakan ini.');
+
+    String title = 'Padam gagal';
+    String message = backendMessage;
+    String primaryLabel = 'OK';
+    bool refreshOnClose = false;
+
+    if (code == 'ERROR_CODE_NOT_FOUND') {
+      title = 'Pergerakan tidak ditemui';
+      message =
+          'Pergerakan ini mungkin sudah dipadam. Muat semula senarai untuk selaraskan data terkini.';
+      primaryLabel = 'Muat semula senarai';
+      refreshOnClose = true;
+    } else if (code == 'ERROR_CODE_INPUT_ERROR') {
+      title = 'Permintaan padam tidak sah';
+      if (param == 'inventory_movement_id') {
+        message =
+            'Format ID pergerakan tidak sah. Sila semak dan cuba lagi.';
+      } else if (param == 'inventory_id') {
+        message =
+            'Format ID inventori tidak sah. Sila guna nombor bulat.';
+      } else if (param == 'field_value') {
+        message =
+            'Format data padam tidak sah. Sila muat semula dan cuba lagi.';
+      }
+      primaryLabel = 'Semak input';
+    }
+
+    if (requestId != null) {
+      message = '$message\n\nID Rujukan: $requestId';
+    }
+
+    return (
+      title: title,
+      message: message,
+      primaryLabel: primaryLabel,
+      refreshOnClose: refreshOnClose,
+    );
+  }
+
   Future<void> _loadHistoryPage(
     int page, {
     bool isInitial = false,
@@ -209,7 +264,7 @@ class _ItemMovementHistoryWidgetState extends State<ItemMovementHistoryWidget> {
     } else {
       _errorMessage = _responseMessage(
         _model.itemHistoryResponse?.jsonBody,
-        'Unable to load item movement history.',
+        'Gagal memuatkan sejarah pergerakan item.',
       );
       _historyItems.clear();
     }
@@ -230,19 +285,19 @@ class _ItemMovementHistoryWidgetState extends State<ItemMovementHistoryWidget> {
     final shouldDelete = await showDialog<bool>(
           context: context,
           builder: (dialogContext) => AlertDialog(
-            title: Text('Delete movement?'),
+            title: Text('Padam pergerakan?'),
             content: Text(
-              'This will remove movement #${movement.id}. This action cannot be undone.',
+              'Ini akan memadam pergerakan #${movement.id}. Tindakan ini tidak boleh dibatalkan.',
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(dialogContext, false),
-                child: Text('Cancel'),
+                child: Text('Batal'),
               ),
               TextButton(
                 onPressed: () => Navigator.pop(dialogContext, true),
                 child: Text(
-                  'Delete',
+                  'Padam',
                   style: TextStyle(color: FlutterFlowTheme.of(context).error),
                 ),
               ),
@@ -273,30 +328,31 @@ class _ItemMovementHistoryWidgetState extends State<ItemMovementHistoryWidget> {
     if ((_model.itemMovementDeleteResponse?.succeeded ?? false)) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Movement deleted successfully.'),
+          content: Text('Pergerakan berjaya dipadam.'),
           duration: Duration(seconds: 2),
         ),
       );
       await _loadHistoryPage(_currentPage);
     } else {
+      final errorUi =
+          _deleteErrorUiModel(_model.itemMovementDeleteResponse?.jsonBody);
       await showDialog(
         context: context,
         builder: (dialogContext) => AlertDialog(
-          title: Text('Delete failed'),
-          content: Text(
-            _responseMessage(
-              _model.itemMovementDeleteResponse?.jsonBody,
-              'Unable to delete this movement.',
-            ),
-          ),
+          title: Text(errorUi.title),
+          content: Text(errorUi.message),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext),
-              child: Text('Ok'),
+              child: Text(errorUi.primaryLabel),
             ),
           ],
         ),
       );
+
+      if (errorUi.refreshOnClose) {
+        await _loadHistoryPage(_currentPage);
+      }
     }
 
     _deletingIds.remove(movement.id);
@@ -322,7 +378,7 @@ class _ItemMovementHistoryWidgetState extends State<ItemMovementHistoryWidget> {
 
   String _formatExpiryDate(String expiryDate) {
     if (expiryDate.isEmpty || expiryDate == '0') {
-      return 'No expiry';
+      return 'Tiada luput';
     }
     final timestamp = int.tryParse(expiryDate);
     if (timestamp == null || timestamp <= 0) {
@@ -369,7 +425,7 @@ class _ItemMovementHistoryWidgetState extends State<ItemMovementHistoryWidget> {
           elevation: 0.0,
           centerTitle: true,
           title: Text(
-            'Item Movement History',
+            'Sejarah Pergerakan Item',
             style: FlutterFlowTheme.of(context).headlineMedium.override(
                   font: GoogleFonts.interTight(
                     fontWeight:
@@ -445,20 +501,20 @@ class _ItemMovementHistoryWidgetState extends State<ItemMovementHistoryWidget> {
                             ),
                             Chip(
                               label: Text(
-                                'Branch: ${_resolvedBranch.isNotEmpty ? _resolvedBranch : '-'}',
+                                'Cawangan: ${_resolvedBranch.isNotEmpty ? _resolvedBranch : '-'}',
                               ),
                               visualDensity: VisualDensity.compact,
                             ),
                             Chip(
                               label: Text(
-                                'Expiry: ${_resolvedExpiryDateRaw.isNotEmpty ? _formatExpiryDate(_resolvedExpiryDateRaw) : 'All'}',
+                                'Luput: ${_resolvedExpiryDateRaw.isNotEmpty ? _formatExpiryDate(_resolvedExpiryDateRaw) : 'Semua'}',
                               ),
                               visualDensity: VisualDensity.compact,
                             ),
                           ],
                         ),
                         Text(
-                          'Swipe left on a movement row to delete.',
+                          'Leret ke kiri pada baris pergerakan untuk padam.',
                           style: FlutterFlowTheme.of(context).labelMedium.override(
                                 font: GoogleFonts.inter(
                                   fontWeight: FontWeight.w500,
@@ -518,7 +574,7 @@ class _ItemMovementHistoryWidgetState extends State<ItemMovementHistoryWidget> {
                               onPressed: () async {
                                 await _loadHistoryPage(_currentPage);
                               },
-                              child: Text('Retry'),
+                              child: Text('Cuba lagi'),
                             ),
                           ),
                         ].divide(SizedBox(height: 10.0)),
@@ -547,7 +603,7 @@ class _ItemMovementHistoryWidgetState extends State<ItemMovementHistoryWidget> {
                             color: FlutterFlowTheme.of(context).secondaryText,
                           ),
                           Text(
-                            'No movement history found.',
+                            'Tiada sejarah pergerakan ditemui.',
                             style: FlutterFlowTheme.of(context).bodyMedium,
                           ),
                         ].divide(SizedBox(height: 8.0)),
@@ -575,11 +631,11 @@ class _ItemMovementHistoryWidgetState extends State<ItemMovementHistoryWidget> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                'Page $_currentPage / $_pageTotal',
+                                'Halaman $_currentPage / $_pageTotal',
                                 style: FlutterFlowTheme.of(context).titleSmall,
                               ),
                               Text(
-                                '$_itemsTotal records',
+                                '$_itemsTotal rekod',
                                 style: FlutterFlowTheme.of(context).labelMedium,
                               ),
                             ],
@@ -596,7 +652,7 @@ class _ItemMovementHistoryWidgetState extends State<ItemMovementHistoryWidget> {
                                         }
                                       : null,
                                   icon: Icon(Icons.chevron_left_rounded),
-                                  label: Text('Previous'),
+                                  label: Text('Sebelumnya'),
                                 ),
                               ),
                               SizedBox(width: 10.0),
@@ -610,7 +666,7 @@ class _ItemMovementHistoryWidgetState extends State<ItemMovementHistoryWidget> {
                                         }
                                       : null,
                                   icon: Icon(Icons.chevron_right_rounded),
-                                  label: Text('Next'),
+                                  label: Text('Seterusnya'),
                                 ),
                               ),
                             ],
@@ -657,7 +713,7 @@ class _ItemMovementHistoryWidgetState extends State<ItemMovementHistoryWidget> {
             ),
             const SizedBox(width: 8.0),
             Text(
-              'Delete',
+              'Padam',
               style: FlutterFlowTheme.of(context).titleSmall.override(
                     font: GoogleFonts.inter(
                       fontWeight: FontWeight.w700,
@@ -759,7 +815,7 @@ class _ItemMovementHistoryWidgetState extends State<ItemMovementHistoryWidget> {
                         ),
                   ),
                   Text(
-                    'Movement #${movement.id}',
+                    'Pergerakan #${movement.id}',
                     style: FlutterFlowTheme.of(context).labelSmall,
                   ),
                 ].divide(const SizedBox(height: 8.0)),

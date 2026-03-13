@@ -1,0 +1,61 @@
+﻿{
+    "summary":  {
+                    "timestamp_myt":  "2026-03-12T16:15:06.6623707+08:00",
+                    "section":  "11) Upload Carousell flow",
+                    "mode":  "read-only revalidation",
+                    "calls":  {
+                                  "default":  {
+                                                  "status":  200,
+                                                  "url":  "=%5B%5D\u0026name=\u0026category=",
+                                                  "count":  1,
+                                                  "top_ids":  [
+
+                                                              ]
+                                              },
+                                  "filtered":  {
+                                                   "status":  200,
+                                                   "url":  "=%5B%5D\u0026name=DICLO\u0026category=BUR",
+                                                   "count":  1,
+                                                   "top_ids":  [
+
+                                                               ]
+                                               },
+                                  "inventoryProbe":  {
+                                                         "status":  200,
+                                                         "url":  "=%5B1357%5D\u0026name=\u0026category=",
+                                                         "count":  1,
+                                                         "top_ids":  [
+
+                                                                     ]
+                                                     }
+                              },
+                    "navigationValidation":  {
+                                                 "sourceRoute":  "/carousell",
+                                                 "targetRoute":  "/uploadCarousell",
+                                                 "directRouteMissingParams":  true,
+                                                 "targetForceUnwrapInventoryId":  true,
+                                                 "result":  "BLOCKED"
+                                             },
+                    "mutation":  {
+                                     "executed":  false,
+                                     "reason":  "blocked-unrevertable-no-delete-update-endpoint"
+                                 }
+                },
+    "raw":  {
+                "default":  {
+                                "url":  "=%5B%5D\u0026name=\u0026category=",
+                                "status":  200,
+                                "json":  null
+                            },
+                "filtered":  {
+                                 "url":  "=%5B%5D\u0026name=DICLO\u0026category=BUR",
+                                 "status":  200,
+                                 "json":  null
+                             },
+                "inventoryProbe":  {
+                                       "url":  "=%5B1357%5D\u0026name=\u0026category=",
+                                       "status":  200,
+                                       "json":  null
+                                   }
+            }
+}

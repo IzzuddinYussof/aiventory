@@ -1,0 +1,412 @@
+{
+  "generatedAt": "2026-03-12T15:14:16.326749+08:00",
+  "section": "6) Order create flow",
+  "navigationValidation": {
+    "directMode": {
+      "sourceRoute": "/dashboardHQ",
+      "targetRoute": "/order",
+      "routeParams": null,
+      "feasibleByDesign": true,
+      "evidence": "dashboard_h_q_widget.dart pushes /order without params; Order form supports manual dropdown selection."
+    },
+    "paramMode": {
+      "sourceRoute": "/findInventory",
+      "targetRoute": "/order",
+      "routeParams": {
+        "inventoryId": "int",
+        "category": "String"
+      },
+      "routeParamValuesUsed": {
+        "inventoryId": 2174,
+        "category": "MATERIAL"
+      },
+      "downstreamPayloadConsistency": {
+        "inventory_id_payload": 2174,
+        "matches_route_inventoryId": true,
+        "channel": "HQ Order",
+        "status": "submitted"
+      }
+    }
+  },
+  "apiCalls": {
+    "inventory": {
+      "status": 200,
+      "count": 897
+    },
+    "inventory_category_list": {
+      "status": 200,
+      "count": 14
+    },
+    "order_lists_pre": {
+      "status": 200,
+      "request": {
+        "branch": "Dentabay Bangi",
+        "status": [
+          "processed"
+        ],
+        "branch_id": 2
+      },
+      "count": 4
+    },
+    "order_status_update_mutation": {
+      "status": 200,
+      "request": {
+        "status": "submitted",
+        "id": 12389,
+        "name": "Izzuddin bin Yussof",
+        "branch": "Dentabay Bangi",
+        "amount": 2,
+        "inventory_id": 2174,
+        "remark": " [SIM6-PARAM]",
+        "image_url": "",
+        "branch_id": 2,
+        "channel": "HQ Order"
+      },
+      "response": {
+        "id": 12389,
+        "created_at": 1771912353920,
+        "inventory_id": 2207,
+        "branch": "Dentabay Bangi",
+        "amount": 2,
+        "status": "submitted",
+        "image_url": "",
+        "quantity_ordered": 2,
+        "quantity_received": 0,
+        "note": "",
+        "po_no": "",
+        "branch_id": 2,
+        "channel": "HQ Order",
+        "submit": {
+          "name": "NUR IZZATI BINTI HASBULLAH",
+          "date": 1771912353919,
+          "remark": ""
+        },
+        "approved": {
+          "name": "NUR IZZATI BINTI HASBULLAH",
+          "date": 1771912363040,
+          "remark": ""
+        },
+        "processed": {
+          "name": "NUR IZZATI BINTI HASBULLAH",
+          "date": 1771912365747,
+          "remark": ""
+        },
+        "pending": {
+          "name": "",
+          "date": null,
+          "remark": ""
+        },
+        "pending_payment": {
+          "name": "",
+          "date": null,
+          "remark": ""
+        },
+        "order": {
+          "name": "",
+          "date": null,
+          "remark": ""
+        },
+        "receive": {
+          "name": "",
+          "date": null,
+          "remark": ""
+        },
+        "cancel": {
+          "name": "",
+          "date": null,
+          "remark": ""
+        },
+        "inventory": {
+          "id": 2207,
+          "created_at": 1747640764781,
+          "item_name": "LOCAL ANAESTHESIA XILONIBSA  2% 1.8mL - INIBSA",
+          "category": "MATERIAL",
+          "min_quantity": 1,
+          "supplier": "AR DENTAL",
+          "price_unit": 175,
+          "expiry": true,
+          "quantity_major": "BOX",
+          "quantity_minor": "CATRIDGE",
+          "ratio": 50,
+          "barcode": "",
+          "image": null
+        }
+      }
+    },
+    "order_lists_submitted_verify": {
+      "status": 200,
+      "request": {
+        "branch": "Dentabay Bangi",
+        "status": [
+          "submitted"
+        ],
+        "branch_id": 2
+      },
+      "count": 19,
+      "contains_mutated_id": true
+    },
+    "order_status_update_revert": {
+      "status": 200,
+      "request": {
+        "id": 12389,
+        "status": "processed",
+        "name": "",
+        "branch": "Dentabay Bangi",
+        "amount": 2,
+        "inventory_id": 2207,
+        "remark": "",
+        "image_url": "",
+        "branch_id": 2,
+        "channel": "HQ Order"
+      },
+      "response": {
+        "id": 12389,
+        "created_at": 1771912353920,
+        "inventory_id": 2207,
+        "branch": "Dentabay Bangi",
+        "amount": 2,
+        "status": "processed",
+        "image_url": "",
+        "quantity_ordered": 2,
+        "quantity_received": 0,
+        "note": "",
+        "po_no": "",
+        "branch_id": 2,
+        "channel": "HQ Order",
+        "submit": {
+          "name": "NUR IZZATI BINTI HASBULLAH",
+          "date": 1771912353919,
+          "remark": ""
+        },
+        "approved": {
+          "name": "NUR IZZATI BINTI HASBULLAH",
+          "date": 1771912363040,
+          "remark": ""
+        },
+        "processed": {
+          "name": "",
+          "date": 1773299655227,
+          "remark": ""
+        },
+        "pending": {
+          "name": "",
+          "date": null,
+          "remark": ""
+        },
+        "pending_payment": {
+          "name": "",
+          "date": null,
+          "remark": ""
+        },
+        "order": {
+          "name": "",
+          "date": null,
+          "remark": ""
+        },
+        "receive": {
+          "name": "",
+          "date": null,
+          "remark": ""
+        },
+        "cancel": {
+          "name": "",
+          "date": null,
+          "remark": ""
+        },
+        "inventory": {
+          "id": 2207,
+          "created_at": 1747640764781,
+          "item_name": "LOCAL ANAESTHESIA XILONIBSA  2% 1.8mL - INIBSA",
+          "category": "MATERIAL",
+          "min_quantity": 1,
+          "supplier": "AR DENTAL",
+          "price_unit": 175,
+          "expiry": true,
+          "quantity_major": "BOX",
+          "quantity_minor": "CATRIDGE",
+          "ratio": 50,
+          "barcode": "",
+          "image": null
+        }
+      }
+    },
+    "order_lists_original_verify": {
+      "status": 200,
+      "request": {
+        "branch": "Dentabay Bangi",
+        "status": [
+          "processed"
+        ],
+        "branch_id": 2
+      },
+      "count": 4,
+      "contains_reverted_id": true
+    },
+    "order_lists_submitted_post_revert": {
+      "status": 200,
+      "count": 18,
+      "contains_id": false
+    },
+    "order_get_post_revert": {
+      "status": 200,
+      "response": {
+        "id": 12389,
+        "created_at": 1771912353920,
+        "inventory_id": 2207,
+        "branch": "Dentabay Bangi",
+        "amount": 2,
+        "status": "processed",
+        "image_url": "",
+        "quantity_ordered": 2,
+        "quantity_received": 0,
+        "note": "",
+        "po_no": "",
+        "branch_id": 2,
+        "channel": "HQ Order",
+        "submit": {
+          "name": "NUR IZZATI BINTI HASBULLAH",
+          "date": 1771912353919,
+          "remark": ""
+        },
+        "approved": {
+          "name": "NUR IZZATI BINTI HASBULLAH",
+          "date": 1771912363040,
+          "remark": ""
+        },
+        "processed": {
+          "name": "",
+          "date": 1773299655227,
+          "remark": ""
+        },
+        "pending": {
+          "name": "",
+          "date": null,
+          "remark": ""
+        },
+        "pending_payment": {
+          "name": "",
+          "date": null,
+          "remark": ""
+        },
+        "order": {
+          "name": "",
+          "date": null,
+          "remark": ""
+        },
+        "receive": {
+          "name": "",
+          "date": null,
+          "remark": ""
+        },
+        "cancel": {
+          "name": "",
+          "date": null,
+          "remark": ""
+        },
+        "inventory": {
+          "id": 2207,
+          "created_at": 1747640764781,
+          "item_name": "LOCAL ANAESTHESIA XILONIBSA  2% 1.8mL - INIBSA",
+          "category": "MATERIAL",
+          "min_quantity": 1,
+          "supplier": "AR DENTAL",
+          "price_unit": 175,
+          "expiry": true,
+          "quantity_major": "BOX",
+          "quantity_minor": "CATRIDGE",
+          "ratio": 50,
+          "barcode": "",
+          "image": null
+        }
+      }
+    }
+  },
+  "stateCapture": {
+    "before": {
+      "id": 12389,
+      "status": "processed",
+      "name": null,
+      "branch": "Dentabay Bangi",
+      "amount": 2,
+      "inventory_id": 2207,
+      "remark": null,
+      "image_url": "",
+      "branch_id": 2,
+      "channel": "HQ Order"
+    },
+    "afterMutation": {
+      "id": 12389,
+      "status": "submitted",
+      "name": null,
+      "branch": "Dentabay Bangi",
+      "amount": 2,
+      "inventory_id": 2207,
+      "remark": null,
+      "image_url": "",
+      "branch_id": 2,
+      "channel": "HQ Order"
+    },
+    "afterRevert": {
+      "id": 12389,
+      "status": "processed",
+      "name": null,
+      "branch": "Dentabay Bangi",
+      "amount": 2,
+      "inventory_id": 2207,
+      "remark": null,
+      "image_url": "",
+      "branch_id": 2,
+      "channel": "HQ Order"
+    },
+    "afterRevertFromGet": {
+      "id": 12389,
+      "status": "processed",
+      "name": null,
+      "branch": "Dentabay Bangi",
+      "amount": 2,
+      "inventory_id": 2207,
+      "remark": null,
+      "image_url": "",
+      "branch_id": 2,
+      "channel": "HQ Order"
+    }
+  },
+  "directVsParamComparison": {
+    "directEntry": {
+      "mode": "no route params; manual dropdown from allowed lists",
+      "selectedValues": {
+        "inventory_id": 2174,
+        "category": "MATERIAL",
+        "item_name": ""
+      }
+    },
+    "paramEntry": {
+      "mode": "route params from /findInventory",
+      "selectedValues": {
+        "inventoryId": 2174,
+        "category": "MATERIAL"
+      }
+    },
+    "mismatch": false,
+    "notes": "Both modes use allowed category/inventory values; difference is source (manual vs route param)."
+  },
+  "statusChannelDerivation": {
+    "allowedChannels": [
+      "HQ Order",
+      "Shopee",
+      "Others"
+    ],
+    "codeRule": "status = submitted when channel == HQ Order else ordered",
+    "testedChannel": "HQ Order",
+    "expectedStatus": "submitted",
+    "actualStatusFromMutationResponse": "submitted"
+  },
+  "checks": {
+    "mutationSucceeded": true,
+    "appearsInOrderList": true,
+    "revertSucceeded": true,
+    "revertExact": true,
+    "backInOriginalStatusList": true,
+    "removedFromSubmittedAfterRevert": true
+  }
+}

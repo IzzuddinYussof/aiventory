@@ -21,6 +21,31 @@ import 'package:provider/provider.dart';
 import 'order_list_model.dart';
 export 'order_list_model.dart';
 
+String _buildStatusUpdateErrorMessage(
+  dynamic responseBody, {
+  String? targetStatus,
+}) {
+  final rawMessage = getJsonField(responseBody, r'''$.message''')?.toString();
+  final message = (rawMessage ?? '').trim();
+  final normalized = message.toLowerCase();
+
+  final isInvalidTransition = normalized.contains('invalid transition') ||
+      (normalized.contains('status') && normalized.contains('not allowed')) ||
+      (normalized.contains('cannot') && normalized.contains('status'));
+
+  if (isInvalidTransition) {
+    final nextStatus = (targetStatus ?? '').trim();
+    final attempted = nextStatus.isEmpty ? '' : ' to "$nextStatus"';
+    final detail = message.isEmpty ? '' : '\n\nDetails: $message';
+    return 'This status update$attempted is not valid for the current order state. '
+        'Please refresh the order list and choose an allowed next status.$detail';
+  }
+
+  return message.isEmpty
+      ? 'Unable to update the order status. Please try again.'
+      : message;
+}
+
 class OrderListWidget extends StatefulWidget {
   const OrderListWidget({
     super.key,
@@ -895,11 +920,11 @@ class _OrderListWidgetState extends State<OrderListWidget>
                                                                               context: context,
                                                                               builder: (alertDialogContext) {
                                                                                 return AlertDialog(
-                                                                                  title: Text('Error approving'),
-                                                                                  content: Text(getJsonField(
+                                                                                  title: Text('Status update failed'),
+                                                                                  content: Text(_buildStatusUpdateErrorMessage(
                                                                                     (_model.newOrder?.jsonBody ?? ''),
-                                                                                    r'''$.message''',
-                                                                                  ).toString()),
+                                                                                    targetStatus: 'approved',
+                                                                                  )),
                                                                                   actions: [
                                                                                     TextButton(
                                                                                       onPressed: () => Navigator.pop(alertDialogContext),
@@ -989,11 +1014,11 @@ class _OrderListWidgetState extends State<OrderListWidget>
                                                                                 context: context,
                                                                                 builder: (alertDialogContext) {
                                                                                   return AlertDialog(
-                                                                                    title: Text('Error approving'),
-                                                                                    content: Text(getJsonField(
+                                                                                    title: Text('Status update failed'),
+                                                                                    content: Text(_buildStatusUpdateErrorMessage(
                                                                                       (_model.orderCancelled?.jsonBody ?? ''),
-                                                                                      r'''$.message''',
-                                                                                    ).toString()),
+                                                                                      targetStatus: 'canceled',
+                                                                                    )),
                                                                                     actions: [
                                                                                       TextButton(
                                                                                         onPressed: () => Navigator.pop(alertDialogContext),
@@ -1487,11 +1512,11 @@ class _OrderListWidgetState extends State<OrderListWidget>
                                                                                   context: context,
                                                                                   builder: (alertDialogContext) {
                                                                                     return AlertDialog(
-                                                                                      title: Text('Error approving'),
-                                                                                      content: Text(getJsonField(
+                                                                                      title: Text('Status update failed'),
+                                                                                      content: Text(_buildStatusUpdateErrorMessage(
                                                                                         (_model.reverseSubmitted?.jsonBody ?? ''),
-                                                                                        r'''$.message''',
-                                                                                      ).toString()),
+                                                                                        targetStatus: 'submitted',
+                                                                                      )),
                                                                                       actions: [
                                                                                         TextButton(
                                                                                           onPressed: () => Navigator.pop(alertDialogContext),
@@ -1551,11 +1576,11 @@ class _OrderListWidgetState extends State<OrderListWidget>
                                                                                   context: context,
                                                                                   builder: (alertDialogContext) {
                                                                                     return AlertDialog(
-                                                                                      title: Text('Error approving'),
-                                                                                      content: Text(getJsonField(
+                                                                                      title: Text('Status update failed'),
+                                                                                      content: Text(_buildStatusUpdateErrorMessage(
                                                                                         (_model.approveOrder?.jsonBody ?? ''),
-                                                                                        r'''$.message''',
-                                                                                      ).toString()),
+                                                                                        targetStatus: 'approved',
+                                                                                      )),
                                                                                       actions: [
                                                                                         TextButton(
                                                                                           onPressed: () => Navigator.pop(alertDialogContext),
@@ -1635,11 +1660,11 @@ class _OrderListWidgetState extends State<OrderListWidget>
                                                                                       context: context,
                                                                                       builder: (alertDialogContext) {
                                                                                         return AlertDialog(
-                                                                                          title: Text('Error approving'),
-                                                                                          content: Text(getJsonField(
+                                                                                          title: Text('Status update failed'),
+                                                                                          content: Text(_buildStatusUpdateErrorMessage(
                                                                                             (_model.orderCancelled2?.jsonBody ?? ''),
-                                                                                            r'''$.message''',
-                                                                                          ).toString()),
+                                                                                            targetStatus: 'canceled',
+                                                                                          )),
                                                                                           actions: [
                                                                                             TextButton(
                                                                                               onPressed: () => Navigator.pop(alertDialogContext),
@@ -2131,11 +2156,11 @@ class _OrderListWidgetState extends State<OrderListWidget>
                                                                                   context: context,
                                                                                   builder: (alertDialogContext) {
                                                                                     return AlertDialog(
-                                                                                      title: Text('Error approving'),
-                                                                                      content: Text(getJsonField(
+                                                                                      title: Text('Status update failed'),
+                                                                                      content: Text(_buildStatusUpdateErrorMessage(
                                                                                         (_model.reverseApproved?.jsonBody ?? ''),
-                                                                                        r'''$.message''',
-                                                                                      ).toString()),
+                                                                                        targetStatus: 'approved',
+                                                                                      )),
                                                                                       actions: [
                                                                                         TextButton(
                                                                                           onPressed: () => Navigator.pop(alertDialogContext),
@@ -2195,11 +2220,11 @@ class _OrderListWidgetState extends State<OrderListWidget>
                                                                                   context: context,
                                                                                   builder: (alertDialogContext) {
                                                                                     return AlertDialog(
-                                                                                      title: Text('Error approving'),
-                                                                                      content: Text(getJsonField(
+                                                                                      title: Text('Status update failed'),
+                                                                                      content: Text(_buildStatusUpdateErrorMessage(
                                                                                         (_model.orderedOrder?.jsonBody ?? ''),
-                                                                                        r'''$.message''',
-                                                                                      ).toString()),
+                                                                                        targetStatus: 'ordered',
+                                                                                      )),
                                                                                       actions: [
                                                                                         TextButton(
                                                                                           onPressed: () => Navigator.pop(alertDialogContext),
@@ -2279,11 +2304,11 @@ class _OrderListWidgetState extends State<OrderListWidget>
                                                                                       context: context,
                                                                                       builder: (alertDialogContext) {
                                                                                         return AlertDialog(
-                                                                                          title: Text('Error approving'),
-                                                                                          content: Text(getJsonField(
+                                                                                          title: Text('Status update failed'),
+                                                                                          content: Text(_buildStatusUpdateErrorMessage(
                                                                                             (_model.orderCancelled3?.jsonBody ?? ''),
-                                                                                            r'''$.message''',
-                                                                                          ).toString()),
+                                                                                            targetStatus: 'canceled',
+                                                                                          )),
                                                                                           actions: [
                                                                                             TextButton(
                                                                                               onPressed: () => Navigator.pop(alertDialogContext),

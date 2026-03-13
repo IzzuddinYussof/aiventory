@@ -1,0 +1,45 @@
+{
+  "timestamp": "20260312-165314",
+  "section": "11) Upload Carousell flow",
+  "mode": "read-only-revalidation",
+  "apiCalls": [
+    {
+      "name": "default",
+      "url": "https://xqoc-ewo0-x3u2.s2.xano.io/api:0o-ZhGP6/inventory_carousell?inventory_ids=%5B%5D&name=&category=",
+      "status": 404,
+      "count": null,
+      "topIds": null,
+      "body": {
+        "code": "ERROR_CODE_NOT_FOUND",
+        "message": "Unable to locate request."
+      }
+    },
+    {
+      "name": "filtered",
+      "url": "https://xqoc-ewo0-x3u2.s2.xano.io/api:0o-ZhGP6/inventory_carousell?inventory_ids=%5B%5D&name=DICLO&category=BUR",
+      "status": 404,
+      "count": null,
+      "topIds": null,
+      "body": {
+        "code": "ERROR_CODE_NOT_FOUND",
+        "message": "Unable to locate request."
+      }
+    },
+    {
+      "name": "inventoryProbe",
+      "url": "https://xqoc-ewo0-x3u2.s2.xano.io/api:0o-ZhGP6/inventory_carousell?inventory_ids=%5B1357%5D&name=&category=",
+      "status": 404,
+      "count": null,
+      "topIds": null,
+      "body": {
+        "code": "ERROR_CODE_NOT_FOUND",
+        "message": "Unable to locate request."
+      }
+    }
+  ],
+  "codeEvidence": {
+    "nav_upload_route": "Id',\n              ParamType.int,\n            ),\n          ),\n        ),\n        FFRoute(\n          name: UploadCarousellWidget.routeName,\n          path: UploadCarousellWidget.routePath,\n          builder: (context, params) => UploadCarousellWidget(\n            inventoryId: params.getParam(\n              'inventoryId',\n              ParamType.int,\n         ",
+    "carousell_push_upload_no_params": null,
+    "upload_init_force_unwrap": null
+  }
+}

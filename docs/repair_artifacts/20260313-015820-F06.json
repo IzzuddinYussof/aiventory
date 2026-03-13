@@ -1,0 +1,42 @@
+{
+  "fixId": "F06",
+  "timestamp": "2026-03-13T01:58:20+08:00",
+  "project": "C:\\Programming\\aiventory",
+  "status": "done",
+  "workflow": {
+    "sequence": ["shiro", "kuro", "hitokiri", "shiro(retry)", "hitokiri"],
+    "retryCyclesUsed": 1,
+    "maxRetryCycles": 1
+  },
+  "changes": {
+    "frontend": [
+      "lib/tracking_order/tracking_order_widget.dart",
+      "test/tracking_order_widget_test.dart"
+    ],
+    "backend": []
+  },
+  "revert": {
+    "patch": "docs/revert_patches/F06.patch",
+    "guideUpdated": true,
+    "rollbackNotes": [
+      "Preferred: git apply -R docs/revert_patches/F06.patch",
+      "Fallback documented in docs/REVERT_GUIDE_REPAIR.md for dirty-tree restore"
+    ],
+    "reverseCheck": "pass"
+  },
+  "verification": {
+    "initial": "fail",
+    "final": "pass",
+    "notes": [
+      "Code-flow null safety validated",
+      "Backend/Xano changes not required for F06",
+      "Runtime flutter test remained environment-blocked (git PATH wrapper issue)"
+    ]
+  },
+  "xanoPolicy": {
+    "credentialsDocUsed": "C:\\Users\\User\\.openclaw\\workspace\\.secrets\\xano_access.md",
+    "leastPrivilege": true,
+    "mutationsPerformed": false
+  },
+  "nextFix": "F07"
+}

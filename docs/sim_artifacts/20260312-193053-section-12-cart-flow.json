@@ -1,0 +1,61 @@
+{
+  "timestamp": "2026-03-12T19:30:53+08:00",
+  "section": "12) Cart flow (deferred retry)",
+  "apiCalls": [
+    {
+      "name": "GET /inventory_carousell",
+      "status": 200,
+      "count": 8
+    },
+    {
+      "name": "GET /inventory_carousell_movement",
+      "status": 200,
+      "count": 7
+    }
+  ],
+  "samples": {
+    "carousellTopIds": [18, 17, 15, 14, 12, 11, 9, 7],
+    "movementTopIds": [19, 24, 25, 26, 3, 9, 10],
+    "selectedRow": {
+      "carousell_id": 18,
+      "inventory_id": 1357,
+      "branch_id": 2,
+      "type": "Selling",
+      "item_name": "DICLORAN 50mg"
+    }
+  },
+  "navigationValidation": {
+    "sourceRoute": "/carousell",
+    "targetRoute": "/cart",
+    "requiredParams": [
+      "itemName:String",
+      "branch:String",
+      "image:String",
+      "itemID:String",
+      "branchID:int",
+      "carousellID:int",
+      "unit:String",
+      "price:double",
+      "availableQuantity:double",
+      "remark:String",
+      "inventoryId:int",
+      "type:String",
+      "search:String",
+      "category:String"
+    ],
+    "paramPresenceValidated": true,
+    "downstreamApiConsistency": true,
+    "result": "BLOCKED-DEFERRED-RETRY (mutation skipped: exact pre-state revert impossible without delete endpoint)"
+  },
+  "directVsParam": {
+    "directEntrySupported": false,
+    "paramEntrySupported": true,
+    "mismatch": false,
+    "note": "Route is param-required-only by design (no params.isEmpty branch)."
+  },
+  "mutation": {
+    "executed": false,
+    "reason": "Skipped due exact-revert blocker (no delete endpoint)"
+  },
+  "blocker": "No delete endpoint for inventory_carousell_movement; cannot restore exact pre-create absence state in same run."
+}

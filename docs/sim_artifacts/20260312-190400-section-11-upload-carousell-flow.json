@@ -1,0 +1,71 @@
+{
+  "generatedAt": "2026-03-12T11:04:00.065Z",
+  "section": "11) Upload Carousell flow",
+  "mode": "blocked-deferred-retry",
+  "calls": {
+    "authLogin": {
+      "status": 200
+    },
+    "inventoryCategoryList": {
+      "status": 200,
+      "count": 14
+    },
+    "carousellDefault": {
+      "status": 200,
+      "count": 8,
+      "topIds": [
+        18,
+        17,
+        15,
+        14,
+        12,
+        11,
+        9,
+        7
+      ]
+    },
+    "carousellFilteredDicloBur": {
+      "status": 200,
+      "count": 8
+    },
+    "carousellInventoryProbe1357": {
+      "status": 200,
+      "count": 8,
+      "topIds": [
+        18,
+        17,
+        15,
+        14,
+        12,
+        11,
+        9,
+        7
+      ]
+    }
+  },
+  "navigationValidation": {
+    "sourceRoute": "/carousell",
+    "targetRoute": "/uploadCarousell",
+    "sourcePushNamedWithoutParams": true,
+    "targetRequiredParams": [
+      "inventoryId:int",
+      "category:String",
+      "search:String",
+      "searchCategory:String"
+    ],
+    "directRouteNullSafety": false,
+    "downstreamParamToPayloadConsistency": true,
+    "result": "BLOCKED-DEFERRED (direct route omits runtime-required inventoryId; mutation remains unrevertable)"
+  },
+  "directVsParam": {
+    "directEntrySupported": false,
+    "paramEntrySupported": true,
+    "mismatch": true,
+    "note": "Direct route from /carousell omits params; UploadCarousellWidget dereferences inventoryId!. Param mode is payload-consistent."
+  },
+  "blocker": {
+    "mutationSkipped": true,
+    "reason": "No app-exposed delete/update endpoint for inventory_carousell; exact pre-state revert in same run is impossible after create.",
+    "antiStallState": "deferred-retry"
+  }
+}

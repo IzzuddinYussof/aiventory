@@ -1,0 +1,231 @@
+{
+  "timestamp": "2026-03-12T15:21:19.152306+08:00",
+  "section": "7) Order List workflow",
+  "route": "/orderList",
+  "apiCalls": {
+    "order_lists_default": {
+      "status": 200,
+      "request": {
+        "branch": "Dentabay Bangi",
+        "status": [
+          "submitted",
+          "ordered",
+          "approved",
+          "pending",
+          "pending_payment",
+          "processed"
+        ],
+        "branch_id": 0
+      },
+      "response_len": 28
+    },
+    "order_get_before": {
+      "status": 200
+    },
+    "put_approve": {
+      "status": 200,
+      "request": {
+        "status": "approved",
+        "id": 12530,
+        "name": "Izzuddin bin Yussof",
+        "branch": "Dentabay Bangi",
+        "amount": 2,
+        "inventory_id": 1475,
+        "remark": "[SIM7 approve]",
+        "image_url": "",
+        "branch_id": 0,
+        "channel": ""
+      }
+    },
+    "put_processed": {
+      "status": 200,
+      "request": {
+        "status": "processed",
+        "id": 12530,
+        "name": "Izzuddin bin Yussof",
+        "branch": "Dentabay Bangi",
+        "amount": 2,
+        "inventory_id": 1475,
+        "remark": "[SIM7 processed]",
+        "image_url": "",
+        "branch_id": 0,
+        "channel": ""
+      }
+    },
+    "put_ordered": {
+      "status": 200,
+      "request": {
+        "status": "ordered",
+        "id": 12530,
+        "name": "Izzuddin bin Yussof",
+        "branch": "Dentabay Bangi",
+        "amount": 2,
+        "inventory_id": 1475,
+        "remark": "[SIM7 ordered]",
+        "image_url": "",
+        "branch_id": 0,
+        "channel": ""
+      }
+    },
+    "put_invalid_sequence_attempt": {
+      "status": 200,
+      "request": {
+        "status": "submitted",
+        "id": 12530,
+        "name": "Izzuddin bin Yussof",
+        "branch": "Dentabay Bangi",
+        "amount": 2,
+        "inventory_id": 1475,
+        "remark": "[SIM7 invalid-seq-attempt ordered->submitted]",
+        "image_url": "",
+        "branch_id": 0,
+        "channel": ""
+      }
+    },
+    "put_cancel": {
+      "status": 200,
+      "request": {
+        "status": "canceled",
+        "id": 12530,
+        "name": "Izzuddin bin Yussof",
+        "branch": "Dentabay Bangi",
+        "amount": 2,
+        "inventory_id": 1475,
+        "remark": "[SIM7 cancel]",
+        "image_url": "",
+        "branch_id": 0,
+        "channel": ""
+      }
+    },
+    "put_reverse_to_submitted": {
+      "status": 200,
+      "request": {
+        "status": "submitted",
+        "id": 12530,
+        "name": "Izzuddin bin Yussof",
+        "branch": "Dentabay Bangi",
+        "amount": 2,
+        "inventory_id": 1475,
+        "remark": "[SIM7 reverse-cancel]",
+        "image_url": "",
+        "branch_id": 0,
+        "channel": ""
+      }
+    },
+    "put_revert_exact": {
+      "status": 200,
+      "request": {
+        "status": "submitted",
+        "id": 12530,
+        "name": "Izzuddin bin Yussof",
+        "branch": "Dentabay Bangi",
+        "amount": 2,
+        "inventory_id": 1475,
+        "remark": "",
+        "image_url": "",
+        "branch_id": 0,
+        "channel": ""
+      }
+    },
+    "order_get_after": {
+      "status": 200
+    }
+  },
+  "selectedOrderId": 12530,
+  "before": {
+    "status": "submitted",
+    "inventory_id": 1475,
+    "branch": "Dentabay Bangi",
+    "amount": 2,
+    "channel": "",
+    "name": null,
+    "remark": null,
+    "image_url": "",
+    "branch_id": 0
+  },
+  "transitions": [
+    {
+      "to": "approved",
+      "status": 200,
+      "ok": true,
+      "response_status": "approved"
+    },
+    {
+      "to": "processed",
+      "status": 200,
+      "ok": true,
+      "response_status": "processed"
+    },
+    {
+      "to": "ordered",
+      "status": 200,
+      "ok": true,
+      "response_status": "ordered"
+    },
+    {
+      "to": "canceled",
+      "status": 200,
+      "ok": true,
+      "response_status": "canceled"
+    },
+    {
+      "to": "submitted",
+      "status": 200,
+      "ok": true,
+      "response_status": "submitted"
+    }
+  ],
+  "invalidSequenceCheck": {
+    "attempt": "ordered -> submitted (allowed status value, sequence-invalid by UI path)",
+    "httpStatus": 200,
+    "responseStatus": "submitted",
+    "serverRejected": false
+  },
+  "after": {
+    "status": "submitted",
+    "inventory_id": 1475,
+    "branch": "Dentabay Bangi",
+    "amount": 2,
+    "channel": "",
+    "name": null,
+    "remark": null,
+    "image_url": "",
+    "branch_id": 0
+  },
+  "checks": {
+    "revertExact": true,
+    "allTransitionHttp200": true,
+    "navigationValidated": true
+  },
+  "navigationValidation": {
+    "source_to_target": "/orderList -> /stockIn (Received button)",
+    "required_param": "orderData: OrderListsStruct",
+    "param_present_in_source_object": true,
+    "param_types_expected": {
+      "id": "int",
+      "inventory": "object",
+      "branch": "string",
+      "status": "string"
+    },
+    "downstream_api_consistency": "Section7: no received mutation API fired from /orderList; status update to received is in /stockIn using orderData.id and orderData fields",
+    "validated": true
+  },
+  "directVsParam": {
+    "directRoute_days_default": "0",
+    "paramRoute_days": "7",
+    "apiCallSame": true,
+    "total_direct": 28,
+    "total_param_days7_after_ui_filter": 18,
+    "statusCounts_direct": {
+      "submitted": 18,
+      "approved": 0,
+      "processed": 4,
+      "ordered": 6
+    },
+    "mismatch": false
+  },
+  "notes": {
+    "received_in_orderList": "UI navigates to /stockIn with orderData; no PUT /order_list_status to received inside /orderList",
+    "allowedStatusesUsedOnly": true
+  }
+}

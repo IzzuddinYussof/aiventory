@@ -1,0 +1,108 @@
+{
+  "startedAt": "2026-03-12T07:28:58.221Z",
+  "section": "8) Stock In flow",
+  "apis": {
+    "login": {
+      "status": 200,
+      "ok": true
+    },
+    "authMe": {
+      "status": 200,
+      "ok": true
+    },
+    "inventory_lookup": {
+      "status": 200,
+      "ok": true,
+      "count": 11
+    },
+    "inventory_barcode": {
+      "status": 200,
+      "ok": true,
+      "probe": "SIM8-BARCODE-PROBE-NOTFOUND",
+      "id": null
+    },
+    "uploadFile_inventory": {
+      "status": 200,
+      "ok": true,
+      "hasViewUrl": true
+    },
+    "order_lists_ordered": {
+      "status": 200,
+      "ok": true,
+      "count": 6
+    },
+    "order_get_before": {
+      "status": 200,
+      "ok": true,
+      "id": 12279,
+      "statusBefore": "ordered"
+    },
+    "inventory_movement_param": {
+      "status": 200,
+      "ok": true
+    },
+    "order_status_received": {
+      "status": 200,
+      "ok": true
+    },
+    "item_history_param": {
+      "status": 200,
+      "ok": true,
+      "count": 1
+    },
+    "item_movement_delete_param": {
+      "status": 200,
+      "ok": true
+    },
+    "order_status_revert": {
+      "status": 200,
+      "ok": true
+    },
+    "order_get_after": {
+      "status": 200,
+      "ok": true,
+      "statusAfter": "ordered"
+    }
+  },
+  "checks": {
+    "navigationValidation": {
+      "sourceRoute": "/orderList",
+      "targetRoute": "/stockIn",
+      "requiredParam": "orderData:OrderListsStruct",
+      "paramPresenceValidated": true,
+      "downstreamPayloadConsistency": {
+        "orderListIdMatches": true,
+        "inventoryIdUsesOrderData": true
+      }
+    },
+    "directVsParam": {
+      "directEntrySupported": true,
+      "paramEntrySupported": true,
+      "directModeEvidence": {
+        "inventory_id": 2102,
+        "unit": "PIECES",
+        "order_list_id": 0,
+        "tx_type": "Stock In"
+      },
+      "paramOrderListId": 12279,
+      "directTriggeredOrderStatusUpdate": false,
+      "paramTriggeredOrderStatusUpdate": true,
+      "mismatch": false
+    },
+    "movementHistoryPresence": {
+      "paramFoundBeforeRevert": true,
+      "paramFoundAfterRevert": false
+    },
+    "revert": {
+      "orderStatusRestored": true,
+      "movementDeleteParamOk": true
+    }
+  },
+  "notes": [],
+  "keyState": {
+    "directInventoryId": 2102,
+    "paramOrderId": 12279,
+    "paramInventoryId": 2069,
+    "uploadViewUrl": "https://lh3.googleusercontent.com/d/1ZpkCzIzmuPm-5A9ZOkiKwFw0Y57_CjKC"
+  }
+}

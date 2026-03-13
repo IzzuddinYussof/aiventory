@@ -1,0 +1,89 @@
+{
+  "generatedAt": "2026-03-12T07:40:03.194Z",
+  "section": "9) Item Movement History flow",
+  "routeParams": {
+    "inventoryId": 1311,
+    "itemName": "SALIVA EJECTOR",
+    "branch": "Dentabay Bangi",
+    "expiryDate": 1738281600000
+  },
+  "resolvedExpiryDateForHistory": "2025-01-31",
+  "calls": {
+    "login": {
+      "status": 200,
+      "ok": true
+    },
+    "itemHistory_before": {
+      "status": 200,
+      "ok": true,
+      "items": 4,
+      "url": "https://xqoc-ewo0-x3u2.s2.xano.io/api:0o-ZhGP6/item_history?inventory_id=1311&expiry_date=2025-01-31&branch=Dentabay%20Bangi&page=1&per_page=100"
+    },
+    "itemHistory_paramRoute": {
+      "status": 200,
+      "ok": true,
+      "items": 5,
+      "url": "https://xqoc-ewo0-x3u2.s2.xano.io/api:0o-ZhGP6/item_history?inventory_id=1311&expiry_date=2025-01-31&branch=Dentabay%20Bangi&page=1&per_page=100",
+      "simEntryId": 30685,
+      "simEntrySample": {
+        "id": 30685,
+        "inventory_id": 1311,
+        "expiry_date": "2025-01-31",
+        "branch": "Dentabay Bangi",
+        "quantity": 1,
+        "note": "[SIM9-DELETE-TARGET]"
+      }
+    },
+    "itemMovementDelete": {
+      "status": 200,
+      "ok": true,
+      "body": "success"
+    },
+    "itemHistory_afterDelete": {
+      "status": 200,
+      "ok": true,
+      "items": 4,
+      "url": "https://xqoc-ewo0-x3u2.s2.xano.io/api:0o-ZhGP6/item_history?inventory_id=1311&expiry_date=2025-01-31&branch=Dentabay%20Bangi&page=1&per_page=100",
+      "simEntryStillPresent": false
+    }
+  },
+  "setup": {
+    "createMovement": {
+      "status": 200,
+      "ok": true
+    }
+  },
+  "checks": {
+    "navigationValidation": {
+      "sourceRoute": "/findInventory",
+      "targetRoute": "/itemMovementHistory",
+      "requiredParams": [
+        "inventoryId:int",
+        "itemName:String",
+        "branch:String",
+        "expiryDate:int"
+      ],
+      "paramPresenceValidated": true,
+      "downstreamApiConsistency": true,
+      "expiryTransform": "expiryDate epoch int -> yyyy-MM-dd string for item_history expiry_date"
+    },
+    "directVsParam": {
+      "directEntrySupported": false,
+      "paramEntrySupported": true,
+      "evidence": "nav.dart route /itemMovementHistory has required params only; no params.isEmpty branch."
+    },
+    "deleteSafety": {
+      "usedTestCreatedMovementOnly": true,
+      "marker": "[SIM9-DELETE-TARGET]",
+      "deleteTargetId": 30685
+    },
+    "dataConsistencyAfterDelete": {
+      "deletedEntryAbsent": true
+    },
+    "revert": {
+      "mutationType": "create-test-movement + delete-test-movement (net zero)",
+      "reverted": true
+    }
+  },
+  "blocker": null
+}

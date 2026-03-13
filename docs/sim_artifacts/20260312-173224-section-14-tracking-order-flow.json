@@ -1,0 +1,107 @@
+﻿{
+    "timestamp":  "2026-03-12T17:32:24.3571625+08:00",
+    "section":  "14) Tracking Order flow",
+    "route":  "/trackingOrder",
+    "mutation":  {
+                     "reason":  "Read-only validation section",
+                     "executed":  false
+                 },
+    "apiCalls":  {
+                     "order_get":  {
+                                       "status":  200,
+                                       "order_id":  12530
+                                   },
+                     "order_lists":  {
+                                         "response_len":  28,
+                                         "status":  200,
+                                         "request":  {
+                                                         "branch":  "Dentabay Bangi",
+                                                         "status":  [
+                                                                        "submitted",
+                                                                        "ordered",
+                                                                        "approved",
+                                                                        "pending",
+                                                                        "pending_payment",
+                                                                        "processed"
+                                                                    ],
+                                                         "branch_id":  0
+                                                     }
+                                     }
+                 },
+    "selectedFromUpstream":  {
+                                 "orderID":  12530,
+                                 "urlPresent":  false,
+                                 "status":  "submitted",
+                                 "itemName":  "GUTTA PERCHA POINT"
+                             },
+    "navigationValidation":  {
+                                 "param_type_consistency":  true,
+                                 "source_passes_params":  [
+                                                              "orderID:int",
+                                                              "itemName:String",
+                                                              "url:String"
+                                                          ],
+                                 "validated":  true,
+                                 "downstream_api_payload_consistency":  "trackingOrder page has no direct API call; it renders FFAppState().orderFlow prepared in source via orderListOrganize(orderListsItem). orderID is display-only.",
+                                 "target_required_params":  [
+                                                                "orderID:int",
+                                                                "itemName:String",
+                                                                "url:String"
+                                                            ],
+                                 "source_to_target":  "/orderList -\u003e /trackingOrder",
+                                 "source_transition_validated":  true
+                             },
+    "directVsParam":  {
+                          "assessment":  "paramized entry required for safe runtime behavior",
+                          "paramEntrySupported":  true,
+                          "directEntrySupported":  false,
+                          "mismatch":  true
+                      },
+    "missingParamBehavior":  {
+                                 "expectedBehaviorWhenMissingUrl":  "runtime-crash-risk (null check operator used on null value at Image.network(widget!.url!))",
+                                 "urlForceUnwrapInBuild":  true,
+                                 "urlNullableInCtor":  true,
+                                 "orderIDDefault":  0,
+                                 "itemNameDefault":  "Error"
+                             },
+    "codeEvidence":  {
+                         "target":  [
+                                        "C:\\Programming\\aiventory\\lib\\tracking_order\\tracking_order_widget.dart:15: int? orderID,",
+                                        "C:\\Programming\\aiventory\\lib\\tracking_order\\tracking_order_widget.dart:16: String? itemName,",
+                                        "C:\\Programming\\aiventory\\lib\\tracking_order\\tracking_order_widget.dart:17: this.url,",
+                                        "C:\\Programming\\aiventory\\lib\\tracking_order\\tracking_order_widget.dart:18: })  : this.orderID = orderID ?? 0,",
+                                        "C:\\Programming\\aiventory\\lib\\tracking_order\\tracking_order_widget.dart:19: this.itemName = itemName ?? \u0027Error\u0027;",
+                                        "C:\\Programming\\aiventory\\lib\\tracking_order\\tracking_order_widget.dart:126: widget!.url!,"
+                                    ],
+                         "source":  [
+                                        "C:\\Programming\\aiventory\\lib\\order_list\\order_list_widget.dart:535: context.pushNamed(",
+                                        "C:\\Programming\\aiventory\\lib\\order_list\\order_list_widget.dart:539: \u0027orderID\u0027:",
+                                        "C:\\Programming\\aiventory\\lib\\order_list\\order_list_widget.dart:544: \u0027itemName\u0027:",
+                                        "C:\\Programming\\aiventory\\lib\\order_list\\order_list_widget.dart:548: .itemName,",
+                                        "C:\\Programming\\aiventory\\lib\\order_list\\order_list_widget.dart:551: \u0027url\u0027: serializeParam(",
+                                        "C:\\Programming\\aiventory\\lib\\order_list\\order_list_widget.dart:555: .url,",
+                                        "C:\\Programming\\aiventory\\lib\\order_list\\order_list_widget.dart:624: orderListsItem.inventory.itemName,",
+                                        "C:\\Programming\\aiventory\\lib\\order_list\\order_list_widget.dart:723: if (orderListsItem.imageUrl !=",
+                                        "C:\\Programming\\aiventory\\lib\\order_list\\order_list_widget.dart:725: orderListsItem.imageUrl !=",
+                                        "C:\\Programming\\aiventory\\lib\\order_list\\order_list_widget.dart:762: orderListsItem.imageUrl,",
+                                        "C:\\Programming\\aiventory\\lib\\order_list\\order_list_widget.dart:766: tag: orderListsItem.imageUrl,",
+                                        "C:\\Programming\\aiventory\\lib\\order_list\\order_list_widget.dart:773: tag: orderListsItem.imageUrl,",
+                                        "C:\\Programming\\aiventory\\lib\\order_list\\order_list_widget.dart:778: orderListsItem.imageUrl,",
+                                        "C:\\Programming\\aiventory\\lib\\order_list\\order_list_widget.dart:1094: context.pushNamed(",
+                                        "C:\\Programming\\aiventory\\lib\\order_list\\order_list_widget.dart:1098: \u0027orderID\u0027:",
+                                        "C:\\Programming\\aiventory\\lib\\order_list\\order_list_widget.dart:1103: \u0027itemName\u0027:",
+                                        "C:\\Programming\\aiventory\\lib\\order_list\\order_list_widget.dart:1107: .itemName,",
+                                        "C:\\Programming\\aiventory\\lib\\order_list\\order_list_widget.dart:1110: \u0027url\u0027: serializeParam(",
+                                        "C:\\Programming\\aiventory\\lib\\order_list\\order_list_widget.dart:1114: .url,",
+                                        "C:\\Programming\\aiventory\\lib\\order_list\\order_list_widget.dart:1183: orderListsItem.inventory.itemName,"
+                                    ],
+                         "nav":  [
+                                     "C:\\Programming\\aiventory\\lib\\flutter_flow\\nav\\nav.dart:152: name: TrackingOrderWidget.routeName,",
+                                     "C:\\Programming\\aiventory\\lib\\flutter_flow\\nav\\nav.dart:156: \u0027orderID\u0027,",
+                                     "C:\\Programming\\aiventory\\lib\\flutter_flow\\nav\\nav.dart:160: \u0027itemName\u0027,",
+                                     "C:\\Programming\\aiventory\\lib\\flutter_flow\\nav\\nav.dart:164: \u0027url\u0027,",
+                                     "C:\\Programming\\aiventory\\lib\\flutter_flow\\nav\\nav.dart:225: \u0027itemName\u0027,",
+                                     "C:\\Programming\\aiventory\\lib\\flutter_flow\\nav\\nav.dart:243: \u0027itemName\u0027,"
+                                 ]
+                     }
+}

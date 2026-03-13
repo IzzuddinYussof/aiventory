@@ -1,0 +1,48 @@
+{
+  "fixId": "F07",
+  "timestamp": "2026-03-13T02:31:28+08:00",
+  "status": "done",
+  "summary": "Standardized Upload Carousell direct vs param behavior by enforcing selected inventory before navigation and forwarding consistent route params.",
+  "filesChanged": [
+    "lib/carousell/carousell_widget.dart",
+    "docs/REPAIR_MASTER_TODO.md",
+    "docs/REVERT_GUIDE_REPAIR.md",
+    "docs/developer-log.md",
+    "docs/revert_patches/F07.patch"
+  ],
+  "backend": {
+    "required": false,
+    "notes": "No backend/Xano mutation required for F07."
+  },
+  "checks": [
+    {
+      "name": "Route param forwarding present",
+      "method": "static code check",
+      "result": "pass",
+      "evidence": "carousell_widget UploadCarousell route now passes inventoryId/category/search/searchCategory"
+    },
+    {
+      "name": "Missing inventory guard",
+      "method": "static code check",
+      "result": "pass",
+      "evidence": "safe snack bar shown and early return when selectedInventoryId missing/invalid"
+    },
+    {
+      "name": "Direct route safe fallback",
+      "method": "existing upload page guard check",
+      "result": "pass",
+      "evidence": "upload page has missing inventoryId safe message"
+    },
+    {
+      "name": "Runtime flutter test",
+      "method": "not executed",
+      "result": "blocked",
+      "evidence": "local environment git PATH wrapper issue persists"
+    }
+  ],
+  "revert": {
+    "patch": "docs/revert_patches/F07.patch",
+    "preferred": "git apply -R docs/revert_patches/F07.patch",
+    "fallback": "git checkout -- lib/carousell/carousell_widget.dart"
+  }
+}

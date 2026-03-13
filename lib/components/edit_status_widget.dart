@@ -13,6 +13,31 @@ import 'package:provider/provider.dart';
 import 'edit_status_model.dart';
 export 'edit_status_model.dart';
 
+String _buildStatusUpdateErrorMessage(
+  dynamic responseBody, {
+  String? targetStatus,
+}) {
+  final rawMessage = getJsonField(responseBody, r'''$.message''')?.toString();
+  final message = (rawMessage ?? '').trim();
+  final normalized = message.toLowerCase();
+
+  final isInvalidTransition = normalized.contains('invalid transition') ||
+      (normalized.contains('status') && normalized.contains('not allowed')) ||
+      (normalized.contains('cannot') && normalized.contains('status'));
+
+  if (isInvalidTransition) {
+    final nextStatus = (targetStatus ?? '').trim();
+    final attempted = nextStatus.isEmpty ? '' : ' to "$nextStatus"';
+    final detail = message.isEmpty ? '' : '\n\nDetails: $message';
+    return 'This status update$attempted is not valid for the current order state. '
+        'Please refresh the order list and choose an allowed next status.$detail';
+  }
+
+  return message.isEmpty
+      ? 'Unable to update the order status. Please try again.'
+      : message;
+}
+
 class EditStatusWidget extends StatefulWidget {
   const EditStatusWidget({
     super.key,
@@ -320,11 +345,11 @@ class _EditStatusWidgetState extends State<EditStatusWidget> {
                           context: context,
                           builder: (alertDialogContext) {
                             return AlertDialog(
-                              title: Text('Error'),
-                              content: Text(getJsonField(
+                              title: Text('Status update failed'),
+                              content: Text(_buildStatusUpdateErrorMessage(
                                 (_model.apiResultioq?.jsonBody ?? ''),
-                                r'''$.message''',
-                              ).toString()),
+                                targetStatus: _model.dropDownValue,
+                              )),
                               actions: [
                                 TextButton(
                                   onPressed: () =>

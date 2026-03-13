@@ -613,8 +613,66 @@ class _CarousellWidgetState extends State<CarousellWidget> {
                                     hoverColor: Colors.transparent,
                                     highlightColor: Colors.transparent,
                                     onTap: () async {
+                                      final selectedInventoryId =
+                                          FFAppState().chosenInventory.inventoryId >
+                                                  0
+                                              ? FFAppState()
+                                                  .chosenInventory
+                                                  .inventoryId
+                                              : FFAppState()
+                                                  .allInventory
+                                                  .firstOrNull
+                                                  ?.id;
+                                      if (selectedInventoryId == null ||
+                                          selectedInventoryId <= 0) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                              'Please select an inventory item first.',
+                                              style:
+                                                  FlutterFlowTheme.of(context)
+                                                      .titleSmall,
+                                            ),
+                                            duration:
+                                                Duration(milliseconds: 2000),
+                                            backgroundColor:
+                                                FlutterFlowTheme.of(context)
+                                                    .secondary,
+                                          ),
+                                        );
+                                        return;
+                                      }
+
+                                      final currentSearch = _model
+                                          .serachInventoryTextController.text
+                                          .trim();
+                                      final currentCategory =
+                                          _model.choiceChipsValue;
+
                                       context.pushNamed(
-                                          UploadCarousellWidget.routeName);
+                                        UploadCarousellWidget.routeName,
+                                        queryParameters: {
+                                          'inventoryId': serializeParam(
+                                            selectedInventoryId,
+                                            ParamType.int,
+                                          ),
+                                          'category': serializeParam(
+                                            currentCategory,
+                                            ParamType.String,
+                                          ),
+                                          'search': serializeParam(
+                                            currentSearch.isNotEmpty
+                                                ? currentSearch
+                                                : null,
+                                            ParamType.String,
+                                          ),
+                                          'searchCategory': serializeParam(
+                                            currentCategory,
+                                            ParamType.String,
+                                          ),
+                                        }.withoutNulls,
+                                      );
                                     },
                                     child: Container(
                                       width: 125.0,

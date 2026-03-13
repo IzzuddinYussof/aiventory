@@ -40,17 +40,28 @@ class CarousellUpdateModel extends FlutterFlowModel<CarousellUpdateWidget> {
   }) async {
     ApiCallResponse? updateCarousellMovement;
 
-    updateCarousellMovement =
-        await CarousellGroup.carousellMovementPutCall.call(
-      id: id,
-      status: status,
-      side: side,
-      name: FFAppState().user.name,
-      doneBool: true,
-    );
+    final isCancelFlow = status == 'Cancelled';
+    final requestId =
+        'cmv-del-${id ?? 0}-${DateTime.now().millisecondsSinceEpoch}';
+
+    updateCarousellMovement = isCancelFlow
+        ? await CarousellGroup.carousellMovementDeleteCall.call(
+            id: id,
+            deletedBy: FFAppState().user.id,
+            reason: '${type ?? 'Unknown'} side cancel from app',
+            requestId: requestId,
+          )
+        : await CarousellGroup.carousellMovementPutCall.call(
+            id: id,
+            status: status,
+            side: side,
+            name: FFAppState().user.name,
+            doneBool: true,
+          );
 
     if ((updateCarousellMovement?.succeeded ?? true)) {
-      if (side == 'buyer') {
+      final removeFromBuy = side == 'buyer' || type == 'Buy';
+      if (removeFromBuy) {
         FFAppState().removeAtIndexFromCarousellBuyList(index!);
       } else {
         FFAppState().removeAtIndexFromCarousellSellList(index!);

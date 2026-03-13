@@ -1,0 +1,82 @@
+﻿{
+    "meta":  {
+                 "timestamp":  "2026-03-12T19:21:17.5258492+08:00",
+                 "section":  "12) Cart flow",
+                 "mode":  "deferred-retry",
+                 "mutationExecuted":  false,
+                 "mutationSkipReason":  "Exact pre-state revert impossible: no delete endpoint for inventory_carousell_movement"
+             },
+    "apiCalls":  [
+                     {
+                         "name":  "GET /inventory_carousell",
+                         "url":  "https://xqoc-ewo0-x3u2.s2.xano.io/api:s4bMNy03/inventory_carousell?inventory_ids=[]\u0026name=\u0026category=",
+                         "status":  200,
+                         "count":  8
+                     },
+                     {
+                         "name":  "GET /inventory_carousell_movement",
+                         "url":  "https://xqoc-ewo0-x3u2.s2.xano.io/api:s4bMNy03/inventory_carousell_movement?branch_id=2\u0026status=In%20Progress",
+                         "status":  200,
+                         "count":  7
+                     }
+                 ],
+    "keyState":  {
+                     "carousellCount":  8,
+                     "movementInProgressCount":  7,
+                     "selectedCarousellRow":  {
+                                                  "id":  18,
+                                                  "created_at":  1773301828282,
+                                                  "inventory_id":  1357,
+                                                  "branch":  "Dentabay Bangi",
+                                                  "branch_id":  2,
+                                                  "image_url":  "https://lh3.googleusercontent.com/d/1PmkR5LMJnXGxZTBvBNrwur1GJ-JaS8E6",
+                                                  "expiry_date":  null,
+                                                  "initial_quantity":  150,
+                                                  "unit_cost":  25,
+                                                  "total_cost":  3750,
+                                                  "unit":  "BOX",
+                                                  "available_quantity":  150,
+                                                  "sold_quantity":  0,
+                                                  "remark":  "Test",
+                                                  "type":  "Selling",
+                                                  "item_name":  "DICLORAN 50mg",
+                                                  "category":  "MEDICINE",
+                                                  "supplier":  "UNIMED",
+                                                  "expiry":  true,
+                                                  "quantity_major":  "BOX",
+                                                  "quantity_minor":  "BOX",
+                                                  "barcode":  "",
+                                                  "image":  null
+                                              }
+                 },
+    "navigationValidation":  {
+                                 "sourceRoute":  "/carousell",
+                                 "targetRoute":  "/cart",
+                                 "requiredParams":  [
+                                                        "itemName:String",
+                                                        "branch:String",
+                                                        "image:String",
+                                                        "itemID:String",
+                                                        "branchID:int",
+                                                        "carousellID:int",
+                                                        "unit:String",
+                                                        "price:double",
+                                                        "availableQuantity:double",
+                                                        "remark:String",
+                                                        "inventoryId:int",
+                                                        "type:String",
+                                                        "search:String",
+                                                        "category:String"
+                                                    ],
+                                 "paramPresenceValidated":  true,
+                                 "downstreamApiConsistency":  true,
+                                 "result":  "BLOCKED-DEFERRED-RETRY",
+                                 "blocker":  "POST /inventory_carousell_movement has no delete endpoint for exact pre-create absence restore"
+                             },
+    "directVsParam":  {
+                          "directEntrySupported":  false,
+                          "paramEntrySupported":  true,
+                          "mismatch":  false,
+                          "evidence":  "nav.dart route /cart has params-required builder only; no params.isEmpty branch"
+                      }
+}

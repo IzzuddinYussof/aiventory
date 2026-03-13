@@ -1,0 +1,88 @@
+﻿{
+    "generatedAt":  "2026-03-12T07:45:20.0558579Z",
+    "section":  "10) Carousell listing flow",
+    "calls":  {
+                  "inventoryCategoryList":  {
+                                                "status":  200,
+                                                "ok":  true,
+                                                "count":  14,
+                                                "pickedCategory":  "BUR"
+                                            },
+                  "defaultList":  {
+                                      "status":  200,
+                                      "ok":  true,
+                                      "url":  "https://xqoc-ewo0-x3u2.s2.xano.io/api:s4bMNy03/inventory_carousell?inventory_ids=%5B%5D\u0026name=\u0026category=",
+                                      "count":  6,
+                                      "sample":  {
+                                                     "id":  15,
+                                                     "inventory_id":  1357,
+                                                     "item_name":  "DICLORAN 50mg",
+                                                     "category":  "MEDICINE",
+                                                     "available_quantity":  151
+                                                 }
+                                  },
+                  "searchByName":  {
+                                       "status":  200,
+                                       "ok":  true,
+                                       "url":  "https://xqoc-ewo0-x3u2.s2.xano.io/api:s4bMNy03/inventory_carousell?inventory_ids=%5B%5D\u0026name=DICLO\u0026category=",
+                                       "term":  "DICLO",
+                                       "count":  1
+                                   },
+                  "filterByCategory":  {
+                                           "status":  200,
+                                           "ok":  true,
+                                           "url":  "https://xqoc-ewo0-x3u2.s2.xano.io/api:s4bMNy03/inventory_carousell?inventory_ids=%5B%5D\u0026name=\u0026category=BUR",
+                                           "category":  "BUR",
+                                           "count":  4
+                                       },
+                  "filterByNameAndCategory":  {
+                                                  "status":  200,
+                                                  "ok":  true,
+                                                  "url":  "https://xqoc-ewo0-x3u2.s2.xano.io/api:s4bMNy03/inventory_carousell?inventory_ids=%5B%5D\u0026name=DICLO\u0026category=BUR",
+                                                  "term":  "DICLO",
+                                                  "category":  "BUR",
+                                                  "count":  6
+                                              },
+                  "inventoryIdsSerialized":  {
+                                                 "status":  200,
+                                                 "ok":  true,
+                                                 "url":  "https://xqoc-ewo0-x3u2.s2.xano.io/api:s4bMNy03/inventory_carousell?inventory_ids=%5B1357%2C1763%5D\u0026name=\u0026category=",
+                                                 "inventory_ids_raw":  "[1357,1763]",
+                                                 "requested_ids":  [
+                                                                       1357,
+                                                                       1763
+                                                                   ],
+                                                 "result_count":  6,
+                                                 "distinct_result_inventory_ids":  [
+                                                                                       1357,
+                                                                                       1763,
+                                                                                       1655
+                                                                                   ]
+                                             }
+              },
+    "checks":  {
+                   "navigationValidation":  {
+                                                "sourceRouteDirect":  "/dashboardHQ (NavBar tab)",
+                                                "targetRoute":  "/carousell",
+                                                "requiredParamsForParamMode":  [
+                                                                                   "carousellId:int",
+                                                                                   "quantity:double"
+                                                                               ],
+                                                "paramPresenceValidated":  true,
+                                                "downstreamApiConsistency":  false,
+                                                "evidence":  "CarousellWidget API calls use only name/category/inventory_ids from UI state; widget.carousellId and widget.quantity are not used in CarousellGroup.carousellGetCall.call(...)"
+                                            },
+                   "directVsParam":  {
+                                         "directEntrySupported":  true,
+                                         "paramEntrySupported":  true,
+                                         "behaviorComparison":  "No API payload difference attributable to route params; params currently ignored by widget logic.",
+                                         "mismatch":  true
+                                     },
+                   "inventoryIdSerialization":  {
+                                                    "appFormat":  "JSON string list via _serializeList, e.g. [1357,1208]",
+                                                    "serverAccepted":  true,
+                                                    "resultSubsetOfRequestedIds":  false
+                                                }
+               },
+    "blocker":  null
+}

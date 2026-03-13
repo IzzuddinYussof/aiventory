@@ -1,0 +1,62 @@
+﻿{
+    "run":  {
+                "timestamp":  "2026-03-12T19:23:44.4793426+08:00",
+                "section":  "13) Carousell Update flow (deferred retry)",
+                "mode":  "live-api",
+                "mutation":  {
+                                 "executed":  false,
+                                 "reason":  "Skipped (deferred retry blocker revalidation only)."
+                             }
+            },
+    "apiCalls":  {
+                     "carousellMovementGet_inProgress":  {
+                                                             "method":  "GET",
+                                                             "url":  "https://xqoc-ewo0-x3u2.s2.xano.io/api:s4bMNy03/inventory_carousell_movement?branch_id=2\u0026status=In%20Progress",
+                                                             "status":  200,
+                                                             "ok":  true,
+                                                             "count":  7
+                                                         },
+                     "carousellMovementGet_delivered":  {
+                                                            "method":  "GET",
+                                                            "url":  "https://xqoc-ewo0-x3u2.s2.xano.io/api:s4bMNy03/inventory_carousell_movement?branch_id=2\u0026status=Delivered",
+                                                            "status":  200,
+                                                            "ok":  true,
+                                                            "count":  5
+                                                        }
+                 },
+    "extractedState":  {
+                           "branchId":  2,
+                           "inProgressCount":  7,
+                           "deliveredCount":  5,
+                           "deliveredWithBuyerSideNameIds":  [
+                                                                 25,
+                                                                 26,
+                                                                 3,
+                                                                 9
+                                                             ]
+                       },
+    "navigationValidation":  {
+                                 "sourceRoutes":  [
+                                                      "/carousell",
+                                                      "/cart"
+                                                  ],
+                                 "targetRoute":  "/carousellUpdate",
+                                 "requiredParams":  [
+
+                                                    ],
+                                 "paramPresenceValidated":  true,
+                                 "downstreamApiConsistency":  true,
+                                 "result":  "BLOCKED-DEFERRED-RETRY (buyer_side metadata persistence remains unrevertable via app PUT contract)",
+                                 "evidence":  [
+                                                  "nav.dart: /carousellUpdate route has direct-only builder and no required params",
+                                                  "carousell_update_widget.dart: page load uses GET /inventory_carousell_movement?status=In Progress\u0026branch_id=FFAppState().branchIdUser"
+                                              ]
+                             },
+    "directVsParam":  {
+                          "directEntrySupported":  true,
+                          "paramEntrySupported":  false,
+                          "mismatch":  false,
+                          "note":  "Route is direct-only by design in nav.dart."
+                      },
+    "blocker":  "Exact pre-state revert remains impossible: PUT /inventory_carousell_movement contract cannot clear buyer_side.name/date once set."
+}

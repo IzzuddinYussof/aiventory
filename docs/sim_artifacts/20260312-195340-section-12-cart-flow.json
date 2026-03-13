@@ -1,0 +1,216 @@
+{
+  "generatedAt": "2026-03-12T11:53:40.346859+00:00",
+  "section": "12) Cart flow",
+  "mode": "blocked-deferred-retry-no-mutation",
+  "calls": {
+    "carousellDefault": {
+      "status": 200,
+      "count": 8,
+      "sampleTopIds": [
+        18,
+        17,
+        15,
+        14,
+        12,
+        11,
+        9,
+        7
+      ]
+    },
+    "movementInProgress": {
+      "status": 200,
+      "branchId": 2,
+      "count": 7,
+      "sampleTopIds": [
+        19,
+        24,
+        25,
+        26,
+        3,
+        9,
+        10
+      ]
+    }
+  },
+  "selectedItem": {
+    "id": 18,
+    "inventoryId": 1357,
+    "itemName": "DICLORAN 50mg",
+    "branch": "Dentabay Bangi",
+    "branchId": 2,
+    "unit": "BOX",
+    "unitCost": 25,
+    "type": "Selling",
+    "remark": "Test",
+    "imageUrl": "https://lh3.googleusercontent.com/d/1PmkR5LMJnXGxZTBvBNrwur1GJ-JaS8E6"
+  },
+  "routeContractValidation": {
+    "sourceRoute": "/carousell",
+    "targetRoute": "/cart",
+    "sourcePushNamedHasParams": true,
+    "targetRequiresParams": [
+      "itemName:String",
+      "branch:String",
+      "image:String",
+      "itemID:String",
+      "branchID:int",
+      "carousellID:int",
+      "unit:String",
+      "price:double",
+      "availableQuantity:double",
+      "remark:String",
+      "inventoryId:int",
+      "type:String",
+      "search:String",
+      "category:String"
+    ],
+    "paramTypesConsistentWithSource": true,
+    "downstreamPayloadFromParams": {
+      "branch_id_from": "type==Selling ? branchID : FFAppState.branchIdUser",
+      "branch_id_to": "type==Selling ? FFAppState.branchIdUser : branchID",
+      "inventory_carousell_id": "carousellID",
+      "inventory_id": "inventoryId",
+      "type": "type"
+    }
+  },
+  "directVsParam": {
+    "directEntrySupported": false,
+    "paramEntrySupported": true,
+    "evidence": "/cart route in nav.dart has no params.isEmpty branch; CarousellWidget pushNamed to Cart always passes queryParameters"
+  },
+  "blocker": {
+    "reason": "Exact pre-state revert for POST /inventory_carousell_movement is not currently possible with app-exposed contracts (no delete endpoint; PUT only mutates status/flags and cannot restore absence of newly created row).",
+    "skippedMutation": true,
+    "requiredByRule": "Rule 5 exact pre-state revert in same run"
+  },
+  "raw": {
+    "carousellDefaultFirst2": [
+      {
+        "id": 18,
+        "created_at": 1773301828282,
+        "inventory_id": 1357,
+        "branch": "Dentabay Bangi",
+        "branch_id": 2,
+        "image_url": "https://lh3.googleusercontent.com/d/1PmkR5LMJnXGxZTBvBNrwur1GJ-JaS8E6",
+        "expiry_date": null,
+        "initial_quantity": 150,
+        "unit_cost": 25,
+        "total_cost": 3750,
+        "unit": "BOX",
+        "available_quantity": 150,
+        "sold_quantity": 0,
+        "remark": "Test",
+        "type": "Selling",
+        "item_name": "DICLORAN 50mg",
+        "category": "MEDICINE",
+        "supplier": "UNIMED",
+        "expiry": true,
+        "quantity_major": "BOX",
+        "quantity_minor": "BOX",
+        "barcode": "",
+        "image": null
+      },
+      {
+        "id": 17,
+        "created_at": 1773301827972,
+        "inventory_id": 1357,
+        "branch": "Dentabay Bangi",
+        "branch_id": 2,
+        "image_url": "https://lh3.googleusercontent.com/d/1PmkR5LMJnXGxZTBvBNrwur1GJ-JaS8E6",
+        "expiry_date": null,
+        "initial_quantity": 150,
+        "unit_cost": 25,
+        "total_cost": 3750,
+        "unit": "BOX",
+        "available_quantity": 150,
+        "sold_quantity": 0,
+        "remark": "Test [SIM11-UPSERT]",
+        "type": "Selling",
+        "item_name": "DICLORAN 50mg",
+        "category": "MEDICINE",
+        "supplier": "UNIMED",
+        "expiry": true,
+        "quantity_major": "BOX",
+        "quantity_minor": "BOX",
+        "barcode": "",
+        "image": null
+      }
+    ],
+    "movementInProgressFirst2": [
+      {
+        "id": 19,
+        "created_at": 1758791301420,
+        "branch_id_from": 15,
+        "branch_id_to": 2,
+        "inventory_carousell_id": 1,
+        "inventory_id": 1655,
+        "user_id": 228,
+        "quantity": 2,
+        "total_cost": 200,
+        "name": "Sheyra test",
+        "delivery": "Self Collect",
+        "type": "Request",
+        "status": "Delivered",
+        "seller": true,
+        "buyer": false,
+        "seller_side": {
+          "name": "Sheyra test",
+          "date": 1759215716971
+        },
+        "buyer_side": {
+          "name": "",
+          "date": null
+        },
+        "branch_from": "Dentabay Kota Warisan",
+        "branch_to": "Dentabay Bangi",
+        "item_name": "012 NITI LOWER",
+        "image_url": "https://lh3.googleusercontent.com/d/1XO6zCiL0M7vl29bFW7-ZKRASvsa-tNPs",
+        "expiry_date": "2025-08-31",
+        "initial_quantity": 10,
+        "unit_cost": 100,
+        "unit": "bracket",
+        "available_quantity": 0,
+        "remark": "Test"
+      },
+      {
+        "id": 24,
+        "created_at": 1759214550683,
+        "branch_id_from": 15,
+        "branch_id_to": 2,
+        "inventory_carousell_id": 1,
+        "inventory_id": 1655,
+        "user_id": 228,
+        "quantity": 2,
+        "total_cost": 200,
+        "name": "Sheyra test",
+        "delivery": "COD",
+        "type": "Request",
+        "status": "In Progress",
+        "seller": false,
+        "buyer": false,
+        "seller_side": {
+          "name": "",
+          "date": null
+        },
+        "buyer_side": {
+          "name": "",
+          "date": null
+        },
+        "branch_from": "Dentabay Kota Warisan",
+        "branch_to": "Dentabay Bangi",
+        "item_name": "012 NITI LOWER",
+        "image_url": "https://lh3.googleusercontent.com/d/1XO6zCiL0M7vl29bFW7-ZKRASvsa-tNPs",
+        "expiry_date": "2025-08-31",
+        "initial_quantity": 10,
+        "unit_cost": 100,
+        "unit": "bracket",
+        "available_quantity": 0,
+        "remark": "Test"
+      }
+    ],
+    "requestUrls": {
+      "carousellDefault": "https://xqoc-ewo0-x3u2.s2.xano.io/api:s4bMNy03/inventory_carousell",
+      "movementInProgress": "https://xqoc-ewo0-x3u2.s2.xano.io/api:s4bMNy03/inventory_carousell_movement"
+    }
+  }
+}

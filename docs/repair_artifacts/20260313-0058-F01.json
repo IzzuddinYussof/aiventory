@@ -1,0 +1,36 @@
+{
+  "fix_id": "F01",
+  "title": "Upload Carousell route param safety",
+  "status": "blocked-final",
+  "run_date": "2026-03-13",
+  "orchestration": {
+    "shiro_initial": "done",
+    "kuro": "done",
+    "hitokiri_initial": "fail",
+    "retry_cycle_used": true,
+    "shiro_retry": "done",
+    "hitokiri_post_retry": "fail"
+  },
+  "changes": {
+    "frontend_files": [
+      "lib/carousell/carousell_widget.dart",
+      "lib/upload_carousell/upload_carousell_widget.dart",
+      "test/widget_test.dart"
+    ],
+    "backend_files": [],
+    "xano_endpoints_changed": []
+  },
+  "blocker": {
+    "type": "environment-verification",
+    "message": "flutter test wrapper cannot complete because git lookup fails in env PATH ('WHERE is not recognized', 'Unable to find git in your PATH').",
+    "repeat_count": 2
+  },
+  "revert": {
+    "patch": "docs/revert_patches/F01.patch",
+    "rollback_note": "No backend rollback needed for F01. Frontend rollback via reverse patch."
+  },
+  "notes": [
+    "Kuro confirmed no backend/Xano changes required.",
+    "Hitokiri confirmed code-flow improved but runtime PASS proof blocked by repeated environment issue."
+  ]
+}

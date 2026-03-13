@@ -1,0 +1,23 @@
+{
+  "timestamp": "2026-03-12T23:55:27.087596+08:00",
+  "section": "15) Purchase Order flow",
+  "mode": "USER-FLOW simulation with LIVE API calls (no playwright, no flutter run)",
+  "mutationExpected": false,
+  "mutationExecuted": false,
+  "apiCalls": [],
+  "navigationValidation": {
+    "sourceRoute": "/dashboardHQ (NavBar tab entry)",
+    "targetRoute": "/purchaseOrder",
+    "requiredParams": [],
+    "paramPresenceValidated": true,
+    "downstreamApiConsistency": "N/A (no downstream API payload exists)",
+    "result": "PASS"
+  },
+  "directVsParam": {
+    "directEntrySupported": true,
+    "paramEntrySupported": false,
+    "mismatch": false,
+    "note": "Route is direct-only by design in nav.dart."
+  },
+  "finding": "Integration gap: PurchaseOrderWidget currently has no backend/API wiring."
+}

@@ -1,0 +1,57 @@
+﻿{
+    "generatedAt":  "2026-03-12T08:41:24.7565051Z",
+    "section":  "11) Upload Carousell flow",
+    "mode":  "read-only-revalidation",
+    "calls":  {
+                  "default":  {
+                                  "endpoint":  "GET /inventory_carousell?inventory_ids=[]\u0026name=\u0026category=",
+                                  "status":  200,
+                                  "count":  8
+                              },
+                  "filtered":  {
+                                   "endpoint":  "GET /inventory_carousell?inventory_ids=[]\u0026name=DICLO\u0026category=BUR",
+                                   "status":  200,
+                                   "count":  8
+                               },
+                  "probe":  {
+                                "endpoint":  "GET /inventory_carousell?inventory_ids=[1357]\u0026name=\u0026category=",
+                                "status":  200,
+                                "count":  8,
+                                "topIds":  [
+                                               18,
+                                               17,
+                                               15,
+                                               14,
+                                               12,
+                                               11,
+                                               9,
+                                               7
+                                           ]
+                            }
+              },
+    "navigationValidation":  {
+                                 "sourceRoute":  "/carousell",
+                                 "targetRoute":  "/uploadCarousell",
+                                 "sourcePushNamedWithoutParams":  true,
+                                 "targetRequiredParams":  [
+                                                              "inventoryId:int",
+                                                              "category:String",
+                                                              "search:String",
+                                                              "searchCategory:String"
+                                                          ],
+                                 "directRouteNullSafety":  false,
+                                 "paramToApiConsistency":  true,
+                                 "result":  "BLOCKED (source direct navigation omits required runtime param inventoryId)"
+                             },
+    "directVsParam":  {
+                          "directEntrySupported":  false,
+                          "paramEntrySupported":  true,
+                          "mismatch":  true,
+                          "note":  "Direct from Carousell omits params while UploadCarousell initState force-unwraps inventoryId; param mode aligns with POST /inventory_carousell payload mapping."
+                      },
+    "mutation":  {
+                     "executed":  false,
+                     "reason":  "Skipped (blocker persists: no app-exposed delete/update endpoint for inventory_carousell exact revert)."
+                 },
+    "blocker":  "Revert impossible with app-exposed contracts: no delete/update endpoint for inventory_carousell rows; existing SIM11 rows remain unreverted."
+}

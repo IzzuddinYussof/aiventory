@@ -1,0 +1,23 @@
+{
+    "timestamp":  "20260313-011519",
+    "changed_files":  [
+                          "lib/backend/api_requests/api_calls.dart",
+                          "lib/carousell_update/carousell_update_model.dart",
+                          "docs/REPAIR_MASTER_TODO.md",
+                          "docs/REVERT_GUIDE_REPAIR.md",
+                          "docs/developer-log.md",
+                          "docs/revert_patches/F03.patch"
+                      ],
+    "fix":  "F03",
+    "notes":  [
+                  "Movement delete/undo API-layer calls added.",
+                  "Cancel flow wired to carousellMovementDeleteCall.",
+                  "Live endpoint verification not completed this run."
+              ],
+    "status":  "blocked-final",
+    "verification":  {
+                         "live_api":  "not_executed",
+                         "revert_mutation_proof":  "not_executed",
+                         "code_flow":  "pass"
+                     }
+}

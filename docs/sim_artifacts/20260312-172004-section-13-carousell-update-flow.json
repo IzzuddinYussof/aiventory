@@ -1,0 +1,198 @@
+﻿{
+    "generatedAt":  "2026-03-12T17:20:04.4081174+08:00",
+    "section":  "13) Carousell Update flow",
+    "calls":  {
+                  "authMe":  {
+                                 "status":  200,
+                                 "userId":  1
+                             },
+                  "movementGetBefore":  {
+                                            "status":  200,
+                                            "branchId":  2,
+                                            "statusFilter":  "In Progress",
+                                            "count":  7
+                                        },
+                  "movementPutMutation":  {
+                                              "status":  200,
+                                              "id":  3,
+                                              "payload":  {
+                                                              "status":  "Delivered",
+                                                              "name":  "Izzuddin bin Yussof",
+                                                              "id":  3,
+                                                              "side":  "buyer",
+                                                              "done_bool":  "true"
+                                                          },
+                                              "response":  {
+                                                               "id":  3,
+                                                               "created_at":  1756284854399,
+                                                               "branch_id_from":  26,
+                                                               "branch_id_to":  2,
+                                                               "inventory_carousell_id":  7,
+                                                               "inventory_id":  1655,
+                                                               "user_id":  1,
+                                                               "quantity":  3,
+                                                               "total_cost":  30,
+                                                               "name":  "Izzuddin bin Yussof",
+                                                               "delivery":  "Self Collect",
+                                                               "type":  "Selling",
+                                                               "status":  "Delivered",
+                                                               "seller":  false,
+                                                               "buyer":  true,
+                                                               "seller_side":  {
+                                                                                   "name":  "",
+                                                                                   "date":  null
+                                                                               },
+                                                               "buyer_side":  {
+                                                                                  "name":  "Izzuddin bin Yussof",
+                                                                                  "date":  1773307199499
+                                                                              },
+                                                               "branch_from":  {
+                                                                                   "label":  "Dentabay Georgetown"
+                                                                               },
+                                                               "branch_to":  {
+                                                                                 "label":  "Dentabay Bangi"
+                                                                             },
+                                                               "item_name":  "012 NITI LOWER",
+                                                               "image_url":  "https://lh3.googleusercontent.com/d/1wgjMXBoBAfqCyuu8UphIM2LodLuupp52",
+                                                               "expiry_date":  null,
+                                                               "initial_quantity":  20,
+                                                               "unit_cost":  10,
+                                                               "unit":  "PACK",
+                                                               "available_quantity":  2,
+                                                               "remark":  "Test je"
+                                                           }
+                                          },
+                  "movementGetAfterMutation":  {
+                                                   "status":  200,
+                                                   "foundInInProgress":  false
+                                               },
+                  "movementPutRevert":  {
+                                            "status":  200,
+                                            "payload":  {
+                                                            "status":  "Delivered",
+                                                            "name":  "Izzuddin bin Yussof",
+                                                            "id":  3,
+                                                            "side":  "buyer",
+                                                            "done_bool":  "false"
+                                                        },
+                                            "response":  {
+                                                             "id":  3,
+                                                             "created_at":  1756284854399,
+                                                             "branch_id_from":  26,
+                                                             "branch_id_to":  2,
+                                                             "inventory_carousell_id":  7,
+                                                             "inventory_id":  1655,
+                                                             "user_id":  1,
+                                                             "quantity":  3,
+                                                             "total_cost":  30,
+                                                             "name":  "Izzuddin bin Yussof",
+                                                             "delivery":  "Self Collect",
+                                                             "type":  "Selling",
+                                                             "status":  "Delivered",
+                                                             "seller":  false,
+                                                             "buyer":  false,
+                                                             "seller_side":  {
+                                                                                 "name":  "",
+                                                                                 "date":  null
+                                                                             },
+                                                             "buyer_side":  {
+                                                                                "name":  "Izzuddin bin Yussof",
+                                                                                "date":  1773307201991
+                                                                            },
+                                                             "branch_from":  {
+                                                                                 "label":  "Dentabay Georgetown"
+                                                                             },
+                                                             "branch_to":  {
+                                                                               "label":  "Dentabay Bangi"
+                                                                           },
+                                                             "item_name":  "012 NITI LOWER",
+                                                             "image_url":  "https://lh3.googleusercontent.com/d/1wgjMXBoBAfqCyuu8UphIM2LodLuupp52",
+                                                             "expiry_date":  null,
+                                                             "initial_quantity":  20,
+                                                             "unit_cost":  10,
+                                                             "unit":  "PACK",
+                                                             "available_quantity":  2,
+                                                             "remark":  "Test je"
+                                                         }
+                                        },
+                  "movementGetAfterRevert":  {
+                                                 "status":  200,
+                                                 "foundInInProgress":  true
+                                             }
+              },
+    "selectedBefore":  {
+                           "id":  3,
+                           "created_at":  1756284854399,
+                           "branch_id_from":  26,
+                           "branch_id_to":  2,
+                           "inventory_carousell_id":  7,
+                           "inventory_id":  1655,
+                           "user_id":  1,
+                           "quantity":  3,
+                           "total_cost":  30,
+                           "name":  "Izzuddin bin Yussof",
+                           "delivery":  "Self Collect",
+                           "type":  "Selling",
+                           "status":  "Delivered",
+                           "seller":  false,
+                           "buyer":  false,
+                           "seller_side":  {
+                                               "name":  "",
+                                               "date":  null
+                                           },
+                           "buyer_side":  {
+                                              "name":  "",
+                                              "date":  null
+                                          },
+                           "branch_from":  "Dentabay Georgetown",
+                           "branch_to":  "Dentabay Bangi",
+                           "item_name":  "012 NITI LOWER",
+                           "image_url":  "https://lh3.googleusercontent.com/d/1wgjMXBoBAfqCyuu8UphIM2LodLuupp52",
+                           "expiry_date":  null,
+                           "initial_quantity":  20,
+                           "unit_cost":  10,
+                           "unit":  "PACK",
+                           "available_quantity":  2,
+                           "remark":  "Test je"
+                       },
+    "selectedAfterMutation":  null,
+    "selectedAfterRevert":  {
+                                "id":  3,
+                                "created_at":  1756284854399,
+                                "branch_id_from":  26,
+                                "branch_id_to":  2,
+                                "inventory_carousell_id":  7,
+                                "inventory_id":  1655,
+                                "user_id":  1,
+                                "quantity":  3,
+                                "total_cost":  30,
+                                "name":  "Izzuddin bin Yussof",
+                                "delivery":  "Self Collect",
+                                "type":  "Selling",
+                                "status":  "Delivered",
+                                "seller":  false,
+                                "buyer":  false,
+                                "seller_side":  {
+                                                    "name":  "",
+                                                    "date":  null
+                                                },
+                                "buyer_side":  {
+                                                   "name":  "Izzuddin bin Yussof",
+                                                   "date":  1773307201991
+                                               },
+                                "branch_from":  "Dentabay Georgetown",
+                                "branch_to":  "Dentabay Bangi",
+                                "item_name":  "012 NITI LOWER",
+                                "image_url":  "https://lh3.googleusercontent.com/d/1wgjMXBoBAfqCyuu8UphIM2LodLuupp52",
+                                "expiry_date":  null,
+                                "initial_quantity":  20,
+                                "unit_cost":  10,
+                                "unit":  "PACK",
+                                "available_quantity":  2,
+                                "remark":  "Test je"
+                            },
+    "checks":  {
+                   "revertExact":  true,
+                   "multipartTransport":  "System.Net.Http.MultipartFormDataContent"
+               }
+}

@@ -1,0 +1,183 @@
+{
+  "generatedAt": "2026-03-12T17:29:06.047624+08:00",
+  "section": "13) Carousell Update flow",
+  "apiCalls": {
+    "get_before": {
+      "status": 200,
+      "count": 7
+    },
+    "put_mutation": {
+      "status": 200,
+      "id": 10,
+      "side": "buyer",
+      "done_bool": true,
+      "statusValue": "Delivered",
+      "response": {
+        "id": 10,
+        "created_at": 1758691151995,
+        "branch_id_from": 15,
+        "branch_id_to": 2,
+        "inventory_carousell_id": 1,
+        "inventory_id": 1655,
+        "user_id": 89,
+        "quantity": 3,
+        "total_cost": 300,
+        "name": "Syahirah Shawalil",
+        "delivery": "COD",
+        "type": "Request",
+        "status": "Delivered",
+        "seller": true,
+        "buyer": true,
+        "seller_side": {
+          "name": "Sheyra test",
+          "date": 1759217453425
+        },
+        "buyer_side": {
+          "name": "Izzuddin bin Yussof",
+          "date": 1773307740090
+        },
+        "branch_from": {
+          "label": "Dentabay Kota Warisan"
+        },
+        "branch_to": {
+          "label": "Dentabay Bangi"
+        },
+        "item_name": "012 NITI LOWER",
+        "image_url": "https://lh3.googleusercontent.com/d/1XO6zCiL0M7vl29bFW7-ZKRASvsa-tNPs",
+        "expiry_date": "2025-08-31",
+        "initial_quantity": 10,
+        "unit_cost": 100,
+        "unit": "bracket",
+        "available_quantity": 0,
+        "remark": "Test"
+      }
+    },
+    "get_after_mutation": {
+      "status": 200,
+      "count": 6
+    },
+    "put_revert": {
+      "status": 200,
+      "id": 10,
+      "side": "buyer",
+      "done_bool": false,
+      "statusValue": "Received",
+      "response": {
+        "id": 10,
+        "created_at": 1758691151995,
+        "branch_id_from": 15,
+        "branch_id_to": 2,
+        "inventory_carousell_id": 1,
+        "inventory_id": 1655,
+        "user_id": 89,
+        "quantity": 3,
+        "total_cost": 300,
+        "name": "Syahirah Shawalil",
+        "delivery": "COD",
+        "type": "Request",
+        "status": "Received",
+        "seller": true,
+        "buyer": false,
+        "seller_side": {
+          "name": "Sheyra test",
+          "date": 1759217453425
+        },
+        "buyer_side": {
+          "name": "Izzuddin bin Yussof",
+          "date": 1773307743188
+        },
+        "branch_from": {
+          "label": "Dentabay Kota Warisan"
+        },
+        "branch_to": {
+          "label": "Dentabay Bangi"
+        },
+        "item_name": "012 NITI LOWER",
+        "image_url": "https://lh3.googleusercontent.com/d/1XO6zCiL0M7vl29bFW7-ZKRASvsa-tNPs",
+        "expiry_date": "2025-08-31",
+        "initial_quantity": 10,
+        "unit_cost": 100,
+        "unit": "bracket",
+        "available_quantity": 0,
+        "remark": "Test"
+      }
+    },
+    "get_after_revert": {
+      "status": 200,
+      "count": 7
+    }
+  },
+  "selectedMovement": {
+    "id": 10,
+    "before": {
+      "status": "Received",
+      "buyer": false,
+      "seller": true,
+      "buyer_side": {
+        "name": "",
+        "date": null
+      },
+      "seller_side": {
+        "name": "Sheyra test",
+        "date": 1759217453425
+      }
+    },
+    "afterMutation": null,
+    "afterRevert": {
+      "id": 10,
+      "created_at": 1758691151995,
+      "branch_id_from": 15,
+      "branch_id_to": 2,
+      "inventory_carousell_id": 1,
+      "inventory_id": 1655,
+      "user_id": 89,
+      "quantity": 3,
+      "total_cost": 300,
+      "name": "Syahirah Shawalil",
+      "delivery": "COD",
+      "type": "Request",
+      "status": "Received",
+      "seller": true,
+      "buyer": false,
+      "seller_side": {
+        "name": "Sheyra test",
+        "date": 1759217453425
+      },
+      "buyer_side": {
+        "name": "Izzuddin bin Yussof",
+        "date": 1773307743188
+      },
+      "branch_from": "Dentabay Kota Warisan",
+      "branch_to": "Dentabay Bangi",
+      "item_name": "012 NITI LOWER",
+      "image_url": "https://lh3.googleusercontent.com/d/1XO6zCiL0M7vl29bFW7-ZKRASvsa-tNPs",
+      "expiry_date": "2025-08-31",
+      "initial_quantity": 10,
+      "unit_cost": 100,
+      "unit": "bracket",
+      "available_quantity": 0,
+      "remark": "Test"
+    }
+  },
+  "checks": {
+    "revertExact": false,
+    "buyerSideExact": false
+  },
+  "navigationValidation": {
+    "sourceRoutes": [
+      "/carousell",
+      "/cart"
+    ],
+    "targetRoute": "/carousellUpdate",
+    "requiredParams": [],
+    "paramPresenceValidated": true,
+    "downstreamApiConsistency": true,
+    "result": "BLOCKED (exact-revert failure due buyer_side metadata persistence)"
+  },
+  "directVsParam": {
+    "directEntrySupported": true,
+    "paramEntrySupported": false,
+    "mismatch": false,
+    "note": "Route is direct-only by design in nav.dart."
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "pre": {
+    "status": 200,
+    "count": 0,
+    "hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  "create": {
+    "status": 200,
+    "body": "{\"id\":30646,\"created_at\":1773260646441,\"inventory_id\":79,\"last_update\":1773260646441,\"branch\":\"Dentabay Bangi\",\"expiry_date\":\"2026-12-31\",\"quantity\":0.01,\"branch_id_from\":0,\"branch_id_to\":0,\"unit\":\"\",\"unit_cost\":0,\"total_cost\":0,\"tx_type\":\"audit_test_kuro_013e\",\"note\":\"kuro live 013e test\",\"doc\":\"\",\"checksum\":\"\",\"order_list_id\":null,\"updates\":[]}",
+    "id": 30646
+  },
+  "probe": {
+    "status": 200,
+    "body": "\"success\""
+  },
+  "cleanup": {
+    "status": 404,
+    "body": "{\"code\":\"ERROR_CODE_NOT_FOUND\",\"message\":\"\"}"
+  },
+  "post": {
+    "status": 200,
+    "count": 0,
+    "hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  "parity": true
+}

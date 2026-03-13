@@ -1,0 +1,21 @@
+name: Item Movement Copy Regression Check
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+jobs:
+  copy-regression-check:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run BM copy regression checker
+        shell: pwsh
+        run: |
+          powershell -ExecutionPolicy Bypass -File scripts/check_item_movement_copy.ps1

@@ -1,0 +1,121 @@
+{
+  "startedAt": "2026-03-12T07:27:06.426Z",
+  "section": "8) Stock In flow",
+  "apis": {
+    "login": {
+      "status": 200,
+      "ok": true
+    },
+    "authMe": {
+      "status": 200,
+      "ok": true
+    },
+    "inventory": {
+      "status": 200,
+      "ok": true,
+      "count": 897
+    },
+    "inventory_barcode": {
+      "status": 200,
+      "ok": true,
+      "probe": "SIM8-BARCODE-PROBE-NOTFOUND",
+      "id": null
+    },
+    "uploadFile_inventory": {
+      "status": 200,
+      "ok": true,
+      "hasViewUrl": true
+    },
+    "order_lists_ordered": {
+      "status": 200,
+      "ok": true,
+      "count": 6
+    },
+    "order_get_before": {
+      "status": 200,
+      "ok": true,
+      "id": 12279,
+      "statusBefore": "ordered"
+    },
+    "inventory_movement_direct": {
+      "status": 200,
+      "ok": true
+    },
+    "inventory_movement_param": {
+      "status": 200,
+      "ok": true
+    },
+    "order_status_received": {
+      "status": 200,
+      "ok": true
+    },
+    "item_history_direct": {
+      "status": 200,
+      "ok": true,
+      "count": 0
+    },
+    "item_history_param": {
+      "status": 200,
+      "ok": true,
+      "count": 1
+    },
+    "item_movement_delete_direct": {
+      "status": null,
+      "ok": false
+    },
+    "item_movement_delete_param": {
+      "status": 200,
+      "ok": true
+    },
+    "order_status_revert": {
+      "status": 200,
+      "ok": true
+    },
+    "order_get_after": {
+      "status": 200,
+      "ok": true,
+      "statusAfter": "ordered"
+    }
+  },
+  "checks": {
+    "navigationValidation": {
+      "sourceRoute": "/orderList",
+      "targetRoute": "/stockIn",
+      "requiredParam": "orderData:OrderListsStruct",
+      "paramPresenceValidated": true,
+      "downstreamPayloadConsistency": {
+        "orderListIdMatches": true,
+        "inventoryIdUsesOrderData": true
+      }
+    },
+    "directVsParam": {
+      "directEntrySupported": true,
+      "paramEntrySupported": true,
+      "directOrderListId": 0,
+      "paramOrderListId": 12279,
+      "directTriggeredOrderStatusUpdate": false,
+      "paramTriggeredOrderStatusUpdate": true,
+      "mismatch": false
+    },
+    "movementHistoryPresence": {
+      "directFoundBeforeRevert": false,
+      "paramFoundBeforeRevert": true,
+      "directFoundAfterRevert": false,
+      "paramFoundAfterRevert": false
+    },
+    "revert": {
+      "orderStatusRestored": true,
+      "movementDeleteDirectOk": false,
+      "movementDeleteParamOk": true
+    }
+  },
+  "notes": [
+    "Movement entry not found in first page; revert may fail if pagination hides records."
+  ],
+  "keyState": {
+    "directInventoryId": 1655,
+    "paramOrderId": 12279,
+    "paramInventoryId": 2069,
+    "uploadViewUrl": "https://lh3.googleusercontent.com/d/1iC0j42gSC3NvVyEyl3kw4i7RaOZx_hVK"
+  }
+}

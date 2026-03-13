@@ -1,0 +1,69 @@
+{
+  "timestamp": "2026-03-12T17:00:01.168204+08:00",
+  "section": "11) Upload Carousell flow",
+  "mode": "read-only revalidation",
+  "apis": {
+    "carousell_default": {
+      "method": "GET",
+      "endpoint": "/inventory_carousell",
+      "query": "inventory_ids=[]&name=&category=",
+      "status": 200,
+      "count": 8
+    },
+    "carousell_filtered": {
+      "method": "GET",
+      "endpoint": "/inventory_carousell",
+      "query": "inventory_ids=[]&name=DICLO&category=BUR",
+      "status": 200,
+      "count": 8
+    },
+    "carousell_inventory_probe": {
+      "method": "GET",
+      "endpoint": "/inventory_carousell",
+      "query": "inventory_ids=[1357]&name=&category=",
+      "status": 200,
+      "count": 8,
+      "topIds": [
+        18,
+        17,
+        15,
+        14,
+        12,
+        11,
+        9,
+        7
+      ]
+    },
+    "carousell_category_only": {
+      "method": "GET",
+      "endpoint": "/inventory_carousell",
+      "query": "inventory_ids=[]&name=&category=BUR",
+      "status": 200,
+      "count": 4
+    }
+  },
+  "navigationValidation": {
+    "sourceRoute": "/carousell",
+    "targetRoute": "/uploadCarousell",
+    "sourcePushNamedWithoutParams": true,
+    "targetRequiredParams": [
+      "inventoryId:int",
+      "category:String",
+      "search:String",
+      "searchCategory:String"
+    ],
+    "targetRuntimeForceUnwrapInventoryId": true,
+    "downstreamPayloadConsistencyParamMode": true,
+    "result": "BLOCKED"
+  },
+  "directVsParam": {
+    "directEntrySupported": false,
+    "paramEntrySupported": true,
+    "mismatch": true,
+    "note": "Direct route omits required runtime param inventoryId; param mode maps inventoryId to upload payload."
+  },
+  "mutation": {
+    "executed": false,
+    "reason": "Skipped due unrevertable inventory_carousell create contract (no app-exposed delete/update endpoint)."
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "fixId": "F05",
+  "timestamp": "2026-03-13T01:45:31+08:00",
+  "status": "blocked-final",
+  "workflow": {
+    "sequence": ["shiro", "kuro", "kuro-retry", "hitokiri"],
+    "retryCycleUsed": 1
+  },
+  "acceptedChanges": {
+    "frontendFiles": [
+      "lib/components/edit_status_widget.dart",
+      "lib/order_list/order_list_widget.dart",
+      "lib/stock_in/stock_in_widget.dart"
+    ],
+    "backendFiles": []
+  },
+  "verification": {
+    "result": "fail",
+    "reason": "No conclusive revert-safe live proof that valid transitions pass and invalid transitions fail for backend state-machine endpoint in this run.",
+    "notes": [
+      "Frontend UX rejection handling improved.",
+      "Read-only retry found endpoint usage evidence but could not complete mutation-based matrix proof safely.",
+      "F05 revert patch strict applicability checks were fragile."
+    ]
+  },
+  "revert": {
+    "patch": "docs/revert_patches/F05.patch",
+    "fallback": "git checkout -- lib/components/edit_status_widget.dart lib/order_list/order_list_widget.dart lib/stock_in/stock_in_widget.dart"
+  },
+  "nextFix": "F06"
+}

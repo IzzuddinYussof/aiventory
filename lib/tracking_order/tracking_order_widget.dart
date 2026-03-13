@@ -34,6 +34,41 @@ class _TrackingOrderWidgetState extends State<TrackingOrderWidget> {
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
+  bool get _hasValidImageUrl {
+    final raw = widget.url?.trim();
+    if (raw == null || raw.isEmpty) return false;
+    final uri = Uri.tryParse(raw);
+    if (uri == null) return false;
+    return (uri.scheme == 'http' || uri.scheme == 'https') && uri.host.isNotEmpty;
+  }
+
+  Widget _buildOrderImage() {
+    if (_hasValidImageUrl) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(40.0),
+        child: Image.network(
+          widget.url!.trim(),
+          width: 60.0,
+          height: 60.0,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            return Icon(
+              Icons.inventory_2_outlined,
+              color: FlutterFlowTheme.of(context).primary,
+              size: 20.0,
+            );
+          },
+        ),
+      );
+    }
+
+    return Icon(
+      Icons.inventory_2_outlined,
+      color: FlutterFlowTheme.of(context).primary,
+      size: 20.0,
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -120,15 +155,7 @@ class _TrackingOrderWidgetState extends State<TrackingOrderWidget> {
                               ),
                               child: Padding(
                                 padding: EdgeInsets.all(2.0),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(40.0),
-                                  child: Image.network(
-                                    widget!.url!,
-                                    width: 60.0,
-                                    height: 60.0,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
+                                child: _buildOrderImage(),
                               ),
                             ),
                             Padding(
@@ -139,7 +166,7 @@ class _TrackingOrderWidgetState extends State<TrackingOrderWidget> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    widget!.itemName,
+                                    widget.itemName,
                                     style: FlutterFlowTheme.of(context)
                                         .bodyMedium
                                         .override(
@@ -170,7 +197,7 @@ class _TrackingOrderWidgetState extends State<TrackingOrderWidget> {
                                         MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
-                                        'Order ID: ${widget!.orderID.toString()}',
+                                        'Order ID: ${widget.orderID.toString()}',
                                         style: FlutterFlowTheme.of(context)
                                             .bodyMedium
                                             .override(

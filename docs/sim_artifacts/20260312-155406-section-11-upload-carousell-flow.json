@@ -1,0 +1,59 @@
+﻿{
+    "generatedAt":  "2026-03-12T07:54:45.1548590Z",
+    "section":  "11) Upload Carousell flow",
+    "calls":  {
+                  "carousellGetDirect":  {
+                                             "endpoint":  "GET /inventory_carousell",
+                                             "query":  "inventory_ids=[]\u0026name=\u0026category=",
+                                             "status":  200,
+                                             "count":  8
+                                         },
+                  "carousellGetParamMode":  {
+                                                "endpoint":  "GET /inventory_carousell",
+                                                "query":  "inventory_ids=[]\u0026name=DICLO\u0026category=BUR",
+                                                "status":  200,
+                                                "count":  8
+                                            },
+                  "carousellGetInventoryProbe":  {
+                                                     "endpoint":  "GET /inventory_carousell",
+                                                     "query":  "inventory_ids=[1357]\u0026name=\u0026category=",
+                                                     "status":  200,
+                                                     "count":  8,
+                                                     "topIds":  [
+                                                                    18,
+                                                                    17,
+                                                                    15,
+                                                                    14,
+                                                                    12
+                                                                ]
+                                                 }
+              },
+    "navigationValidation":  {
+                                 "sourceToTarget":  "/carousell -\u003e /uploadCarousell",
+                                 "sourceEvidence":  "CarousellWidget uses context.pushNamed(UploadCarousellWidget.routeName) without queryParameters",
+                                 "targetParamContract":  "nav.dart maps inventoryId:int, category:String, search:String, searchCategory:String",
+                                 "requiredParamTypeCheck":  "inventoryId must be int when provided",
+                                 "runtimeNullSafety":  "UploadCarousellWidget initState force-unwraps widget.inventoryId!",
+                                 "downstreamApiPayloadConsistency":  "carousellPost payload uses inventoryId from route-bound dropdown preset plus category/search/searchCategory for refresh GET",
+                                 "result":  "BLOCKED (direct route path from source violates target runtime param expectation)"
+                             },
+    "directVsParam":  {
+                          "directEntry":  {
+                                              "feasibleFromSource":  true,
+                                              "runtimeSafe":  false,
+                                              "reason":  "source route omits params while target initState dereferences null inventoryId"
+                                          },
+                          "paramEntry":  {
+                                             "feasible":  true,
+                                             "runtimeSafe":  true,
+                                             "behavior":  "prefills inventory/category and can call POST /inventory_carousell + refresh GET"
+                                         },
+                          "mismatch":  true
+                      },
+    "mutation":  {
+                     "executed":  false,
+                     "reason":  "Skipped to avoid additional non-revertable rows while section is blocked",
+                     "existingBlocker":  "No app-exposed delete/update endpoint for inventory_carousell records to restore exact pre-state"
+                 },
+    "blocker":  "Section remains blocked until backend/app exposes exact revert path for inventory_carousell rows (delete by id or id-based upsert)."
+}

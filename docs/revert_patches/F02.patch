@@ -1,0 +1,87 @@
+diff --git a/lib/backend/api_requests/api_calls.dart b/lib/backend/api_requests/api_calls.dart
+index fef01dc..3a6cc10 100644
+--- a/lib/backend/api_requests/api_calls.dart
++++ b/lib/backend/api_requests/api_calls.dart
+@@ -675,6 +675,9 @@ class CarousellGroup {
+   static Map<String, String> headers = {};
+   static CarousellGetCall carousellGetCall = CarousellGetCall();
+   static CarousellPostCall carousellPostCall = CarousellPostCall();
++  static CarousellDeleteCall carousellDeleteCall = CarousellDeleteCall();
++  static CarousellUndoDeleteCall carousellUndoDeleteCall =
++      CarousellUndoDeleteCall();
+   static CarousellMovementPostCall carousellMovementPostCall =
+       CarousellMovementPostCall();
+   static CarousellMovementGetCall carousellMovementGetCall =
+@@ -765,6 +768,72 @@ class CarousellPostCall {
+   }
+ }
+ 
++class CarousellDeleteCall {
++  Future<ApiCallResponse> call({
++    int? id,
++    int? deletedBy,
++    String? reason = '',
++    String? requestId = '',
++  }) async {
++    final baseUrl = CarousellGroup.getBaseUrl();
++
++    final ffApiRequestBody = '''
++{
++  "id": ${id},
++  "deleted_by": ${deletedBy},
++  "reason": "${escapeStringForJson(reason)}",
++  "request_id": "${escapeStringForJson(requestId)}"
++}''';
++    return ApiManager.instance.makeApiCall(
++      callName: 'carousellDelete',
++      apiUrl: '${baseUrl}/inventory_carousell_delete',
++      callType: ApiCallType.DELETE,
++      headers: {},
++      params: {},
++      body: ffApiRequestBody,
++      bodyType: BodyType.JSON,
++      returnBody: true,
++      encodeBodyUtf8: false,
++      decodeUtf8: false,
++      cache: false,
++      isStreamingApi: false,
++      alwaysAllowBody: true,
++    );
++  }
++}
++
++class CarousellUndoDeleteCall {
++  Future<ApiCallResponse> call({
++    int? id,
++    int? restoredBy,
++    String? requestId = '',
++  }) async {
++    final baseUrl = CarousellGroup.getBaseUrl();
++
++    final ffApiRequestBody = '''
++{
++  "id": ${id},
++  "restored_by": ${restoredBy},
++  "request_id": "${escapeStringForJson(requestId)}"
++}''';
++    return ApiManager.instance.makeApiCall(
++      callName: 'carousellUndoDelete',
++      apiUrl: '${baseUrl}/inventory_carousell_undo_delete',
++      callType: ApiCallType.POST,
++      headers: {},
++      params: {},
++      body: ffApiRequestBody,
++      bodyType: BodyType.JSON,
++      returnBody: true,
++      encodeBodyUtf8: false,
++      decodeUtf8: false,
++      cache: false,
++      isStreamingApi: false,
++      alwaysAllowBody: false,
++    );
++  }
++}
++
+ class CarousellMovementPostCall {
+   Future<ApiCallResponse> call({
+     int? branchIdFrom,

@@ -675,12 +675,19 @@ class CarousellGroup {
   static Map<String, String> headers = {};
   static CarousellGetCall carousellGetCall = CarousellGetCall();
   static CarousellPostCall carousellPostCall = CarousellPostCall();
+  static CarousellDeleteCall carousellDeleteCall = CarousellDeleteCall();
+  static CarousellUndoDeleteCall carousellUndoDeleteCall =
+      CarousellUndoDeleteCall();
   static CarousellMovementPostCall carousellMovementPostCall =
       CarousellMovementPostCall();
   static CarousellMovementGetCall carousellMovementGetCall =
       CarousellMovementGetCall();
   static CarousellMovementPutCall carousellMovementPutCall =
       CarousellMovementPutCall();
+  static CarousellMovementDeleteCall carousellMovementDeleteCall =
+      CarousellMovementDeleteCall();
+  static CarousellMovementUndoDeleteCall carousellMovementUndoDeleteCall =
+      CarousellMovementUndoDeleteCall();
 }
 
 class CarousellGetCall {
@@ -750,6 +757,72 @@ class CarousellPostCall {
     return ApiManager.instance.makeApiCall(
       callName: 'carousellPost',
       apiUrl: '${baseUrl}/inventory_carousell',
+      callType: ApiCallType.POST,
+      headers: {},
+      params: {},
+      body: ffApiRequestBody,
+      bodyType: BodyType.JSON,
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: false,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
+    );
+  }
+}
+
+class CarousellDeleteCall {
+  Future<ApiCallResponse> call({
+    int? id,
+    int? deletedBy,
+    String? reason = '',
+    String? requestId = '',
+  }) async {
+    final baseUrl = CarousellGroup.getBaseUrl();
+
+    final ffApiRequestBody = '''
+{
+  "id": ${id},
+  "deleted_by": ${deletedBy},
+  "reason": "${escapeStringForJson(reason)}",
+  "request_id": "${escapeStringForJson(requestId)}"
+}''';
+    return ApiManager.instance.makeApiCall(
+      callName: 'carousellDelete',
+      apiUrl: '${baseUrl}/inventory_carousell_delete',
+      callType: ApiCallType.DELETE,
+      headers: {},
+      params: {},
+      body: ffApiRequestBody,
+      bodyType: BodyType.JSON,
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: false,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: true,
+    );
+  }
+}
+
+class CarousellUndoDeleteCall {
+  Future<ApiCallResponse> call({
+    int? id,
+    int? restoredBy,
+    String? requestId = '',
+  }) async {
+    final baseUrl = CarousellGroup.getBaseUrl();
+
+    final ffApiRequestBody = '''
+{
+  "id": ${id},
+  "restored_by": ${restoredBy},
+  "request_id": "${escapeStringForJson(requestId)}"
+}''';
+    return ApiManager.instance.makeApiCall(
+      callName: 'carousellUndoDelete',
+      apiUrl: '${baseUrl}/inventory_carousell_undo_delete',
       callType: ApiCallType.POST,
       headers: {},
       params: {},
@@ -857,6 +930,72 @@ class CarousellMovementPutCall {
         'done_bool': doneBool,
       },
       bodyType: BodyType.MULTIPART,
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: false,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
+    );
+  }
+}
+
+class CarousellMovementDeleteCall {
+  Future<ApiCallResponse> call({
+    int? id,
+    int? deletedBy,
+    String? reason = '',
+    String? requestId = '',
+  }) async {
+    final baseUrl = CarousellGroup.getBaseUrl();
+
+    final ffApiRequestBody = '''
+{
+  "id": ${id},
+  "deleted_by": ${deletedBy},
+  "reason": "${escapeStringForJson(reason)}",
+  "request_id": "${escapeStringForJson(requestId)}"
+}''';
+    return ApiManager.instance.makeApiCall(
+      callName: 'carousellMovementDelete',
+      apiUrl: '${baseUrl}/inventory_carousell_movement_delete',
+      callType: ApiCallType.DELETE,
+      headers: {},
+      params: {},
+      body: ffApiRequestBody,
+      bodyType: BodyType.JSON,
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: false,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: true,
+    );
+  }
+}
+
+class CarousellMovementUndoDeleteCall {
+  Future<ApiCallResponse> call({
+    int? id,
+    int? restoredBy,
+    String? requestId = '',
+  }) async {
+    final baseUrl = CarousellGroup.getBaseUrl();
+
+    final ffApiRequestBody = '''
+{
+  "id": ${id},
+  "restored_by": ${restoredBy},
+  "request_id": "${escapeStringForJson(requestId)}"
+}''';
+    return ApiManager.instance.makeApiCall(
+      callName: 'carousellMovementUndoDelete',
+      apiUrl: '${baseUrl}/inventory_carousell_movement_undo_delete',
+      callType: ApiCallType.POST,
+      headers: {},
+      params: {},
+      body: ffApiRequestBody,
+      bodyType: BodyType.JSON,
       returnBody: true,
       encodeBodyUtf8: false,
       decodeUtf8: false,

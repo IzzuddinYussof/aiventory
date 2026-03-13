@@ -1,0 +1,168 @@
+{
+  "timestamp": "2026-03-12T17:40:19.430577+08:00",
+  "section": "16) Consolidation",
+  "status": "completed-with-deferred-blockers",
+  "calledApis": [],
+  "mutationExpected": false,
+  "severityFindings": [
+    {
+      "severity": "Critical",
+      "id": "C1",
+      "title": "UploadCarousell direct navigation missing required runtime param",
+      "evidence": [
+        "docs/sim_artifacts/20260312-170001-section-11-upload-carousell-flow.json"
+      ],
+      "impact": "Direct /carousell -> /uploadCarousell path can dereference null inventoryId and break flow.",
+      "fix": "Pass required params when pushing UploadCarousell route, or guard nullable inventoryId in UploadCarousellWidget init/build."
+    },
+    {
+      "severity": "Critical",
+      "id": "C2",
+      "title": "UploadCarousell create has no exact revert path",
+      "evidence": [
+        "docs/sim_artifacts/20260312-155026-section-11-upload-carousell-flow.json"
+      ],
+      "impact": "POST /inventory_carousell creates persistent rows without delete/update contract; violates safe simulation/revert policy.",
+      "fix": "Expose delete/update endpoint for inventory_carousell and wire app cleanup path."
+    },
+    {
+      "severity": "Critical",
+      "id": "C3",
+      "title": "Cart create has no delete endpoint for exact pre-state restoration",
+      "evidence": [
+        "docs/sim_artifacts/20260312-171312-section-12-cart-flow.json"
+      ],
+      "impact": "POST /inventory_carousell_movement cannot be reverted to pre-create absence state.",
+      "fix": "Add delete endpoint (or backend reversible transaction) for inventory_carousell_movement."
+    },
+    {
+      "severity": "High",
+      "id": "H1",
+      "title": "CarousellUpdate revert not exact due buyer_side metadata persistence",
+      "evidence": [
+        "docs/sim_artifacts/20260312-172906-section-13-carousell-update-flow.json"
+      ],
+      "impact": "PUT toggle true->false leaves buyer_side.name/date mutated; audit correctness risk.",
+      "fix": "Backend should clear buyer_side metadata when done_bool=false or accept explicit null reset fields."
+    },
+    {
+      "severity": "High",
+      "id": "H2",
+      "title": "TrackingOrder missing-param handling unsafe for url",
+      "evidence": [
+        "docs/sim_artifacts/20260312-173224-section-14-tracking-order-flow.json"
+      ],
+      "impact": "url force unwrap may throw runtime exception when omitted.",
+      "fix": "Guard null url and show placeholder/fallback image."
+    },
+    {
+      "severity": "Medium",
+      "id": "M1",
+      "title": "Order status transition validation not enforced server-side",
+      "evidence": [
+        "docs/sim_artifacts/20260312-152119-section-7-order-list-workflow.json"
+      ],
+      "impact": "Sequence-invalid transitions accepted (ordered -> submitted), risking workflow integrity.",
+      "fix": "Enforce allowed transition matrix in /order_list_status backend."
+    },
+    {
+      "severity": "Medium",
+      "id": "M2",
+      "title": "Edit inventory invalid required-field case accepted",
+      "evidence": [
+        "docs/sim_artifacts/20260312-070759-section-5-edit-inventory-flow.json"
+      ],
+      "impact": "Empty item_name accepted (HTTP 200), weak validation.",
+      "fix": "Add server-side required-field validation for PUT /inventory."
+    },
+    {
+      "severity": "Low",
+      "id": "L1",
+      "title": "Carousell route params currently ignored by page API load",
+      "evidence": [
+        "docs/sim_artifacts/20260312-154520-section-10-carousell-listing-flow.json"
+      ],
+      "impact": "Paramized navigation does not affect downstream queries, confusing contract.",
+      "fix": "Use route params in initial query/filter or remove unused params from route contract."
+    }
+  ],
+  "apiContractMismatches": [
+    {
+      "api": "POST /inventory_carousell",
+      "app_payload": "{inventory_id, remark, branch_id, type, category}",
+      "backend_behavior": "create-only; repeated call inserts new row",
+      "mismatch": "No update/delete counterpart, cannot restore exact pre-state"
+    },
+    {
+      "api": "POST /inventory_carousell_movement",
+      "app_payload": "multipart create from /cart",
+      "backend_behavior": "create exposed + get/put only",
+      "mismatch": "No delete contract to revert creation"
+    },
+    {
+      "api": "PUT /inventory_carousell_movement",
+      "app_payload": "{id,status,side,done_bool,name}",
+      "backend_behavior": "persists buyer_side metadata even when done_bool false",
+      "mismatch": "Cannot restore original buyer_side null/empty state"
+    },
+    {
+      "api": "PUT /order_list_status",
+      "app_payload": "status transitions from UI actions",
+      "backend_behavior": "accepts sequence-invalid transition ordered->submitted",
+      "mismatch": "Server transition guard absent"
+    }
+  ],
+  "uxImpacts": [
+    "Upload Carousell button from Carousell can fail/crash due missing inventoryId param.",
+    "Cart and Upload mutation tests blocked by unrevertable create operations, slowing QA throughput.",
+    "Carousell Update toggles can leave stale buyer metadata visible to users.",
+    "Tracking Order page may break image rendering when url param missing.",
+    "Order workflow allows unexpected backward transitions, causing queue confusion."
+  ],
+  "deferredQueue": [
+    {
+      "section": "11) Upload Carousell flow",
+      "status": "blocked-deferred",
+      "deferredAt": "2026-03-12T17:05:00+08:00",
+      "reason": "anti-stall after repeated blocked runs",
+      "latestArtifact": "docs/sim_artifacts/20260312-170001-section-11-upload-carousell-flow.json"
+    },
+    {
+      "section": "12) Cart flow",
+      "status": "blocked-deferred",
+      "deferredAt": "2026-03-12T17:13:12+08:00",
+      "reason": "anti-stall after 3 consecutive blocked runs",
+      "latestArtifact": "docs/sim_artifacts/20260312-171312-section-12-cart-flow.json"
+    },
+    {
+      "section": "13) Carousell Update flow",
+      "status": "blocked-deferred",
+      "deferredAt": "2026-03-12T17:29:06+08:00",
+      "reason": "anti-stall after 3 consecutive blocked runs",
+      "latestArtifact": "docs/sim_artifacts/20260312-172906-section-13-carousell-update-flow.json"
+    }
+  ],
+  "overallSummary": {
+    "completedSections": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      14,
+      15,
+      16
+    ],
+    "blockedDeferredSections": [
+      11,
+      12,
+      13
+    ],
+    "finalStatus": "All non-deferred sections attempted; deferred blockers remain and require backend/app contract changes."
+  }
+}

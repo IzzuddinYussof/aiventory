@@ -1,0 +1,48 @@
+{
+  "generatedAt": "2026-03-12T06:58:26.325264+00:00",
+  "section": "3) Dashboard flow",
+  "calls": {
+    "dashboardBranch": {
+      "status": 200,
+      "ok": true,
+      "query": {
+        "access": "All, Management, Socmed, Finance, Leave, Developer, Appointment, Dentist, OperationManager, Inventory",
+        "branch_id": "2"
+      },
+      "json": {
+        "total_inventory": 20225,
+        "order_count": 0,
+        "order_late": 0,
+        "expiring": 1148
+      }
+    },
+    "dashboardAllDentabay": {
+      "status": 200,
+      "ok": true,
+      "query": {
+        "access": "All, Management, Socmed, Finance, Leave, Developer, Appointment, Dentist, OperationManager, Inventory",
+        "branch_id": "0"
+      },
+      "json": {
+        "total_inventory": 15751.5,
+        "order_count": 95,
+        "order_late": 152,
+        "expiring": 254751
+      }
+    }
+  },
+  "derived": {
+    "branch2": {
+      "total_inventory": 20225,
+      "order_count": 0,
+      "expiring": 1148,
+      "order_late": 0
+    },
+    "branch0": {
+      "total_inventory": 15751.5,
+      "order_count": 95,
+      "expiring": 254751,
+      "order_late": 152
+    }
+  }
+}

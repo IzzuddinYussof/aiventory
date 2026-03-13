@@ -1,0 +1,34 @@
+{
+  "section": "11) Upload Carousell flow",
+  "timestamp": "2026-03-12T08:03:10.988909+00:00",
+  "calls": [
+    {
+      "name": "default",
+      "url": "https://xqoc-ewo0-x3u2.s2.xano.io/api:0o-ZhGP6/inventory_carousell?inventory_ids=%5B%5D&name=&category=",
+      "status": 404,
+      "summary": {},
+      "body": {
+        "raw": "HTTP Error 404: Not Found"
+      }
+    },
+    {
+      "name": "filtered",
+      "url": "https://xqoc-ewo0-x3u2.s2.xano.io/api:0o-ZhGP6/inventory_carousell?inventory_ids=%5B%5D&name=DICLO&category=BUR",
+      "status": 404,
+      "summary": {},
+      "body": {
+        "raw": "HTTP Error 404: Not Found"
+      }
+    },
+    {
+      "name": "inventory_probe",
+      "url": "https://xqoc-ewo0-x3u2.s2.xano.io/api:0o-ZhGP6/inventory_carousell?inventory_ids=%5B1357%5D&name=&category=",
+      "status": 404,
+      "summary": {},
+      "body": {
+        "raw": "HTTP Error 404: Not Found"
+      }
+    }
+  ],
+  "artifactPath": "docs/sim_artifacts/20260312-160311-section-11-upload-carousell-flow.json"
+}

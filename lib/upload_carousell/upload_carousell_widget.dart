@@ -43,6 +43,33 @@ class _UploadCarousellWidgetState extends State<UploadCarousellWidget> {
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
+  void _syncUnitListAndTypeFromInventory() {
+    final inventory = _model.inventoryChosen;
+    if (inventory == null) {
+      _model.unitList = [];
+      safeSetState(() {
+        _model.typeValueController?.value = null;
+        _model.typeValue = null;
+        _model.unitValueController?.value = null;
+        _model.unitValue = null;
+      });
+      return;
+    }
+
+    _model.unitList = inventory.quantityMajor != inventory.quantityMinor
+        ? [inventory.quantityMinor, inventory.quantityMajor]
+        : [inventory.quantityMajor];
+
+    safeSetState(() {
+      _model.typeValueController?.value = inventory.quantityMajor;
+      _model.typeValue = inventory.quantityMajor;
+      if (!_model.unitList.contains(_model.unitValue)) {
+        _model.unitValueController?.value = null;
+        _model.unitValue = null;
+      }
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -53,9 +80,20 @@ class _UploadCarousellWidgetState extends State<UploadCarousellWidget> {
       _model.itemList =
           FFAppState().allInventory.toList().cast<InventoryStruct>();
       safeSetState(() {});
+
+      final inventoryId = widget.inventoryId;
+      if (inventoryId == null || inventoryId <= 0) {
+        safeSetState(() {
+          _model.itemValueController?.value = null;
+          _model.itemValue = null;
+          _model.inventoryChosen = null;
+        });
+        return;
+      }
+
       safeSetState(() {
-        _model.itemValueController?.value = widget!.inventoryId!;
-        _model.itemValue = widget!.inventoryId!;
+        _model.itemValueController?.value = inventoryId;
+        _model.itemValue = inventoryId;
       });
       _model.inventoryChosen = FFAppState()
           .allInventory
@@ -87,6 +125,41 @@ class _UploadCarousellWidgetState extends State<UploadCarousellWidget> {
   @override
   Widget build(BuildContext context) {
     context.watch<FFAppState>();
+
+    if (widget.inventoryId == null || widget.inventoryId! <= 0) {
+      return GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus();
+          FocusManager.instance.primaryFocus?.unfocus();
+        },
+        child: Scaffold(
+          key: scaffoldKey,
+          backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
+          appBar: AppBar(
+            backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
+            automaticallyImplyLeading: true,
+            title: Text(
+              'Upload Carousell',
+              style: FlutterFlowTheme.of(context).headlineMedium,
+            ),
+            elevation: 0.0,
+          ),
+          body: SafeArea(
+            top: true,
+            child: Center(
+              child: Padding(
+                padding: EdgeInsets.all(24.0),
+                child: Text(
+                  'Missing required parameter: inventoryId. Please open this page from an inventory item.',
+                  textAlign: TextAlign.center,
+                  style: FlutterFlowTheme.of(context).bodyMedium,
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
 
     return GestureDetector(
       onTap: () {
@@ -336,35 +409,7 @@ class _UploadCarousellWidgetState extends State<UploadCarousellWidget> {
                                                       .toList()
                                                       .firstOrNull;
                                               safeSetState(() {});
-                                              _model.unitList = _model
-                                                          .inventoryChosen
-                                                          ?.quantityMajor !=
-                                                      _model.inventoryChosen
-                                                          ?.quantityMinor
-                                                  ? ((String var1,
-                                                          String var2) {
-                                                      return [var1, var2];
-                                                    }(
-                                                      _model.inventoryChosen!
-                                                          .quantityMinor,
-                                                      _model.inventoryChosen!
-                                                          .quantityMajor))
-                                                  : ((String var1) {
-                                                      return [var1];
-                                                    }(_model.inventoryChosen!
-                                                          .quantityMajor))
-                                                      .toList()
-                                                      .cast<String>();
-                                              safeSetState(() {});
-                                              safeSetState(() {
-                                                _model.typeValueController
-                                                        ?.value =
-                                                    _model.inventoryChosen!
-                                                        .quantityMajor;
-                                                _model.typeValue = _model
-                                                    .inventoryChosen!
-                                                    .quantityMajor;
-                                              });
+                                              _syncUnitListAndTypeFromInventory();
                                             },
                                             width: double.infinity,
                                             height: 52.0,
@@ -534,13 +579,19 @@ class _UploadCarousellWidgetState extends State<UploadCarousellWidget> {
                                                       .toList()
                                                       .firstOrNull;
                                               safeSetState(() {});
-                                              safeSetState(() {
-                                                _model.itemValueController
-                                                        ?.value =
-                                                    _model.inventoryChosen!.id;
-                                                _model.itemValue =
-                                                    _model.inventoryChosen!.id;
-                                              });
+                                              if (_model.inventoryChosen !=
+                                                  null) {
+                                                safeSetState(() {
+                                                  _model.itemValueController
+                                                          ?.value =
+                                                      _model.inventoryChosen
+                                                          ?.id;
+                                                  _model.itemValue =
+                                                      _model.inventoryChosen
+                                                          ?.id;
+                                                });
+                                                _syncUnitListAndTypeFromInventory();
+                                              }
                                             }
 
                                             safeSetState(() {});

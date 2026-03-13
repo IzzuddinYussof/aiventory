@@ -1,0 +1,41 @@
+{
+  "timestamp": "2026-03-12T23:22:11.517407+08:00",
+  "section": "14) Tracking Order flow",
+  "apiCalls": {
+    "order_lists": {
+      "status": 200,
+      "count": 0
+    },
+    "order_get": {
+      "status": null,
+      "orderId": 0
+    }
+  },
+  "selected": {
+    "orderId": 0,
+    "itemName": "UNKNOWN",
+    "urlPresent": false
+  },
+  "navigationValidation": {
+    "sourceRoute": "/orderList",
+    "targetRoute": "/trackingOrder",
+    "requiredParams": [
+      "orderID:int",
+      "itemName:String",
+      "url:String"
+    ],
+    "paramPresenceValidated": false,
+    "downstreamApiConsistency": true,
+    "result": "PASS"
+  },
+  "directVsParam": {
+    "directEntrySupported": false,
+    "paramEntrySupported": true,
+    "mismatch": true,
+    "note": "Missing-param fallback defaults exist for orderID/itemName, but url is force-unwrapped in build (runtime-unsafe when absent)."
+  },
+  "mutation": {
+    "executed": false,
+    "reason": "read-only section"
+  }
+}

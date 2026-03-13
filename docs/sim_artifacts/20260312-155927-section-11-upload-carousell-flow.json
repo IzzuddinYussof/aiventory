@@ -1,0 +1,49 @@
+﻿{
+    "blocker":  "Revert impossible with app-exposed contracts: no delete/update endpoint for inventory_carousell rows; existing SIM11 rows remain unreverted.",
+    "section":  "11) Upload Carousell flow",
+    "calls":  {
+                  "filtered":  {
+                                   "count":  8,
+                                   "status":  200
+                               },
+                  "default":  {
+                                  "count":  8,
+                                  "status":  200
+                              },
+                  "inventoryProbe":  {
+                                         "status":  200,
+                                         "topIds":  [
+                                                        18,
+                                                        17,
+                                                        15,
+                                                        14,
+                                                        12
+                                                    ],
+                                         "count":  8
+                                     }
+              },
+    "generatedAt":  "2026-03-12T07:59:28.6931034Z",
+    "checks":  {
+                   "directVsParam":  {
+                                         "paramEntrySupported":  true,
+                                         "directEntrySupported":  false,
+                                         "note":  "Direct from Carousell omits params but UploadCarousell initState force-unwraps inventoryId; param mode aligns with POST /inventory_carousell payload.",
+                                         "mismatch":  true
+                                     },
+                   "navigationValidation":  {
+                                                "targetRoute":  "/uploadCarousell",
+                                                "sourceRoute":  "/carousell",
+                                                "paramToApiConsistency":  true,
+                                                "directRouteNullSafety":  false,
+                                                "result":  "BLOCKED (source direct navigation omits required runtime param inventoryId)",
+                                                "sourcePushNamedWithoutParams":  true,
+                                                "targetRequiredParams":  [
+                                                                             "inventoryId:int",
+                                                                             "category:String",
+                                                                             "search:String",
+                                                                             "searchCategory:String"
+                                                                         ]
+                                            }
+               },
+    "mode":  "read-only revalidation (mutation skipped while blocker active)"
+}

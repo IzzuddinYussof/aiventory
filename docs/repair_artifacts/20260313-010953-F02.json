@@ -1,0 +1,23 @@
+{
+    "timestamp":  "2026-03-13T01:09:53.6045761+08:00",
+    "fix":  "F02",
+    "status":  "blocked-final",
+    "orchestrator":  "main",
+    "sessions":  {
+                     "hitokiri":  "174a3c5e-3778-4a5e-bed9-becee4d5e985",
+                     "kuro":  "742f4480-4cb8-4b29-b3ec-535a2f6aaf1e",
+                     "shiro_retry":  "0fd1727a-de98-4f6d-bb91-2da0a387763d",
+                     "shiro_followup":  "e0481547-f580-465d-8a8e-05fdb2d917bb",
+                     "shiro_initial":  "b1b2a524-2883-4890-9211-e2391abcaad5"
+                 },
+    "changed_files":  [
+                          "lib/backend/api_requests/api_calls.dart"
+                      ],
+    "revert_patch":  "docs/revert_patches/F02.patch",
+    "root_cause":  "Frontend trigger path for inventory_carousell delete/undo not safely identified/completed; verification remained partial.",
+    "backend_contract":  {
+                             "undo_delete":  "POST /inventory_carousell_undo_delete",
+                             "delete":  "DELETE /inventory_carousell_delete"
+                         },
+    "retry_exhausted":  true
+}

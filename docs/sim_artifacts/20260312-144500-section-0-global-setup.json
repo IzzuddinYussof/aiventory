@@ -1,0 +1,18 @@
+{
+  "timestamp": "2026-03-12T14:45:00+08:00",
+  "section": "0) Global setup (once)",
+  "apiCallsExecuted": [],
+  "baseUrls": [
+    "https://xqoc-ewo0-x3u2.s2.xano.io/api:s4bMNy03",
+    "https://xqoc-ewo0-x3u2.s2.xano.io/api:0o-ZhGP6"
+  ],
+  "routeSummary": {
+    "directAndParamCapable": ["/dashboardHQ","/findInventory","/order","/orderList","/stockIn","/carousell"],
+    "directOnly": ["/login","/purchaseOrder","/carousellUpdate"],
+    "paramRequiredOnly": ["/trackingOrder","/editInventory","/uploadCarousell","/itemMovementHistory","/cart"]
+  },
+  "sources": [
+    "lib/backend/api_requests/api_calls.dart",
+    "lib/flutter_flow/nav/nav.dart"
+  ]
+}

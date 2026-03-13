@@ -1,0 +1,29 @@
+{
+  "name": "aiventory",
+  "version": "1.0.0",
+  "description": "FlutterFlow-based inventory operations app for multi-branch stock, ordering, receiving, and internal Carousell workflows.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "lib": "lib",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IzzuddinYussof/aiventory.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/IzzuddinYussof/aiventory/issues"
+  },
+  "homepage": "https://github.com/IzzuddinYussof/aiventory#readme",
+  "dependencies": {
+    "playwright": "^1.58.2"
+  }
+}

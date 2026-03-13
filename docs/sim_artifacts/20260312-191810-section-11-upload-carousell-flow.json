@@ -1,0 +1,90 @@
+{
+  "timestamp": "2026-03-12T19:18:10.649266+08:00",
+  "section": "11) Upload Carousell flow",
+  "mode": "deferred retry revalidation",
+  "mutation": {
+    "executed": false,
+    "reason": "Skipped (blocker persists, deferred retry)."
+  },
+  "apis": {
+    "auth_login": {
+      "method": "POST",
+      "endpoint": "/auth/login",
+      "format": "multipart",
+      "status": 403
+    },
+    "inventory_category_list": {
+      "method": "GET",
+      "endpoint": "/inventory_category_list",
+      "status": 200,
+      "count": 14
+    },
+    "carousell_default": {
+      "method": "GET",
+      "endpoint": "/inventory_carousell",
+      "query": "inventory_ids=[]&name=&category=",
+      "status": 200,
+      "count": 8
+    },
+    "carousell_filtered": {
+      "method": "GET",
+      "endpoint": "/inventory_carousell",
+      "query": "inventory_ids=[]&name=DICLO&category=BUR",
+      "status": 200,
+      "count": 8
+    },
+    "carousell_inventory_probe": {
+      "method": "GET",
+      "endpoint": "/inventory_carousell",
+      "query": "inventory_ids=[1357]&name=&category=",
+      "status": 200,
+      "count": 8,
+      "topIds": [
+        18,
+        17,
+        15,
+        14,
+        12,
+        11,
+        9,
+        7
+      ]
+    }
+  },
+  "navigationValidation": {
+    "sourceRoute": "/carousell",
+    "targetRoute": "/uploadCarousell",
+    "paramToApiConsistency": true,
+    "directRouteNullSafety": false,
+    "result": "BLOCKED-DEFERRED-RETRY (direct /carousell path omits runtime-required inventoryId)",
+    "sourcePushNamedWithoutParams": true,
+    "targetRequiredParams": [
+      "inventoryId:int",
+      "category:String",
+      "search:String",
+      "searchCategory:String"
+    ]
+  },
+  "directVsParam": {
+    "paramEntrySupported": true,
+    "directEntrySupported": false,
+    "mismatch": true,
+    "note": "Deferred retry confirms direct path still omits params while target force-unwraps inventoryId; param mode remains payload-consistent."
+  },
+  "blocker": "Revert impossible with app-exposed contracts: no delete/update endpoint for inventory_carousell rows; exact pre-state restoration not achievable.",
+  "revalidation": {
+    "defaultCount": 8,
+    "filteredCount": 8,
+    "inventoryProbeCount": 8,
+    "topIds": [
+      18,
+      17,
+      15,
+      14,
+      12,
+      11,
+      9,
+      7
+    ]
+  }
+}

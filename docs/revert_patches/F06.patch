@@ -1,0 +1,148 @@
+diff --git a/lib/tracking_order/tracking_order_widget.dart b/lib/tracking_order/tracking_order_widget.dart
+index fa166a7e4f40714d34c81596b454f757981d6af3..b0baadbf3c2d9410b02638fc1cfcc2303ca48e9b 100644
+--- a/lib/tracking_order/tracking_order_widget.dart
++++ b/lib/tracking_order/tracking_order_widget.dart
+@@ -34,6 +34,41 @@ class _TrackingOrderWidgetState extends State<TrackingOrderWidget> {
+ 
+   final scaffoldKey = GlobalKey<ScaffoldState>();
+ 
++  bool get _hasValidImageUrl {
++    final raw = widget.url?.trim();
++    if (raw == null || raw.isEmpty) return false;
++    final uri = Uri.tryParse(raw);
++    if (uri == null) return false;
++    return (uri.scheme == 'http' || uri.scheme == 'https') && uri.host.isNotEmpty;
++  }
++
++  Widget _buildOrderImage() {
++    if (_hasValidImageUrl) {
++      return ClipRRect(
++        borderRadius: BorderRadius.circular(40.0),
++        child: Image.network(
++          widget.url!.trim(),
++          width: 60.0,
++          height: 60.0,
++          fit: BoxFit.cover,
++          errorBuilder: (context, error, stackTrace) {
++            return Icon(
++              Icons.inventory_2_outlined,
++              color: FlutterFlowTheme.of(context).primary,
++              size: 20.0,
++            );
++          },
++        ),
++      );
++    }
++
++    return Icon(
++      Icons.inventory_2_outlined,
++      color: FlutterFlowTheme.of(context).primary,
++      size: 20.0,
++    );
++  }
++
+   @override
+   void initState() {
+     super.initState();
+@@ -120,15 +155,7 @@ class _TrackingOrderWidgetState extends State<TrackingOrderWidget> {
+                               ),
+                               child: Padding(
+                                 padding: EdgeInsets.all(2.0),
+-                                child: ClipRRect(
+-                                  borderRadius: BorderRadius.circular(40.0),
+-                                  child: Image.network(
+-                                    widget!.url!,
+-                                    width: 60.0,
+-                                    height: 60.0,
+-                                    fit: BoxFit.cover,
+-                                  ),
+-                                ),
++                                child: _buildOrderImage(),
+                               ),
+                             ),
+                             Padding(
+@@ -139,7 +166,7 @@ class _TrackingOrderWidgetState extends State<TrackingOrderWidget> {
+                                 crossAxisAlignment: CrossAxisAlignment.start,
+                                 children: [
+                                   Text(
+-                                    widget!.itemName,
++                                    widget.itemName,
+                                     style: FlutterFlowTheme.of(context)
+                                         .bodyMedium
+                                         .override(
+@@ -170,7 +197,7 @@ class _TrackingOrderWidgetState extends State<TrackingOrderWidget> {
+                                         MainAxisAlignment.spaceBetween,
+                                     children: [
+                                       Text(
+-                                        'Order ID: ${widget!.orderID.toString()}',
++                                        'Order ID: ${widget.orderID.toString()}',
+                                         style: FlutterFlowTheme.of(context)
+                                             .bodyMedium
+                                             .override(
+diff --git a/test/tracking_order_widget_test.dart b/test/tracking_order_widget_test.dart
+new file mode 100644
+index 0000000000000000000000000000000000000000..93405700a1ac92d9d2b8e2a05f12543a11d2ddfa
+--- /dev/null
++++ b/test/tracking_order_widget_test.dart
+@@ -0,0 +1,61 @@
++import 'package:aiventory/flutter_flow/flutter_flow_theme.dart';
++import 'package:aiventory/flutter_flow/flutter_flow_util.dart';
++import 'package:aiventory/tracking_order/tracking_order_widget.dart';
++import 'package:flutter/material.dart';
++import 'package:flutter_test/flutter_test.dart';
++import 'package:provider/provider.dart';
++import 'package:shared_preferences/shared_preferences.dart';
++
++Future<FFAppState> _createInitializedAppState() async {
++  SharedPreferences.setMockInitialValues({});
++  await FlutterFlowTheme.initialize();
++
++  FFAppState.reset();
++  final appState = FFAppState();
++  await appState.initializePersistedState();
++  return appState;
++}
++
++Widget _buildTestApp({required FFAppState appState, String? url}) {
++  return ChangeNotifierProvider.value(
++    value: appState,
++    child: MaterialApp(
++      home: TrackingOrderWidget(
++        orderID: 123,
++        itemName: 'Sample Item',
++        url: url,
++      ),
++    ),
++  );
++}
++
++void main() {
++  TestWidgetsFlutterBinding.ensureInitialized();
++
++  testWidgets('TrackingOrder renders safely when url is missing',
++      (WidgetTester tester) async {
++    final appState = await _createInitializedAppState();
++
++    await tester.pumpWidget(_buildTestApp(appState: appState));
++    await tester.pump();
++
++    expect(find.text('Tracking Order'), findsOneWidget);
++    expect(find.text('Sample Item'), findsOneWidget);
++    expect(find.byIcon(Icons.inventory_2_outlined), findsOneWidget);
++    expect(tester.takeException(), isNull);
++  });
++
++  testWidgets('TrackingOrder renders fallback when url is invalid',
++      (WidgetTester tester) async {
++    final appState = await _createInitializedAppState();
++
++    await tester.pumpWidget(
++      _buildTestApp(appState: appState, url: 'not-a-valid-url'),
++    );
++    await tester.pump();
++
++    expect(find.text('Tracking Order'), findsOneWidget);
++    expect(find.byIcon(Icons.inventory_2_outlined), findsOneWidget);
++    expect(tester.takeException(), isNull);
++  });
++}

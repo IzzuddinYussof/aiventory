@@ -1,0 +1,61 @@
+{
+  "generatedAt": "2026-03-12T09:09:44.986Z",
+  "section": "12) Cart flow",
+  "mode": "blocked-no-mutation",
+  "calls": {
+    "authLogin": {
+      "status": 200
+    },
+    "carousellDefault": {
+      "status": 404,
+      "count": 0,
+      "sampleTopIds": []
+    },
+    "movementInProgress": {
+      "status": 404,
+      "branchId": 2,
+      "count": null,
+      "sampleTopIds": []
+    }
+  },
+  "selectedItem": null,
+  "routeContractValidation": {
+    "sourceRoute": "/carousell",
+    "targetRoute": "/cart",
+    "sourcePushNamedHasParams": true,
+    "targetRequiresParams": [
+      "itemName:String",
+      "branch:String",
+      "image:String",
+      "itemID:String",
+      "branchID:int",
+      "carousellID:int",
+      "unit:String",
+      "price:double",
+      "availableQuantity:double",
+      "remark:String",
+      "inventoryId:int",
+      "type:String",
+      "search:String",
+      "category:String"
+    ],
+    "paramTypesConsistentWithSource": true,
+    "downstreamPayloadFromParams": {
+      "branch_id_from": "type==Selling ? branchID : FFAppState.branchIdUser",
+      "branch_id_to": "type==Selling ? FFAppState.branchIdUser : branchID",
+      "inventory_carousell_id": "carousellID",
+      "inventory_id": "inventoryId",
+      "type": "type"
+    }
+  },
+  "directVsParam": {
+    "directEntrySupported": false,
+    "paramEntrySupported": true,
+    "evidence": "/cart route in nav.dart has no params.isEmpty branch; CarousellWidget pushNamed to Cart always passes queryParameters"
+  },
+  "blocker": {
+    "reason": "Exact pre-state revert for POST /inventory_carousell_movement is not currently possible with app-exposed contracts (no delete endpoint; PUT only mutates status/flags and cannot restore absence of newly created row).",
+    "skippedMutation": true,
+    "requiredByRule": "Rule 5 exact pre-state revert in same run"
+  }
+}

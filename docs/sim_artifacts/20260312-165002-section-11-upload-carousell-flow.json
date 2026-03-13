@@ -1,0 +1,67 @@
+﻿{
+    "generatedAt":  "2026-03-12T16:50:03.0474125+08:00",
+    "section":  "11) Upload Carousell flow",
+    "mode":  "read-only-revalidation",
+    "calls":  {
+                  "inventoryCategoryList":  {
+                                                "status":  200,
+                                                "sample":  [
+                                                               "BUR",
+                                                               "CROWN \u0026 BRIDGE",
+                                                               "DISINFECTANT"
+                                                           ],
+                                                "count":  14
+                                            },
+                  "carousellGetDefault":  {
+                                              "status":  200,
+                                              "topIds":  [
+                                                             18,
+                                                             17,
+                                                             15,
+                                                             14,
+                                                             12,
+                                                             11,
+                                                             9,
+                                                             7
+                                                         ],
+                                              "count":  8
+                                          },
+                  "carousellGetByCategory":  {
+                                                 "status":  200,
+                                                 "category":  "BUR",
+                                                 "count":  4
+                                             },
+                  "carousellGetByInventoryIds":  {
+                                                     "status":  200,
+                                                     "inventory_ids":  "[1357]",
+                                                     "count":  8
+                                                 }
+              },
+    "navigationValidation":  {
+                                 "sourceRoute":  "/carousell",
+                                 "targetRoute":  "/uploadCarousell",
+                                 "sourceTransition":  "context.pushNamed(UploadCarousellWidget.routeName) with no queryParameters",
+                                 "targetRequiredParams":  [
+                                                              "inventoryId:int",
+                                                              "category:String",
+                                                              "search:String",
+                                                              "searchCategory:String"
+                                                          ],
+                                 "requiredParamRuntimeUse":  "UploadCarousellWidget initState force-unwraps widget.inventoryId! and assigns to dropdown controller",
+                                 "paramToApiConsistency":  "When params exist, upload uses inventoryId-\u003ePOST /inventory_carousell inventory_id and refresh uses search/searchCategory-\u003eGET /inventory_carousell name/category",
+                                 "result":  "BLOCKED"
+                             },
+    "directVsParam":  {
+                          "directEntrySupported":  false,
+                          "paramEntrySupported":  true,
+                          "mismatch":  true,
+                          "directEvidence":  "CarousellWidget Upload Item onTap pushes upload route without params",
+                          "paramEvidence":  "Router accepts params + UploadCarousellWidget consumes them"
+                      },
+    "mutation":  {
+                     "expected":  true,
+                     "executed":  false,
+                     "reason":  "Skipped because exact pre-state revert is impossible: no app-exposed delete/update for inventory_carousell."
+                 },
+    "blocker":  "Cannot safely execute POST /inventory_carousell under strict revert rule; endpoint creates rows and there is no app contract endpoint to delete/restore exact pre-state."
+}

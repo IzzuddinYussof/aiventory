@@ -1,0 +1,90 @@
+﻿{
+    "blocker":  "POST /inventory_carousell appears to create additional rows for same inventory_id and no delete endpoint exists in app contract for exact cleanup.",
+    "section":  "11) Upload Carousell flow",
+    "generatedAt":  "2026-03-12T07:50:28.5980381Z",
+    "checks":  {
+                   "mutation":  {
+                                    "simMarkerAbsentAfterRevert":  false,
+                                    "afterMutationCount":  2,
+                                    "revertExact":  false,
+                                    "inventoryId":  1357,
+                                    "beforeCount":  1,
+                                    "newRowsCreated":  true,
+                                    "mutationApplied":  true
+                                },
+                   "navigationValidation":  {
+                                                "sourceDirect":  "/carousell -\u003e /uploadCarousell (context.pushNamed without params)",
+                                                "sourceParamized":  "router supports query params inventoryId:int, category:String, search:String, searchCategory:String",
+                                                "paramToApiConsistency":  true,
+                                                "requiredParamsInWidget":  "initState force-unwrap widget.inventoryId (widget!.inventoryId!) indicates param-required at runtime"
+                                            },
+                   "directVsParam":  {
+                                         "evidence":  "CarousellWidget navigates without params, but UploadCarousellWidget initState dereferences widget.inventoryId! causing runtime failure when null.",
+                                         "paramEntrySupported":  true,
+                                         "directEntrySupported":  false,
+                                         "mismatch":  true
+                                     }
+               },
+    "calls":  {
+                  "carousellGetAfterRevert":  {
+                                                  "count":  8,
+                                                  "status":  200
+                                              },
+                  "carousellPostRevert":  {
+                                              "response":  {
+                                                               "id":  18,
+                                                               "created_at":  1773301828282,
+                                                               "inventory_id":  1357,
+                                                               "branch":  "Dentabay Bangi",
+                                                               "branch_id":  2,
+                                                               "image_url":  "https://lh3.googleusercontent.com/d/1PmkR5LMJnXGxZTBvBNrwur1GJ-JaS8E6",
+                                                               "expiry_date":  null,
+                                                               "initial_quantity":  150,
+                                                               "unit_cost":  25,
+                                                               "total_cost":  3750,
+                                                               "unit":  "BOX",
+                                                               "available_quantity":  150,
+                                                               "sold_quantity":  0,
+                                                               "remark":  "Test",
+                                                               "type":  "Selling"
+                                                           },
+                                              "status":  200
+                                          },
+                  "inventoryCategoryList":  {
+                                                "count":  14,
+                                                "status":  200
+                                            },
+                  "carousellListBefore":  {
+                                              "count":  6,
+                                              "status":  200
+                                          },
+                  "inventory":  {
+                                    "count":  897,
+                                    "status":  200
+                                },
+                  "carousellGetAfterMutation":  {
+                                                    "count":  7,
+                                                    "status":  200
+                                                },
+                  "carousellPostMutation":  {
+                                                "response":  {
+                                                                 "id":  17,
+                                                                 "created_at":  1773301827972,
+                                                                 "inventory_id":  1357,
+                                                                 "branch":  "Dentabay Bangi",
+                                                                 "branch_id":  2,
+                                                                 "image_url":  "https://lh3.googleusercontent.com/d/1PmkR5LMJnXGxZTBvBNrwur1GJ-JaS8E6",
+                                                                 "expiry_date":  null,
+                                                                 "initial_quantity":  150,
+                                                                 "unit_cost":  25,
+                                                                 "total_cost":  3750,
+                                                                 "unit":  "BOX",
+                                                                 "available_quantity":  150,
+                                                                 "sold_quantity":  0,
+                                                                 "remark":  "Test [SIM11-UPSERT]",
+                                                                 "type":  "Selling"
+                                                             },
+                                                "status":  200
+                                            }
+              }
+}
