@@ -1,18 +1,10 @@
 import '/backend/api_requests/api_calls.dart';
 import '/backend/schema/structs/index.dart';
 import '/components/upload_image_widget.dart';
-import '/flutter_flow/flutter_flow_drop_down.dart';
-import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import '/flutter_flow/flutter_flow_widgets.dart';
 import '/flutter_flow/form_field_controller.dart';
-import 'dart:ui';
 import 'order_widget.dart' show OrderWidget;
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
-import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
 
 class OrderModel extends FlutterFlowModel<OrderWidget> {
   ///  Local state fields for this page.
@@ -53,12 +45,18 @@ class OrderModel extends FlutterFlowModel<OrderWidget> {
   TextEditingController? quantityTextController;
   String? Function(BuildContext, String?)? quantityTextControllerValidator;
   String? _quantityTextControllerValidator(BuildContext context, String? val) {
-    if (val == null || val.isEmpty) {
+    final quantityText = val?.trim() ?? '';
+    if (quantityText.isEmpty) {
       return 'Please enter quantity to order';
     }
 
-    if (val.length < 1) {
-      return 'Requires at least 1 characters.';
+    final quantity = double.tryParse(quantityText);
+    if (quantity == null) {
+      return 'Please enter a valid quantity';
+    }
+
+    if (quantity <= 0) {
+      return 'Quantity must be greater than 0';
     }
 
     return null;

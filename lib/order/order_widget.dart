@@ -7,7 +7,6 @@ import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import '/flutter_flow/form_field_controller.dart';
 import '/utils/branch_selection_guard.dart';
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
@@ -35,6 +34,7 @@ class OrderWidget extends StatefulWidget {
 
 class _OrderWidgetState extends State<OrderWidget> {
   late OrderModel _model;
+  static const String _defaultOrderChannel = 'HQ Order';
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -78,6 +78,41 @@ class _OrderWidgetState extends State<OrderWidget> {
     _model.categoryValueController?.value = widget.category;
     _setFilteredItems(widget.category);
     _syncSelectedInventory(null);
+  }
+
+  void _resetUploadImage() {
+    _model.uploadImageModel.uploadedImage = null;
+    _model.uploadImageModel.uploadedLocalFile_uploadData4ah = FFUploadedFile(
+      bytes: Uint8List.fromList([]),
+      originalFilename: '',
+    );
+  }
+
+  void _resetFormAfterSubmit() {
+    _model.orderChannelValue = _defaultOrderChannel;
+    _model.orderChannelValueController?.value = _defaultOrderChannel;
+    _model.categoryValue = widget.category;
+    _model.categoryValueController?.value = widget.category;
+    _setFilteredItems(widget.category);
+    _syncSelectedInventory(null);
+    _model.quantityTextController?.clear();
+    _model.remarkTextController?.clear();
+    _model.file = null;
+    _model.uploadedImage = null;
+    _resetUploadImage();
+  }
+
+  double? _parseQuantity() =>
+      double.tryParse(_model.quantityTextController?.text.trim() ?? '');
+
+  void _showValidationMessage(String message) {
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(message),
+        ),
+      );
   }
 
   @override
@@ -281,7 +316,8 @@ class _OrderWidgetState extends State<OrderWidget> {
                                       controller:
                                           _model.orderChannelValueController ??=
                                               FormFieldController<String>(
-                                        _model.orderChannelValue ??= 'HQ Order',
+                                        _model.orderChannelValue ??=
+                                            _defaultOrderChannel,
                                       ),
                                       options: ['HQ Order', 'Shopee', 'Others'],
                                       onChanged: (val) => safeSetState(
@@ -979,16 +1015,33 @@ class _OrderWidgetState extends State<OrderWidget> {
                                         0.0, 12.0, 0.0, 0.0),
                                     child: FFButtonWidget(
                                       onPressed: () async {
+                                        final quantity = _parseQuantity();
                                         if (_model.formKey.currentState ==
                                                 null ||
                                             !_model.formKey.currentState!
                                                 .validate()) {
                                           return;
                                         }
-                                        if (_model.orderChannelValue == null) {
+                                        if ((_model.orderChannelValue ?? '')
+                                            .isEmpty) {
+                                          _showValidationMessage(
+                                              'Please select an order channel.');
+                                          return;
+                                        }
+                                        if ((_model.categoryValue ?? '')
+                                            .isEmpty) {
+                                          _showValidationMessage(
+                                              'Please select a category.');
                                           return;
                                         }
                                         if (_model.itemValue == null) {
+                                          _showValidationMessage(
+                                              'Please select an item.');
+                                          return;
+                                        }
+                                        if (quantity == null || quantity <= 0) {
+                                          _showValidationMessage(
+                                              'Please enter a valid quantity greater than 0.');
                                           return;
                                         }
                                         if (!await ensureConcreteBranchSelected(
@@ -1065,8 +1118,7 @@ class _OrderWidgetState extends State<OrderWidget> {
                                               : 'ordered',
                                           name: FFAppState().user.name,
                                           branch: FFAppState().activeBranch,
-                                          amount: double.tryParse(_model
-                                              .quantityTextController.text),
+                                          amount: quantity,
                                           inventoryId: _model.itemValue,
                                           remark:
                                               _model.remarkTextController.text,
@@ -1096,24 +1148,8 @@ class _OrderWidgetState extends State<OrderWidget> {
                                             ),
                                           );
                                           safeSetState(() {
-                                            _model.orderChannelValueController
-                                                ?.reset();
-                                            _model.orderChannelValue = null;
-                                            _model.categoryValueController
-                                                ?.reset();
-                                            _model.categoryValue = null;
-                                            _model.itemValueController?.reset();
-                                            _model.itemValue = null;
+                                            _resetFormAfterSubmit();
                                           });
-                                          safeSetState(() {
-                                            _model.quantityTextController
-                                                ?.clear();
-                                            _model.remarkTextController
-                                                ?.clear();
-                                          });
-                                          _setFilteredItems(null);
-                                          _model.file = null;
-                                          _model.uploadedImage = null;
                                           safeSetState(() {});
                                         } else {
                                           await showDialog(
