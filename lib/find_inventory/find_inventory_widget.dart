@@ -346,6 +346,9 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
         (_nextPage != null || _currentPage < _pageTotal);
     final showPaginationControls =
         _pageTotal > 1 || _nextPage != null || _prevPage != null;
+    final isCompactMobile = MediaQuery.sizeOf(context).width < 480.0;
+    final actionColumnWidth = isCompactMobile ? 136.0 : 148.0;
+    final actionButtonHeight = isCompactMobile ? 30.0 : 32.0;
 
     return GestureDetector(
       onTap: () {
@@ -2159,224 +2162,75 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
                                                     .fromSTEB(
                                                   0.0,
                                                   0.0,
-                                                  8.0,
+                                                  isCompactMobile ? 4.0 : 8.0,
                                                   0.0,
                                                 ),
-                                                child: Column(
-                                                  mainAxisSize:
-                                                      MainAxisSize.max,
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.start,
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.end,
-                                                  children: [
-                                                    Card(
-                                                      clipBehavior: Clip
-                                                          .antiAliasWithSaveLayer,
-                                                      color:
-                                                          FlutterFlowTheme.of(
-                                                        context,
-                                                      ).primary,
-                                                      shape:
-                                                          RoundedRectangleBorder(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(
-                                                          40.0,
-                                                        ),
-                                                      ),
-                                                      child: Visibility(
-                                                        visible: inventoryItemItem
-                                                                    .inventory
-                                                                    .image
-                                                                    .url !=
-                                                                null &&
-                                                            inventoryItemItem
-                                                                    .inventory
-                                                                    .image
-                                                                    .url !=
-                                                                '',
-                                                        child: Padding(
-                                                          padding:
-                                                              EdgeInsets.all(
-                                                            2.0,
-                                                          ),
-                                                          child: ClipRRect(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                              40.0,
-                                                            ),
-                                                            child:
-                                                                Image.network(
-                                                              inventoryItemItem
-                                                                  .inventory
-                                                                  .image
-                                                                  .url,
-                                                              width: 60.0,
-                                                              height: 60.0,
-                                                              fit: BoxFit.cover,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    FFButtonWidget(
-                                                      onPressed: () async {
-                                                        context.pushNamed(
-                                                          OrderWidget.routeName,
-                                                          queryParameters: {
-                                                            'inventoryId':
-                                                                serializeParam(
-                                                              inventoryItemItem
-                                                                  .inventoryId,
-                                                              ParamType.int,
-                                                            ),
-                                                            'category':
-                                                                serializeParam(
-                                                              inventoryItemItem
-                                                                  .inventory
-                                                                  .category,
-                                                              ParamType.String,
-                                                            ),
-                                                          }.withoutNulls,
-                                                        );
-                                                      },
-                                                      text: 'Add Order',
-                                                      icon: Icon(
-                                                        Icons.add,
-                                                        size: 15.0,
-                                                      ),
-                                                      options: FFButtonOptions(
-                                                        height: 25.0,
-                                                        padding: EdgeInsets.all(
-                                                          8.0,
-                                                        ),
-                                                        iconPadding:
-                                                            EdgeInsetsDirectional
-                                                                .fromSTEB(
-                                                          0.0,
-                                                          0.0,
-                                                          0.0,
-                                                          0.0,
-                                                        ),
+                                                child: SizedBox(
+                                                  width: actionColumnWidth,
+                                                  child: Column(
+                                                    mainAxisSize:
+                                                        MainAxisSize.max,
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.start,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment.end,
+                                                    children: [
+                                                      Card(
+                                                        clipBehavior: Clip
+                                                            .antiAliasWithSaveLayer,
                                                         color:
                                                             FlutterFlowTheme.of(
                                                           context,
-                                                        ).accent2,
-                                                        textStyle:
-                                                            FlutterFlowTheme.of(
-                                                          context,
-                                                        ).bodySmall.override(
-                                                                  font:
-                                                                      GoogleFonts
-                                                                          .inter(
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w600,
-                                                                    fontStyle:
-                                                                        FlutterFlowTheme
-                                                                            .of(
-                                                                      context,
-                                                                    ).bodySmall.fontStyle,
-                                                                  ),
-                                                                  fontSize:
-                                                                      10.0,
-                                                                  letterSpacing:
-                                                                      0.0,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w600,
-                                                                  fontStyle: FlutterFlowTheme
-                                                                          .of(
-                                                                    context,
-                                                                  )
-                                                                      .bodySmall
-                                                                      .fontStyle,
-                                                                ),
-                                                        elevation: 0.0,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(
-                                                          8.0,
+                                                        ).primary,
+                                                        shape:
+                                                            RoundedRectangleBorder(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                            40.0,
+                                                          ),
+                                                        ),
+                                                        child: Visibility(
+                                                          visible: inventoryItemItem
+                                                                      .inventory
+                                                                      .image
+                                                                      .url !=
+                                                                  null &&
+                                                              inventoryItemItem
+                                                                      .inventory
+                                                                      .image
+                                                                      .url !=
+                                                                  '',
+                                                          child: Padding(
+                                                            padding:
+                                                                EdgeInsets.all(
+                                                              2.0,
+                                                            ),
+                                                            child: ClipRRect(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                40.0,
+                                                              ),
+                                                              child:
+                                                                  Image.network(
+                                                                inventoryItemItem
+                                                                    .inventory
+                                                                    .image
+                                                                    .url,
+                                                                width: 60.0,
+                                                                height: 60.0,
+                                                                fit: BoxFit
+                                                                    .cover,
+                                                              ),
+                                                            ),
+                                                          ),
                                                         ),
                                                       ),
-                                                    ),
-                                                    FFButtonWidget(
-                                                      onPressed: () async {
-                                                        FFAppState()
-                                                                .chosenInventory =
-                                                            inventoryItemItem;
-                                                        safeSetState(() {});
-                                                      },
-                                                      text: 'Stock Out',
-                                                      icon: Icon(
-                                                        Icons.fmd_bad,
-                                                        size: 15.0,
-                                                      ),
-                                                      options: FFButtonOptions(
-                                                        height: 25.0,
-                                                        padding: EdgeInsets.all(
-                                                          8.0,
-                                                        ),
-                                                        iconPadding:
-                                                            EdgeInsetsDirectional
-                                                                .fromSTEB(
-                                                          0.0,
-                                                          0.0,
-                                                          0.0,
-                                                          0.0,
-                                                        ),
-                                                        color:
-                                                            FlutterFlowTheme.of(
-                                                          context,
-                                                        ).warning,
-                                                        textStyle:
-                                                            FlutterFlowTheme.of(
-                                                          context,
-                                                        ).bodySmall.override(
-                                                                  font:
-                                                                      GoogleFonts
-                                                                          .inter(
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w600,
-                                                                    fontStyle:
-                                                                        FlutterFlowTheme
-                                                                            .of(
-                                                                      context,
-                                                                    ).bodySmall.fontStyle,
-                                                                  ),
-                                                                  fontSize:
-                                                                      10.0,
-                                                                  letterSpacing:
-                                                                      0.0,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w600,
-                                                                  fontStyle: FlutterFlowTheme
-                                                                          .of(
-                                                                    context,
-                                                                  )
-                                                                      .bodySmall
-                                                                      .fontStyle,
-                                                                ),
-                                                        elevation: 0.0,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(
-                                                          8.0,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    if (FFAppState()
-                                                            .user
-                                                            .branch ==
-                                                        'AI Venture')
                                                       FFButtonWidget(
                                                         onPressed: () async {
-                                                          context.goNamed(
-                                                            EditInventoryWidget
+                                                          context.pushNamed(
+                                                            OrderWidget
                                                                 .routeName,
                                                             queryParameters: {
                                                               'inventoryId':
@@ -2385,20 +2239,37 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
                                                                     .inventoryId,
                                                                 ParamType.int,
                                                               ),
+                                                              'category':
+                                                                  serializeParam(
+                                                                inventoryItemItem
+                                                                    .inventory
+                                                                    .category,
+                                                                ParamType
+                                                                    .String,
+                                                              ),
                                                             }.withoutNulls,
                                                           );
                                                         },
-                                                        text: 'Edit Inventory',
+                                                        text: 'Add Order',
                                                         icon: Icon(
-                                                          Icons.edit,
-                                                          size: 15.0,
+                                                          Icons.add,
+                                                          size: isCompactMobile
+                                                              ? 13.0
+                                                              : 15.0,
                                                         ),
                                                         options:
                                                             FFButtonOptions(
-                                                          height: 25.0,
-                                                          padding:
-                                                              EdgeInsets.all(
-                                                            8.0,
+                                                          width:
+                                                              double.infinity,
+                                                          height:
+                                                              actionButtonHeight,
+                                                          padding: EdgeInsets
+                                                              .symmetric(
+                                                            horizontal:
+                                                                isCompactMobile
+                                                                    ? 10.0
+                                                                    : 12.0,
+                                                            vertical: 6.0,
                                                           ),
                                                           iconPadding:
                                                               EdgeInsetsDirectional
@@ -2412,7 +2283,7 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
                                                               FlutterFlowTheme
                                                                   .of(
                                                             context,
-                                                          ).accent1,
+                                                          ).accent2,
                                                           textStyle:
                                                               FlutterFlowTheme
                                                                       .of(
@@ -2430,7 +2301,9 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
                                                                       ).bodySmall.fontStyle,
                                                                     ),
                                                                     fontSize:
-                                                                        10.0,
+                                                                        isCompactMobile
+                                                                            ? 10.0
+                                                                            : 11.0,
                                                                     letterSpacing:
                                                                         0.0,
                                                                     fontWeight:
@@ -2450,8 +2323,182 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
                                                           ),
                                                         ),
                                                       ),
-                                                  ].divide(
-                                                      SizedBox(height: 6.0)),
+                                                      FFButtonWidget(
+                                                        onPressed: () async {
+                                                          FFAppState()
+                                                                  .chosenInventory =
+                                                              inventoryItemItem;
+                                                          safeSetState(() {});
+                                                        },
+                                                        text: 'Stock Out',
+                                                        icon: Icon(
+                                                          Icons.fmd_bad,
+                                                          size: isCompactMobile
+                                                              ? 13.0
+                                                              : 15.0,
+                                                        ),
+                                                        options:
+                                                            FFButtonOptions(
+                                                          width:
+                                                              double.infinity,
+                                                          height:
+                                                              actionButtonHeight,
+                                                          padding: EdgeInsets
+                                                              .symmetric(
+                                                            horizontal:
+                                                                isCompactMobile
+                                                                    ? 10.0
+                                                                    : 12.0,
+                                                            vertical: 6.0,
+                                                          ),
+                                                          iconPadding:
+                                                              EdgeInsetsDirectional
+                                                                  .fromSTEB(
+                                                            0.0,
+                                                            0.0,
+                                                            0.0,
+                                                            0.0,
+                                                          ),
+                                                          color:
+                                                              FlutterFlowTheme
+                                                                  .of(
+                                                            context,
+                                                          ).warning,
+                                                          textStyle:
+                                                              FlutterFlowTheme
+                                                                      .of(
+                                                            context,
+                                                          ).bodySmall.override(
+                                                                    font: GoogleFonts
+                                                                        .inter(
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w600,
+                                                                      fontStyle:
+                                                                          FlutterFlowTheme
+                                                                              .of(
+                                                                        context,
+                                                                      ).bodySmall.fontStyle,
+                                                                    ),
+                                                                    fontSize:
+                                                                        isCompactMobile
+                                                                            ? 10.0
+                                                                            : 11.0,
+                                                                    letterSpacing:
+                                                                        0.0,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w600,
+                                                                    fontStyle:
+                                                                        FlutterFlowTheme
+                                                                            .of(
+                                                                      context,
+                                                                    ).bodySmall.fontStyle,
+                                                                  ),
+                                                          elevation: 0.0,
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                            8.0,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      if (FFAppState()
+                                                              .user
+                                                              .branch ==
+                                                          'AI Venture')
+                                                        FFButtonWidget(
+                                                          onPressed: () async {
+                                                            context.goNamed(
+                                                              EditInventoryWidget
+                                                                  .routeName,
+                                                              queryParameters: {
+                                                                'inventoryId':
+                                                                    serializeParam(
+                                                                  inventoryItemItem
+                                                                      .inventoryId,
+                                                                  ParamType.int,
+                                                                ),
+                                                              }.withoutNulls,
+                                                            );
+                                                          },
+                                                          text:
+                                                              'Edit Inventory',
+                                                          icon: Icon(
+                                                            Icons.edit,
+                                                            size:
+                                                                isCompactMobile
+                                                                    ? 13.0
+                                                                    : 15.0,
+                                                          ),
+                                                          options:
+                                                              FFButtonOptions(
+                                                            width:
+                                                                double.infinity,
+                                                            height:
+                                                                actionButtonHeight,
+                                                            padding: EdgeInsets
+                                                                .symmetric(
+                                                              horizontal:
+                                                                  isCompactMobile
+                                                                      ? 8.0
+                                                                      : 12.0,
+                                                              vertical: 6.0,
+                                                            ),
+                                                            iconPadding:
+                                                                EdgeInsetsDirectional
+                                                                    .fromSTEB(
+                                                              0.0,
+                                                              0.0,
+                                                              0.0,
+                                                              0.0,
+                                                            ),
+                                                            color:
+                                                                FlutterFlowTheme
+                                                                    .of(
+                                                              context,
+                                                            ).accent1,
+                                                            textStyle:
+                                                                FlutterFlowTheme
+                                                                        .of(
+                                                              context,
+                                                            )
+                                                                    .bodySmall
+                                                                    .override(
+                                                                      font: GoogleFonts
+                                                                          .inter(
+                                                                        fontWeight:
+                                                                            FontWeight.w600,
+                                                                        fontStyle:
+                                                                            FlutterFlowTheme.of(
+                                                                          context,
+                                                                        ).bodySmall.fontStyle,
+                                                                      ),
+                                                                      fontSize: isCompactMobile
+                                                                          ? 9.5
+                                                                          : 10.5,
+                                                                      letterSpacing:
+                                                                          0.0,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w600,
+                                                                      fontStyle:
+                                                                          FlutterFlowTheme
+                                                                              .of(
+                                                                        context,
+                                                                      ).bodySmall.fontStyle,
+                                                                    ),
+                                                            elevation: 0.0,
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                              8.0,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                    ].divide(
+                                                        SizedBox(height: 6.0)),
+                                                  ),
                                                 ),
                                               ),
                                             ],

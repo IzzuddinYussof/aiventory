@@ -454,6 +454,22 @@ Touched files in this phase:
 Rollback instruction:
 - revert only the Phase 2 commit once created
 
+### Hotfix — mobile Find Inventory action buttons
+Status: completed
+Branch: `ui-repair-phase1`
+
+What changed:
+- fixed right-side action buttons on mobile item cards in `Find Inventory`
+- added a dedicated responsive action column width for mobile
+- unified button widths/heights so labels no longer clip on narrow screens
+- kept the same actions and behavior (`Add Order`, `Stock Out`, `Edit Inventory`)
+
+Touched files:
+- `lib/find_inventory/find_inventory_widget.dart`
+
+Rollback instruction:
+- revert only the hotfix commit once created
+
 ## Touched file target list (expected)
 
 High probability:
