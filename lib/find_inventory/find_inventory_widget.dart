@@ -398,10 +398,11 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
                       Container(
                         width: double.infinity,
                         decoration: BoxDecoration(
-                          color: FlutterFlowTheme.of(
-                            context,
-                          ).secondaryBackground,
-                          borderRadius: BorderRadius.circular(12.0),
+                          color: FlutterFlowTheme.of(context).secondaryBackground,
+                          borderRadius: BorderRadius.circular(18.0),
+                          border: Border.all(
+                            color: FlutterFlowTheme.of(context).alternate,
+                          ),
                         ),
                         child: Stack(
                           children: [
@@ -414,7 +415,65 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
                               ),
                               child: Column(
                                 mainAxisSize: MainAxisSize.max,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
+                                  Container(
+                                    width: double.infinity,
+                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                      14.0,
+                                      14.0,
+                                      14.0,
+                                      14.0,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: FlutterFlowTheme.of(context).primaryBackground,
+                                      borderRadius: BorderRadius.circular(14.0),
+                                      border: Border.all(
+                                        color: FlutterFlowTheme.of(context).alternate,
+                                      ),
+                                    ),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Search live inventory with branch-ready filters.',
+                                          style: FlutterFlowTheme.of(context)
+                                              .bodyLarge
+                                              .override(
+                                                font: GoogleFonts.inter(
+                                                  fontWeight: FontWeight.w600,
+                                                  fontStyle:
+                                                      FlutterFlowTheme.of(context)
+                                                          .bodyLarge
+                                                          .fontStyle,
+                                                ),
+                                                letterSpacing: 0.0,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                        ),
+                                        SizedBox(height: 6.0),
+                                        Text(
+                                          'Use item name, supplier, or expiry date to narrow the list before checking movement history.',
+                                          style: FlutterFlowTheme.of(context)
+                                              .labelMedium
+                                              .override(
+                                                font: GoogleFonts.inter(
+                                                  fontWeight:
+                                                      FlutterFlowTheme.of(context)
+                                                          .labelMedium
+                                                          .fontWeight,
+                                                  fontStyle:
+                                                      FlutterFlowTheme.of(context)
+                                                          .labelMedium
+                                                          .fontStyle,
+                                                ),
+                                                letterSpacing: 0.0,
+                                              ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                   TextFormField(
                                     controller: _model.searchItemTextController,
                                     focusNode: _model.searchItemFocusNode,
@@ -1653,78 +1712,51 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
                           ],
                         ),
                       ),
-                      if ((_model.inventoryItems.isNotEmpty) == true)
-                        Padding(
-                          padding: EdgeInsetsDirectional.fromSTEB(
-                            8.0,
-                            0.0,
-                            0.0,
-                            0.0,
-                          ),
-                          child: Text(
-                            'List of Items',
-                            style:
-                                FlutterFlowTheme.of(context).bodyLarge.override(
-                                      font: GoogleFonts.inter(
-                                        fontWeight: FlutterFlowTheme.of(
-                                          context,
-                                        ).bodyLarge.fontWeight,
-                                        fontStyle: FlutterFlowTheme.of(
-                                          context,
-                                        ).bodyLarge.fontStyle,
-                                      ),
-                                      letterSpacing: 0.0,
-                                      fontWeight: FlutterFlowTheme.of(
-                                        context,
-                                      ).bodyLarge.fontWeight,
-                                      fontStyle: FlutterFlowTheme.of(
-                                        context,
-                                      ).bodyLarge.fontStyle,
-                                    ),
-                          ),
-                        ),
-                      Padding(
+                      Container(
+                        width: double.infinity,
                         padding: EdgeInsetsDirectional.fromSTEB(
-                          8.0,
-                          0.0,
-                          0.0,
-                          0.0,
+                          12.0,
+                          12.0,
+                          12.0,
+                          12.0,
                         ),
-                        child: Text(
-                          'Tap any item card to view movement history.',
-                          style: FlutterFlowTheme.of(context).labelSmall,
+                        decoration: BoxDecoration(
+                          color: FlutterFlowTheme.of(context).secondaryBackground,
+                          borderRadius: BorderRadius.circular(16.0),
+                          border: Border.all(
+                            color: FlutterFlowTheme.of(context).alternate,
+                          ),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              (_model.inventoryItems.isNotEmpty) == true
+                                  ? 'Matched inventory'
+                                  : 'No inventory shown yet',
+                              style: FlutterFlowTheme.of(context)
+                                  .bodyLarge
+                                  .override(
+                                    font: GoogleFonts.inter(
+                                      fontWeight: FontWeight.w600,
+                                      fontStyle: FlutterFlowTheme.of(context)
+                                          .bodyLarge
+                                          .fontStyle,
+                                    ),
+                                    letterSpacing: 0.0,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                            ),
+                            SizedBox(height: 4.0),
+                            Text(
+                              (_model.inventoryItems.isNotEmpty) == true
+                                  ? 'Tap any item card to view movement history and next actions.'
+                                  : 'Run a search to load branch inventory, then review item cards here.',
+                              style: FlutterFlowTheme.of(context).labelSmall,
+                            ),
+                          ],
                         ),
                       ),
-                      if ((_model.inventoryItems.isNotEmpty) == false)
-                        Padding(
-                          padding: EdgeInsetsDirectional.fromSTEB(
-                            8.0,
-                            0.0,
-                            0.0,
-                            0.0,
-                          ),
-                          child: Text(
-                            'The list is empty',
-                            style:
-                                FlutterFlowTheme.of(context).bodyLarge.override(
-                                      font: GoogleFonts.inter(
-                                        fontWeight: FlutterFlowTheme.of(
-                                          context,
-                                        ).bodyLarge.fontWeight,
-                                        fontStyle: FlutterFlowTheme.of(
-                                          context,
-                                        ).bodyLarge.fontStyle,
-                                      ),
-                                      letterSpacing: 0.0,
-                                      fontWeight: FlutterFlowTheme.of(
-                                        context,
-                                      ).bodyLarge.fontWeight,
-                                      fontStyle: FlutterFlowTheme.of(
-                                        context,
-                                      ).bodyLarge.fontStyle,
-                                    ),
-                          ),
-                        ),
 
                       // This list view is "shrink wrapped" this can affect your app performance, we would suggest limiting the number of items you query in this list view.
                       //
@@ -1733,8 +1765,57 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
                         builder: (context) {
                           final inventoryItem = _model.inventoryItems.toList();
                           if (inventoryItem.isEmpty) {
-                            return Image.asset(
-                              'assets/images/empty_inventory.png',
+                            return Container(
+                              width: double.infinity,
+                              padding: EdgeInsetsDirectional.fromSTEB(
+                                20.0,
+                                24.0,
+                                20.0,
+                                24.0,
+                              ),
+                              decoration: BoxDecoration(
+                                color: FlutterFlowTheme.of(context)
+                                    .secondaryBackground,
+                                borderRadius: BorderRadius.circular(18.0),
+                                border: Border.all(
+                                  color: FlutterFlowTheme.of(context).alternate,
+                                ),
+                              ),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Image.asset(
+                                    'assets/images/empty_inventory.png',
+                                    height: 180.0,
+                                    fit: BoxFit.contain,
+                                  ),
+                                  SizedBox(height: 12.0),
+                                  Text(
+                                    'Nothing matches the current search yet.',
+                                    textAlign: TextAlign.center,
+                                    style: FlutterFlowTheme.of(context)
+                                        .bodyLarge
+                                        .override(
+                                          font: GoogleFonts.inter(
+                                            fontWeight: FontWeight.w600,
+                                            fontStyle:
+                                                FlutterFlowTheme.of(context)
+                                                    .bodyLarge
+                                                    .fontStyle,
+                                          ),
+                                          letterSpacing: 0.0,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                  ),
+                                  SizedBox(height: 6.0),
+                                  Text(
+                                    'Adjust the item name, supplier, or expiry filter and try again.',
+                                    textAlign: TextAlign.center,
+                                    style: FlutterFlowTheme.of(context)
+                                        .labelMedium,
+                                  ),
+                                ],
+                              ),
                             );
                           }
 

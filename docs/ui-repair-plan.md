@@ -539,6 +539,29 @@ Touched files in this phase:
 Rollback instruction:
 - revert only the Phase 5 commit once created
 
+### Phase 6 — forms/empty-state polish pass
+Status: completed (first-pass, partial)
+Branch: `ui-repair-phase1`
+
+What this phase changed:
+- `find_inventory` now opens with a calmer search brief and clearer result-state framing
+- `find_inventory` empty state now reads like an intentional no-result panel instead of a bare placeholder image
+- `stock_in` now has a clearer receiving intro and a more explicit final save CTA, especially for order-linked receiving
+
+What this phase did NOT change yet:
+- shared dialog component restyling across the app
+- deeper field-level redesign for all generated inputs in `stock_in`
+- item-card redesign inside `find_inventory` result rows
+- broader modal/confirmation polish outside these two screens
+
+Touched files in this phase:
+- `lib/find_inventory/find_inventory_widget.dart`
+- `lib/stock_in/stock_in_widget.dart`
+- `docs/ui-repair-plan.md`
+
+Rollback instruction:
+- revert only the Phase 6 commit once created
+
 ## Touched file target list (expected)
 
 High probability:
