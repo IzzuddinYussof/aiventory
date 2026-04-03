@@ -304,6 +304,7 @@ class _DashboardHQWidgetState extends State<DashboardHQWidget>
   @override
   Widget build(BuildContext context) {
     context.watch<FFAppState>();
+    final isWideLayout = MediaQuery.sizeOf(context).width >= 900.0;
 
     return GestureDetector(
       onTap: () {
@@ -321,15 +322,18 @@ class _DashboardHQWidgetState extends State<DashboardHQWidget>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding:
-                        EdgeInsetsDirectional.fromSTEB(16.0, 44.0, 16.0, 16.0),
+                    padding: EdgeInsetsDirectional.fromSTEB(
+                        isWideLayout ? 24.0 : 16.0,
+                        isWideLayout ? 28.0 : 44.0,
+                        isWideLayout ? 24.0 : 16.0,
+                        16.0),
                     child: Row(
                       mainAxisSize: MainAxisSize.max,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Card(
                           clipBehavior: Clip.antiAliasWithSaveLayer,
-                          color: FlutterFlowTheme.of(context).primary,
+                          color: FlutterFlowTheme.of(context).secondaryText,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(40.0),
                           ),
@@ -339,8 +343,8 @@ class _DashboardHQWidgetState extends State<DashboardHQWidget>
                               borderRadius: BorderRadius.circular(40.0),
                               child: Image.network(
                                 FFAppState().user.profilePic.url,
-                                width: 60.0,
-                                height: 60.0,
+                                width: 68.0,
+                                height: 68.0,
                                 fit: BoxFit.cover,
                               ),
                             ),
@@ -415,9 +419,10 @@ class _DashboardHQWidgetState extends State<DashboardHQWidget>
                           ),
                         ),
                         FlutterFlowIconButton(
-                          borderRadius: 8.0,
-                          buttonSize: 30.0,
-                          fillColor: FlutterFlowTheme.of(context).accent1,
+                          borderRadius: 14.0,
+                          buttonSize: 38.0,
+                          fillColor:
+                              FlutterFlowTheme.of(context).secondaryBackground,
                           icon: Icon(
                             Icons.logout,
                             color: FlutterFlowTheme.of(context).primary,
@@ -453,11 +458,11 @@ class _DashboardHQWidgetState extends State<DashboardHQWidget>
                       ),
                       child: Container(
                         width: double.infinity,
-                        height: 50.0,
+                        height: 58.0,
                         decoration: BoxDecoration(
                           color:
                               FlutterFlowTheme.of(context).secondaryBackground,
-                          borderRadius: BorderRadius.circular(12.0),
+                          borderRadius: BorderRadius.circular(18.0),
                         ),
                         child: Column(
                           mainAxisSize: MainAxisSize.max,
@@ -539,6 +544,57 @@ class _DashboardHQWidgetState extends State<DashboardHQWidget>
                         ),
                       ),
                     ),
+                  Padding(
+                    padding: EdgeInsetsDirectional.fromSTEB(
+                      isWideLayout ? 24.0 : 16.0,
+                      18.0,
+                      isWideLayout ? 24.0 : 16.0,
+                      12.0,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Operations snapshot',
+                          style: FlutterFlowTheme.of(context)
+                              .headlineSmall
+                              .override(
+                                font: GoogleFonts.interTight(
+                                  fontWeight: FlutterFlowTheme.of(context)
+                                      .headlineSmall
+                                      .fontWeight,
+                                  fontStyle: FlutterFlowTheme.of(context)
+                                      .headlineSmall
+                                      .fontStyle,
+                                ),
+                                letterSpacing: 0.0,
+                                fontStyle: FlutterFlowTheme.of(context)
+                                    .headlineSmall
+                                    .fontStyle,
+                              ),
+                        ),
+                        SizedBox(height: 6.0),
+                        Text(
+                          'Monitor branch performance, orders, and stock health at a glance.',
+                          style:
+                              FlutterFlowTheme.of(context).bodySmall.override(
+                                    font: GoogleFonts.inter(
+                                      fontWeight: FlutterFlowTheme.of(context)
+                                          .bodySmall
+                                          .fontWeight,
+                                      fontStyle: FlutterFlowTheme.of(context)
+                                          .bodySmall
+                                          .fontStyle,
+                                    ),
+                                    letterSpacing: 0.0,
+                                    fontStyle: FlutterFlowTheme.of(context)
+                                        .bodySmall
+                                        .fontStyle,
+                                  ),
+                        ),
+                      ],
+                    ),
+                  ),
                   if (responsiveVisibility(
                     context: context,
                     tabletLandscape: false,

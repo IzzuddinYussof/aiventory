@@ -470,6 +470,30 @@ Touched files:
 Rollback instruction:
 - revert only the hotfix commit once created
 
+### Phase 3 — login and dashboard first-pass polish
+Status: completed (first-pass)
+Branch: `ui-repair-phase1`
+
+What this phase changed:
+- login screen now has a cleaner branded first impression, calmer shell surface, tighter input/button feel, and stronger hierarchy
+- HQ dashboard now has a more premium first-screen posture via improved top spacing, stronger top identity block feel, larger user avatar treatment, calmer logout affordance, and a clearer "Operations snapshot" section introduction
+- branch selector shell on dashboard refined to feel less generated
+
+What this phase did NOT change:
+- business logic
+- auth behavior
+- dashboard metric logic and counts
+- deeper screen-by-screen list/card redesign yet
+- live deployment yet
+
+Touched files in this phase:
+- `lib/login/login_widget.dart`
+- `lib/dashboard_h_q/dashboard_h_q_widget.dart`
+- `docs/ui-repair-plan.md`
+
+Rollback instruction:
+- revert only the Phase 3 commit once created
+
 ## Touched file target list (expected)
 
 High probability:
