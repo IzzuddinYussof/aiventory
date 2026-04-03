@@ -516,6 +516,29 @@ Touched files in this phase:
 Rollback instruction:
 - revert only the Phase 4 commit once created
 
+### Phase 5 — stock/order/carousell calm-up pass
+Status: completed (first-pass, partial)
+Branch: `ui-repair-phase1`
+
+What this phase changed:
+- `order` now has clearer top messaging for the workflow and less generic app-bar posture
+- `carousell` now has a calmer top spacing and clearer explanatory intro copy for marketplace activity
+- both screens now better reflect operations-focused product tone instead of generic generated copy
+
+What this phase did NOT change yet:
+- `stock_in` deeper pass (deferred to keep branch stable after parser artefacts in that file)
+- `order` item-card and summary-card redesign
+- `carousell` listing-card visual redesign
+- per-row action hierarchy refinements in these screens
+
+Touched files in this phase:
+- `lib/order/order_widget.dart`
+- `lib/carousell/carousell_widget.dart`
+- `docs/ui-repair-plan.md`
+
+Rollback instruction:
+- revert only the Phase 5 commit once created
+
 ## Touched file target list (expected)
 
 High probability:

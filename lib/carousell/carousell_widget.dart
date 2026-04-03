@@ -211,7 +211,7 @@ class _CarousellWidgetState extends State<CarousellWidget> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Stay up to date with the latest news below.',
+                                'Manage listings and branch-linked Carousell activity more clearly.',
                                 style: FlutterFlowTheme.of(context)
                                     .labelMedium
                                     .override(

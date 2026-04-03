@@ -207,7 +207,7 @@ class _OrderWidgetState extends State<OrderWidget> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Please fill out the form below to continue.',
+                                    'Build the order with clear branch context and item selection.',
                                     style: FlutterFlowTheme.of(context)
                                         .labelMedium
                                         .override(
