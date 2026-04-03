@@ -557,6 +557,7 @@ What this phase did NOT change yet:
 Phase 6 follow-up:
 - added a safer first-pass dialog polish helper in `find_inventory` and `stock_in`
 - kept the dialog pass scoped so the branch stays stable before wider rollout
+- continued with a more objective-led hierarchy pass for `order`, `stock_in`, and `carousell` so the workflow feels more deliberate instead of form-dump driven
 
 Touched files in this phase:
 - `lib/find_inventory/find_inventory_widget.dart`

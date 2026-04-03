@@ -345,6 +345,25 @@ class _StockInWidgetState extends State<StockInWidget> {
                             ),
                           Padding(
                             padding: EdgeInsetsDirectional.fromSTEB(
+                                0.0, 8.0, 0.0, 0.0),
+                            child: Text(
+                              'Item lookup',
+                              style: FlutterFlowTheme.of(context)
+                                  .bodyMedium
+                                  .override(
+                                    font: GoogleFonts.inter(
+                                      fontWeight: FontWeight.w600,
+                                      fontStyle: FlutterFlowTheme.of(context)
+                                          .bodyMedium
+                                          .fontStyle,
+                                    ),
+                                    letterSpacing: 0.0,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsetsDirectional.fromSTEB(
                                 0.0, 4.0, 0.0, 0.0),
                             child: Row(
                               mainAxisSize: MainAxisSize.max,
@@ -798,6 +817,25 @@ class _StockInWidgetState extends State<StockInWidget> {
                             );
                           },
                         ),
+                      Padding(
+                        padding: EdgeInsetsDirectional.fromSTEB(
+                            0.0, 8.0, 0.0, 0.0),
+                        child: Text(
+                          'Movement details',
+                          style: FlutterFlowTheme.of(context)
+                              .bodyMedium
+                              .override(
+                                font: GoogleFonts.inter(
+                                  fontWeight: FontWeight.w600,
+                                  fontStyle: FlutterFlowTheme.of(context)
+                                      .bodyMedium
+                                      .fontStyle,
+                                ),
+                                letterSpacing: 0.0,
+                                fontWeight: FontWeight.w600,
+                              ),
+                        ),
+                      ),
                       Text(
                         'Item Name : ${_model.inventoryChosen?.itemName}',
                         style: FlutterFlowTheme.of(context).bodyMedium.override(
@@ -1635,6 +1673,25 @@ class _StockInWidgetState extends State<StockInWidget> {
                                 );
                               }),
                           ],
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsetsDirectional.fromSTEB(
+                            0.0, 8.0, 0.0, 0.0),
+                        child: Text(
+                          'Proof and notes',
+                          style: FlutterFlowTheme.of(context)
+                              .bodyMedium
+                              .override(
+                                font: GoogleFonts.inter(
+                                  fontWeight: FontWeight.w600,
+                                  fontStyle: FlutterFlowTheme.of(context)
+                                      .bodyMedium
+                                      .fontStyle,
+                                ),
+                                letterSpacing: 0.0,
+                                fontWeight: FontWeight.w600,
+                              ),
                         ),
                       ),
                       Container(

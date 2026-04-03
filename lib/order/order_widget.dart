@@ -206,31 +206,51 @@ class _OrderWidgetState extends State<OrderWidget> {
                                 mainAxisSize: MainAxisSize.max,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    'Build the order with clear branch context and item selection.',
-                                    style: FlutterFlowTheme.of(context)
-                                        .labelMedium
-                                        .override(
-                                          font: GoogleFonts.inter(
-                                            fontWeight:
-                                                FlutterFlowTheme.of(context)
-                                                    .labelMedium
-                                                    .fontWeight,
-                                            fontStyle:
-                                                FlutterFlowTheme.of(context)
-                                                    .labelMedium
-                                                    .fontStyle,
-                                          ),
-                                          letterSpacing: 0.0,
-                                          fontWeight:
-                                              FlutterFlowTheme.of(context)
-                                                  .labelMedium
-                                                  .fontWeight,
-                                          fontStyle:
-                                              FlutterFlowTheme.of(context)
-                                                  .labelMedium
-                                                  .fontStyle,
+                                  Container(
+                                    width: double.infinity,
+                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                      16.0,
+                                      16.0,
+                                      16.0,
+                                      16.0,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: FlutterFlowTheme.of(context)
+                                          .secondaryBackground,
+                                      borderRadius: BorderRadius.circular(18.0),
+                                      border: Border.all(
+                                        color: FlutterFlowTheme.of(context)
+                                            .alternate,
+                                      ),
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Build orders with cleaner intent and branch control.',
+                                          style: FlutterFlowTheme.of(context)
+                                              .bodyLarge
+                                              .override(
+                                                font: GoogleFonts.inter(
+                                                  fontWeight: FontWeight.w600,
+                                                  fontStyle:
+                                                      FlutterFlowTheme.of(context)
+                                                          .bodyLarge
+                                                          .fontStyle,
+                                                ),
+                                                letterSpacing: 0.0,
+                                                fontWeight: FontWeight.w600,
+                                              ),
                                         ),
+                                        SizedBox(height: 6.0),
+                                        Text(
+                                          'Set the channel first, lock the category and item, then submit with quantity and proof in one deliberate flow.',
+                                          style: FlutterFlowTheme.of(context)
+                                              .labelMedium,
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                   if (FFAppState().isHQUser)
                                     Padding(
@@ -309,6 +329,26 @@ class _OrderWidgetState extends State<OrderWidget> {
                                         isMultiSelect: false,
                                       ),
                                     ),
+                                  Padding(
+                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                        0.0, 20.0, 0.0, 8.0),
+                                    child: Text(
+                                      'Order setup',
+                                      style: FlutterFlowTheme.of(context)
+                                          .bodyMedium
+                                          .override(
+                                            font: GoogleFonts.inter(
+                                              fontWeight: FontWeight.w600,
+                                              fontStyle:
+                                                  FlutterFlowTheme.of(context)
+                                                      .bodyMedium
+                                                      .fontStyle,
+                                            ),
+                                            letterSpacing: 0.0,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                    ),
+                                  ),
                                   Padding(
                                     padding: EdgeInsetsDirectional.fromSTEB(
                                         0.0, 24.0, 0.0, 0.0),
@@ -1010,10 +1050,53 @@ class _OrderWidgetState extends State<OrderWidget> {
                                     updateCallback: () => safeSetState(() {}),
                                     child: UploadImageWidget(),
                                   ),
-                                  Padding(
+                                  Container(
+                                    width: double.infinity,
                                     padding: EdgeInsetsDirectional.fromSTEB(
-                                        0.0, 12.0, 0.0, 0.0),
-                                    child: FFButtonWidget(
+                                      14.0,
+                                      14.0,
+                                      14.0,
+                                      14.0,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: FlutterFlowTheme.of(context)
+                                          .secondaryBackground,
+                                      borderRadius: BorderRadius.circular(16.0),
+                                      border: Border.all(
+                                        color: FlutterFlowTheme.of(context)
+                                            .alternate,
+                                      ),
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Final check',
+                                          style: FlutterFlowTheme.of(context)
+                                              .bodyMedium
+                                              .override(
+                                                font: GoogleFonts.inter(
+                                                  fontWeight: FontWeight.w600,
+                                                  fontStyle:
+                                                      FlutterFlowTheme.of(context)
+                                                          .bodyMedium
+                                                          .fontStyle,
+                                                ),
+                                                letterSpacing: 0.0,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                        ),
+                                        SizedBox(height: 4.0),
+                                        Text(
+                                          'Make sure the item, quantity, channel, and proof are aligned before sending the order through.',
+                                          style: FlutterFlowTheme.of(context)
+                                              .labelSmall,
+                                        ),
+                                        Padding(
+                                          padding: EdgeInsetsDirectional.fromSTEB(
+                                              0.0, 12.0, 0.0, 0.0),
+                                          child: FFButtonWidget(
                                       onPressed: () async {
                                         final quantity = _parseQuantity();
                                         if (_model.formKey.currentState ==
@@ -1177,7 +1260,7 @@ class _OrderWidgetState extends State<OrderWidget> {
 
                                         safeSetState(() {});
                                       },
-                                      text: 'Submit Order',
+                                      text: 'Submit order request',
                                       options: FFButtonOptions(
                                         width: double.infinity,
                                         height: 48.0,
@@ -1222,6 +1305,9 @@ class _OrderWidgetState extends State<OrderWidget> {
                                       ),
                                     ),
                                   ),
+                                ],
+                              ),
+                            ),
                                 ]
                                     .divide(SizedBox(height: 12.0))
                                     .addToEnd(SizedBox(height: 24.0)),
