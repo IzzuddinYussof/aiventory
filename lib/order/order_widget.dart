@@ -228,7 +228,7 @@ class _OrderWidgetState extends State<OrderWidget> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          'Build orders with cleaner intent and branch control.',
+                                          'Build orders with clear intent and branch control.',
                                           style: FlutterFlowTheme.of(context)
                                               .bodyLarge
                                               .override(
@@ -460,6 +460,35 @@ class _OrderWidgetState extends State<OrderWidget> {
                                       isOverButton: true,
                                       isSearchable: true,
                                       isMultiSelect: false,
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                        0.0, 8.0, 0.0, 0.0),
+                                    child: Text(
+                                      'Item selection',
+                                      style: FlutterFlowTheme.of(context)
+                                          .bodyMedium
+                                          .override(
+                                            font: GoogleFonts.inter(
+                                              fontWeight: FontWeight.w600,
+                                              fontStyle:
+                                                  FlutterFlowTheme.of(context)
+                                                      .bodyMedium
+                                                      .fontStyle,
+                                            ),
+                                            letterSpacing: 0.0,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                        0.0, 2.0, 0.0, 0.0),
+                                    child: Text(
+                                      'Choose the category first so the item list stays intentional and easier to scan.',
+                                      style: FlutterFlowTheme.of(context)
+                                          .labelSmall,
                                     ),
                                   ),
                                   FlutterFlowDropDown<String>(
@@ -874,6 +903,35 @@ class _OrderWidgetState extends State<OrderWidget> {
                                           );
                                         }),
                                     ],
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                        0.0, 8.0, 0.0, 0.0),
+                                    child: Text(
+                                      'Notes and proof',
+                                      style: FlutterFlowTheme.of(context)
+                                          .bodyMedium
+                                          .override(
+                                            font: GoogleFonts.inter(
+                                              fontWeight: FontWeight.w600,
+                                              fontStyle:
+                                                  FlutterFlowTheme.of(context)
+                                                      .bodyMedium
+                                                      .fontStyle,
+                                            ),
+                                            letterSpacing: 0.0,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                        0.0, 2.0, 0.0, 0.0),
+                                    child: Text(
+                                      'Add context that helps the receiving side act fast without guessing.',
+                                      style: FlutterFlowTheme.of(context)
+                                          .labelSmall,
+                                    ),
                                   ),
                                   TextFormField(
                                     controller: _model.remarkTextController,

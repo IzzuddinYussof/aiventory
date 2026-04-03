@@ -746,6 +746,26 @@ class _CarousellWidgetState extends State<CarousellWidget> {
                                 thickness: 1.0,
                                 color: FlutterFlowTheme.of(context).alternate,
                               ),
+                              Padding(
+                                padding: EdgeInsetsDirectional.fromSTEB(
+                                    0.0, 16.0, 0.0, 8.0),
+                                child: Text(
+                                  'Quick actions',
+                                  style: FlutterFlowTheme.of(context)
+                                      .bodyMedium
+                                      .override(
+                                        font: GoogleFonts.inter(
+                                          fontWeight: FontWeight.w600,
+                                          fontStyle:
+                                              FlutterFlowTheme.of(context)
+                                                  .bodyMedium
+                                                  .fontStyle,
+                                        ),
+                                        letterSpacing: 0.0,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                ),
+                              ),
                               Row(
                                 mainAxisSize: MainAxisSize.max,
                                 mainAxisAlignment: MainAxisAlignment.end,
@@ -896,9 +916,61 @@ class _CarousellWidgetState extends State<CarousellWidget> {
                                   ),
                                 ].divide(SizedBox(width: 12.0)),
                               ),
+                              Container(
+                                width: double.infinity,
+                                margin: EdgeInsetsDirectional.fromSTEB(
+                                  0.0,
+                                  20.0,
+                                  0.0,
+                                  12.0,
+                                ),
+                                padding: EdgeInsetsDirectional.fromSTEB(
+                                  14.0,
+                                  14.0,
+                                  14.0,
+                                  14.0,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: FlutterFlowTheme.of(context)
+                                      .secondaryBackground,
+                                  borderRadius: BorderRadius.circular(16.0),
+                                  border: Border.all(
+                                    color: FlutterFlowTheme.of(context)
+                                        .alternate,
+                                  ),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Listing board',
+                                      style: FlutterFlowTheme.of(context)
+                                          .bodyLarge
+                                          .override(
+                                            font: GoogleFonts.inter(
+                                              fontWeight: FontWeight.w600,
+                                              fontStyle:
+                                                  FlutterFlowTheme.of(context)
+                                                      .bodyLarge
+                                                      .fontStyle,
+                                            ),
+                                            letterSpacing: 0.0,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                    ),
+                                    SizedBox(height: 4.0),
+                                    Text(
+                                      "Selling: ${FFAppState().carousellList.where((e) => e.type == 'Selling').toList().length}  •  Requesting: ${FFAppState().carousellList.where((e) => e.type == 'Requesting').toList().length}",
+                                      style: FlutterFlowTheme.of(context)
+                                          .labelSmall,
+                                    ),
+                                  ],
+                                ),
+                              ),
                               Padding(
                                 padding: EdgeInsetsDirectional.fromSTEB(
-                                    0.0, 24.0, 0.0, 12.0),
+                                    0.0, 4.0, 0.0, 12.0),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.max,
                                   children: [

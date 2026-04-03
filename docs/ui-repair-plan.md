@@ -521,8 +521,8 @@ Status: completed (first-pass, partial)
 Branch: `ui-repair-phase1`
 
 What this phase changed:
-- `order` now has clearer top messaging for the workflow and less generic app-bar posture
-- `carousell` now has a calmer top spacing and clearer explanatory intro copy for marketplace activity
+- `order` now has clearer top messaging for the workflow, stronger section cues, and a more intentional final-submit posture
+- `carousell` now has calmer top spacing, clearer explanatory intro copy, visible quick actions framing, and a more deliberate listing-board summary
 - both screens now better reflect operations-focused product tone instead of generic generated copy
 
 What this phase did NOT change yet:
