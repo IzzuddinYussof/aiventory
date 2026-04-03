@@ -81,42 +81,45 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
         FFRoute(
           name: FindInventoryWidget.routeName,
           path: FindInventoryWidget.routePath,
-          builder: (context, params) => params.isEmpty
-              ? NavBarPage(initialPage: 'findInventory')
-              : FindInventoryWidget(
-                  expiryDate: params.getParam(
-                    'expiryDate',
-                    ParamType.DateTime,
-                  ),
-                ),
+          builder: (context, params) => NavBarPage(
+            initialPage: 'findInventory',
+            page: FindInventoryWidget(
+              expiryDate: params.getParam(
+                'expiryDate',
+                ParamType.DateTime,
+              ),
+            ),
+          ),
         ),
         FFRoute(
           name: OrderWidget.routeName,
           path: OrderWidget.routePath,
-          builder: (context, params) => params.isEmpty
-              ? NavBarPage(initialPage: 'Order')
-              : OrderWidget(
-                  inventoryId: params.getParam(
-                    'inventoryId',
-                    ParamType.int,
-                  ),
-                  category: params.getParam(
-                    'category',
-                    ParamType.String,
-                  ),
-                ),
+          builder: (context, params) => NavBarPage(
+            initialPage: 'Order',
+            page: OrderWidget(
+              inventoryId: params.getParam(
+                'inventoryId',
+                ParamType.int,
+              ),
+              category: params.getParam(
+                'category',
+                ParamType.String,
+              ),
+            ),
+          ),
         ),
         FFRoute(
           name: OrderListWidget.routeName,
           path: OrderListWidget.routePath,
-          builder: (context, params) => params.isEmpty
-              ? NavBarPage(initialPage: 'orderList')
-              : OrderListWidget(
-                  days: params.getParam(
-                    'days',
-                    ParamType.String,
-                  ),
-                ),
+          builder: (context, params) => NavBarPage(
+            initialPage: 'orderList',
+            page: OrderListWidget(
+              days: params.getParam(
+                'days',
+                ParamType.String,
+              ),
+            ),
+          ),
         ),
         FFRoute(
           name: StockInWidget.routeName,
