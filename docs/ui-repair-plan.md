@@ -402,6 +402,32 @@ Expected result:
 - no feature removal unless purely presentational and approved later
 - no backend restructuring in this UI phase
 
+## Phase progress log
+
+### Phase 1 — theme/token foundation
+Status: completed
+Branch: `ui-repair-phase1`
+
+What this phase changed:
+- semantic color palette shifted from generic FlutterFlow purple/teal to a calmer operations-grade teal/slate system
+- light and dark surface system upgraded for cleaner contrast and calmer density
+- text hierarchy tokens tightened for stronger titles, calmer labels, and more premium rhythm
+- base Material shell colors aligned with the new surface/background system
+
+What this phase did NOT change:
+- route structure
+- workflow logic
+- API/state/business semantics
+- screen-specific layouts yet
+- per-screen button/dropdown redesign yet
+
+Touched files in this phase:
+- `lib/flutter_flow/flutter_flow_theme.dart`
+- `lib/main.dart`
+
+Rollback instruction:
+- revert only the Phase 1 commit
+
 ## Touched file target list (expected)
 
 High probability:

@@ -6,8 +6,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import 'flutter_flow/flutter_flow_util.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'flutter_flow/nav/nav.dart';
 import 'index.dart';
 
 void main() async {
@@ -94,10 +92,34 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         brightness: Brightness.light,
         useMaterial3: false,
+        scaffoldBackgroundColor: const Color(0xFFF4F7F6),
+        canvasColor: const Color(0xFFF4F7F6),
+        cardColor: const Color(0xFFFFFFFF),
+        dividerColor: const Color(0xFFD7E2E0),
+        splashColor: const Color(0x140E8C7D),
+        highlightColor: Colors.transparent,
+        colorScheme: const ColorScheme.light(
+          primary: Color(0xFF0E8C7D),
+          secondary: Color(0xFF4D6B73),
+          surface: Color(0xFFFFFFFF),
+          error: Color(0xFFD55C5C),
+        ),
       ),
       darkTheme: ThemeData(
         brightness: Brightness.dark,
         useMaterial3: false,
+        scaffoldBackgroundColor: const Color(0xFF0F191A),
+        canvasColor: const Color(0xFF0F191A),
+        cardColor: const Color(0xFF152224),
+        dividerColor: const Color(0xFF243537),
+        splashColor: const Color(0x2235C9B8),
+        highlightColor: Colors.transparent,
+        colorScheme: const ColorScheme.dark(
+          primary: Color(0xFF35C9B8),
+          secondary: Color(0xFF87A9AE),
+          surface: Color(0xFF152224),
+          error: Color(0xFFFF7A7A),
+        ),
       ),
       themeMode: _themeMode,
       routerConfig: _router,

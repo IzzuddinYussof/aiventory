@@ -252,8 +252,10 @@ class ThemeTypography extends Typography {
   bool get headlineSmallIsCustom => false;
   TextStyle get headlineSmall => GoogleFonts.interTight(
         color: theme.primaryText,
-        fontWeight: FontWeight.w600,
-        fontSize: 24.0,
+        fontWeight: FontWeight.w700,
+        fontSize: 22.0,
+        letterSpacing: -0.25,
+        height: 1.16,
       );
   String get titleLargeFamily => 'Inter Tight';
   bool get titleLargeIsCustom => false;
@@ -328,22 +330,22 @@ class DarkModeTheme extends FlutterFlowTheme {
   @Deprecated('Use tertiary instead')
   Color get tertiaryColor => tertiary;
 
-  late Color primary = const Color(0xFF4B39EF);
-  late Color secondary = const Color(0xFF39D2C0);
-  late Color tertiary = const Color(0xFFEE8B60);
-  late Color alternate = const Color(0xFF262D34);
-  late Color primaryText = const Color(0xFFFFFFFF);
-  late Color secondaryText = const Color(0xFF95A1AC);
-  late Color primaryBackground = const Color(0xFF1D2428);
-  late Color secondaryBackground = const Color(0xFF14181B);
-  late Color accent1 = const Color(0x4C4B39EF);
-  late Color accent2 = const Color(0x4D39D2C0);
-  late Color accent3 = const Color(0x4DEE8B60);
-  late Color accent4 = const Color(0xB2262D34);
-  late Color success = const Color(0xFF249689);
-  late Color warning = const Color(0xFFF9CF58);
-  late Color error = const Color(0xFFFF5963);
-  late Color info = const Color(0xFFFFFFFF);
+  late Color primary = const Color(0xFF35C9B8);
+  late Color secondary = const Color(0xFF87A9AE);
+  late Color tertiary = const Color(0xFFF1BF67);
+  late Color alternate = const Color(0xFF243537);
+  late Color primaryText = const Color(0xFFF2F7F6);
+  late Color secondaryText = const Color(0xFF9CB1B2);
+  late Color primaryBackground = const Color(0xFF0F191A);
+  late Color secondaryBackground = const Color(0xFF152224);
+  late Color accent1 = const Color(0x3335C9B8);
+  late Color accent2 = const Color(0x3387A9AE);
+  late Color accent3 = const Color(0x33F1BF67);
+  late Color accent4 = const Color(0xB2152224);
+  late Color success = const Color(0xFF39B889);
+  late Color warning = const Color(0xFFF1BC52);
+  late Color error = const Color(0xFFFF7A7A);
+  late Color info = const Color(0xFFEAF6F6);
 }
 
 extension TextStyleHelper on TextStyle {
