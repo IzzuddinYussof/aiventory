@@ -187,6 +187,36 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
     _prevPage = prevPage ?? (_currentPage > 1 ? _currentPage - 1 : null);
   }
 
+  Future<void> _showStatusDialog({
+    required String title,
+    required String message,
+  }) async {
+    await showDialog(
+      context: context,
+      builder: (alertDialogContext) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.0),
+          ),
+          titlePadding:
+              EdgeInsetsDirectional.fromSTEB(20.0, 20.0, 20.0, 8.0),
+          contentPadding:
+              EdgeInsetsDirectional.fromSTEB(20.0, 0.0, 20.0, 12.0),
+          actionsPadding:
+              EdgeInsetsDirectional.fromSTEB(12.0, 0.0, 12.0, 12.0),
+          title: Text(title),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(alertDialogContext),
+              child: Text('Ok'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Future<void> _loadInventoryPage(int page) async {
     if (_isPaginationLoading) {
       return;
@@ -209,25 +239,12 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
       _model.inventoryItems = _parseInventoryListingItems(response.jsonBody);
       _applyPagingState(response.jsonBody);
     } else {
-      await showDialog(
-        context: context,
-        builder: (alertDialogContext) {
-          return AlertDialog(
-            title: Text('Error (Inventory Pagination)'),
-            content: Text(
-              getJsonField(
-                (response.jsonBody ?? ''),
-                r'''$.message''',
-              ).toString(),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(alertDialogContext),
-                child: Text('Ok'),
-              ),
-            ],
-          );
-        },
+      await _showStatusDialog(
+        title: 'Error (Inventory Pagination)',
+        message: getJsonField(
+          (response.jsonBody ?? ''),
+          r'''$.message''',
+        ).toString(),
       );
     }
 
@@ -275,47 +292,21 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
             _activeInventoryIdList = inventoryIds;
             safeSetState(() {});
           } else {
-            await showDialog(
-              context: context,
-              builder: (alertDialogContext) {
-                return AlertDialog(
-                  title: Text('Error (Inventory List Loading)'),
-                  content: Text(
-                    getJsonField(
-                      (_model.listInventoryLoad?.jsonBody ?? ''),
-                      r'''$.message''',
-                    ).toString(),
-                  ),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(alertDialogContext),
-                      child: Text('Ok'),
-                    ),
-                  ],
-                );
-              },
+            await _showStatusDialog(
+              title: 'Error (Inventory List Loading)',
+              message: getJsonField(
+                (_model.listInventoryLoad?.jsonBody ?? ''),
+                r'''$.message''',
+              ).toString(),
             );
           }
         } else {
-          await showDialog(
-            context: context,
-            builder: (alertDialogContext) {
-              return AlertDialog(
-                title: Text('Error Search Inventory'),
-                content: Text(
-                  getJsonField(
-                    (_model.searchInventory?.jsonBody ?? ''),
-                    r'''$.message''',
-                  ).toString(),
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(alertDialogContext),
-                    child: Text('Ok'),
-                  ),
-                ],
-              );
-            },
+          await _showStatusDialog(
+            title: 'Error Search Inventory',
+            message: getJsonField(
+              (_model.searchInventory?.jsonBody ?? ''),
+              r'''$.message''',
+            ).toString(),
           );
         }
       });

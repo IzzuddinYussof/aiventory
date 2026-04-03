@@ -95,16 +95,24 @@ class _StockInWidgetState extends State<StockInWidget> {
     safeSetState(() {});
   }
 
-  Future<void> _showUnitRequiredDialog() async {
-    final message = _model.unitOptions.isEmpty
-        ? 'The selected inventory has no configured unit. Set up the inventory unit first.'
-        : 'Please choose a unit before saving stock in.';
-
+  Future<void> _showStatusDialog({
+    required String title,
+    required String message,
+  }) async {
     await showDialog(
       context: context,
       builder: (alertDialogContext) {
         return AlertDialog(
-          title: Text('Unit Required'),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.0),
+          ),
+          titlePadding:
+              EdgeInsetsDirectional.fromSTEB(20.0, 20.0, 20.0, 8.0),
+          contentPadding:
+              EdgeInsetsDirectional.fromSTEB(20.0, 0.0, 20.0, 12.0),
+          actionsPadding:
+              EdgeInsetsDirectional.fromSTEB(12.0, 0.0, 12.0, 12.0),
+          title: Text(title),
           content: Text(message),
           actions: [
             TextButton(
@@ -114,6 +122,17 @@ class _StockInWidgetState extends State<StockInWidget> {
           ],
         );
       },
+    );
+  }
+
+  Future<void> _showUnitRequiredDialog() async {
+    final message = _model.unitOptions.isEmpty
+        ? 'The selected inventory has no configured unit. Set up the inventory unit first.'
+        : 'Please choose a unit before saving stock in.';
+
+    await _showStatusDialog(
+      title: 'Unit Required',
+      message: message,
     );
   }
 
@@ -1860,29 +1879,12 @@ class _StockInWidgetState extends State<StockInWidget> {
                                                 ?.viewUrl;
                                         safeSetState(() {});
                                       } else {
-                                        await showDialog(
-                                          context: context,
-                                          builder: (alertDialogContext) {
-                                            return AlertDialog(
-                                              title:
-                                                  Text('Error uploading file'),
-                                              content: Text(getJsonField(
-                                                (_model.uploadedFile
-                                                        ?.jsonBody ??
-                                                    ''),
-                                                r'''$.message''',
-                                              ).toString()),
-                                              actions: [
-                                                TextButton(
-                                                  onPressed: () =>
-                                                      Navigator.pop(
-                                                    alertDialogContext,
-                                                  ),
-                                                  child: Text('Ok'),
-                                                ),
-                                              ],
-                                            );
-                                          },
+                                        await _showStatusDialog(
+                                          title: 'Error uploading file',
+                                          message: getJsonField(
+                                            (_model.uploadedFile?.jsonBody ?? ''),
+                                            r'''$.message''',
+                                          ).toString(),
                                         );
                                       }
                                     }
@@ -1955,27 +1957,15 @@ class _StockInWidgetState extends State<StockInWidget> {
                                         context.safePop();
                                       }
                                     } else {
-                                      await showDialog(
-                                        context: context,
-                                        builder: (alertDialogContext) {
-                                          return AlertDialog(
-                                            title: Text(
-                                                'Error saving inventory movement'),
-                                            content: Text(getJsonField(
-                                              (_model.saveInventoryMovement
-                                                      ?.jsonBody ??
-                                                  ''),
-                                              r'''$.message''',
-                                            ).toString()),
-                                            actions: [
-                                              TextButton(
-                                                onPressed: () => Navigator.pop(
-                                                    alertDialogContext),
-                                                child: Text('Ok'),
-                                              ),
-                                            ],
-                                          );
-                                        },
+                                      await _showStatusDialog(
+                                        title:
+                                            'Error saving inventory movement',
+                                        message: getJsonField(
+                                          (_model.saveInventoryMovement
+                                                  ?.jsonBody ??
+                                              ''),
+                                          r'''$.message''',
+                                        ).toString(),
                                       );
                                     }
                                   }),
@@ -1993,29 +1983,13 @@ class _StockInWidgetState extends State<StockInWidget> {
 
                                       if (!(_model.updateReceived?.succeeded ??
                                           true)) {
-                                        await showDialog(
-                                          context: context,
-                                          builder: (alertDialogContext) {
-                                            return AlertDialog(
-                                              title:
-                                                  Text('Error update received'),
-                                              content: Text(getJsonField(
-                                                (_model.updateReceived
-                                                        ?.jsonBody ??
-                                                    ''),
-                                                r'''$.message''',
-                                              ).toString()),
-                                              actions: [
-                                                TextButton(
-                                                  onPressed: () =>
-                                                      Navigator.pop(
-                                                    alertDialogContext,
-                                                  ),
-                                                  child: Text('Ok'),
-                                                ),
-                                              ],
-                                            );
-                                          },
+                                        await _showStatusDialog(
+                                          title: 'Error update received',
+                                          message: getJsonField(
+                                            (_model.updateReceived?.jsonBody ??
+                                                ''),
+                                            r'''$.message''',
+                                          ).toString(),
                                         );
                                       }
                                     }
@@ -2023,22 +1997,10 @@ class _StockInWidgetState extends State<StockInWidget> {
                                 ]);
                               }, showOverlay: false);
                             } else {
-                              await showDialog(
-                                context: context,
-                                builder: (alertDialogContext) {
-                                  return AlertDialog(
-                                    title: Text('Error'),
-                                    content: Text(
-                                        'Please choose the item and fill in the required info'),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () =>
-                                            Navigator.pop(alertDialogContext),
-                                        child: Text('Ok'),
-                                      ),
-                                    ],
-                                  );
-                                },
+                              await _showStatusDialog(
+                                title: 'Error',
+                                message:
+                                    'Please choose the item and fill in the required info',
                               );
                             }
 

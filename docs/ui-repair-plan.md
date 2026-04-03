@@ -549,10 +549,14 @@ What this phase changed:
 - `stock_in` now has a clearer receiving intro and a more explicit final save CTA, especially for order-linked receiving
 
 What this phase did NOT change yet:
-- shared dialog component restyling across the app
+- shared dialog component restyling across the full app
 - deeper field-level redesign for all generated inputs in `stock_in`
 - item-card redesign inside `find_inventory` result rows
 - broader modal/confirmation polish outside these two screens
+
+Phase 6 follow-up:
+- added a safer first-pass dialog polish helper in `find_inventory` and `stock_in`
+- kept the dialog pass scoped so the branch stays stable before wider rollout
 
 Touched files in this phase:
 - `lib/find_inventory/find_inventory_widget.dart`
