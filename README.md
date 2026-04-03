@@ -1,12 +1,12 @@
 # aiventory
 
-FlutterFlow-based inventory operations app for multi-branch stock, ordering, receiving, and internal Carousell workflows.
+Inventory operations app for multi-branch stock, ordering, receiving, and internal Carousell workflows.
 
 ## Documentation
 
-- Project documentation: `C:\Programming\aiventory\docs\project-documentation.md`
-- Developer log: `C:\Programming\aiventory\docs\developer-log.md`
+- Project documentation: `docs/project-documentation.md`
+- Developer log: `docs/developer-log.md`
 
 ## Getting Started
 
-FlutterFlow projects are built to run on the Flutter stable release.
+Built to run on the Flutter stable release.

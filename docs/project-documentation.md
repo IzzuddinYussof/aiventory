@@ -9,7 +9,7 @@ Aiventory is a Flutter mobile and web client for internal inventory operations a
 - stock receiving and stock-out movement tracking
 - an internal "Carousell" workflow for selling or requesting stock between branches
 
-This document is derived from the current implementation in `C:\Programming\aiventory\lib`, not from external product documentation.
+This document is derived from the current implementation in `lib`, not from external product documentation.
 
 ## Current Product Shape
 
@@ -25,7 +25,7 @@ At a high level:
 
 ## Tech Stack
 
-- Flutter application generated largely from FlutterFlow
+- Flutter application
 - navigation via `go_router`
 - app state via `FFAppState` and `provider`
 - local persistence via `shared_preferences`
@@ -37,12 +37,12 @@ At a high level:
 
 Primary source directories:
 
-- `C:\Programming\aiventory\lib\main.dart` - app bootstrap and shell
-- `C:\Programming\aiventory\lib\flutter_flow\nav\nav.dart` - route registry
-- `C:\Programming\aiventory\lib\app_state.dart` - global persisted and in-memory app state
-- `C:\Programming\aiventory\lib\backend\api_requests\api_calls.dart` - API client definitions
-- `C:\Programming\aiventory\lib\backend\schema\structs` - API/domain structs
-- `C:\Programming\aiventory\lib\components` - reusable modal and widget flows
+- `lib/main.dart` - app bootstrap and shell
+- `lib/flutter_flow/nav/nav.dart` - route registry
+- `lib/app_state.dart` - global persisted and in-memory app state
+- `lib/backend/api_requests/api_calls.dart` - API client definitions
+- `lib/backend/schema/structs` - API/domain structs
+- `lib/components` - reusable modal and widget flows
 
 ## Startup And Authentication Flow
 
@@ -588,6 +588,6 @@ These functions are small, but they directly influence what users see in operati
 1. confirm business terminology with the product owner
 2. document the canonical order status state machine
 3. document the backend contract for each API group
-4. identify which files are safe to regenerate from FlutterFlow and which contain business logic that must be preserved
+4. identify which files are safe to regenerate and which contain business logic that must be preserved
 5. add setup and test instructions once the team standardizes local development flow
 

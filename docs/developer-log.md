@@ -26,7 +26,7 @@ Reverse-engineer the current project structure, map the main user flows, trace t
 
 ### Architecture Notes
 
-- Client framework: Flutter with heavy FlutterFlow generation
+- Client framework: Flutter
 - Routing: `go_router`
 - State: `FFAppState` plus provider-based propagation
 - Persistence: `shared_preferences`
@@ -64,14 +64,14 @@ Reverse-engineer the current project structure, map the main user flows, trace t
 
 ### Artifacts Created
 
-- `C:\Programming\aiventory\docs\project-documentation.md`
-- `C:\Programming\aiventory\docs\developer-log.md`
+- `docs/project-documentation.md`
+- `docs/developer-log.md`
 
 ### Suggested Follow-Up
 
 1. validate this reverse-engineered documentation with a product or operations owner
 2. define a single canonical order status enum and transition table
 3. add a developer setup section with required Flutter version, environment values, and backend dependencies
-4. separate generated FlutterFlow code from hand-maintained business logic in team documentation
+4. separate generated UI scaffolding from hand-maintained business logic in team documentation
 5. add tests for custom functions, order state transitions, and stock movement flows
 
