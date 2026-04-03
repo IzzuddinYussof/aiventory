@@ -1,6 +1,5 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 
-import 'package:flutter/foundation.dart';
 import 'form_field_controller.dart';
 import 'package:flutter/material.dart';
 
@@ -165,6 +164,15 @@ class _FlutterFlowDropDownState<T> extends State<FlutterFlowDropDown<T>> {
             width: widget.borderWidth,
           ),
           color: widget.fillColor,
+          boxShadow: [
+            BoxShadow(
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? const Color(0x22000000)
+                  : const Color(0x0E122021),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         child: Padding(
           padding: _useDropdown2() ? EdgeInsets.zero : widget.margin,
@@ -300,8 +308,21 @@ class _FlutterFlowDropDownState<T> extends State<FlutterFlowDropDown<T>> {
       dropdownStyleData: DropdownStyleData(
         elevation: widget.elevation.toInt(),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(4.0),
+          borderRadius: BorderRadius.circular(widget.borderRadius),
           color: widget.fillColor,
+          border: Border.all(
+            color: widget.borderColor,
+            width: widget.borderWidth,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? const Color(0x33000000)
+                  : const Color(0x14111C1D),
+              blurRadius: 18,
+              offset: const Offset(0, 8),
+            ),
+          ],
         ),
         isOverButton: widget.isOverButton,
         offset: widget.menuOffset ?? Offset.zero,

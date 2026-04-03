@@ -428,6 +428,32 @@ Touched files in this phase:
 Rollback instruction:
 - revert only the Phase 1 commit
 
+### Phase 2 — shared shell and component polish
+Status: completed
+Branch: `ui-repair-phase1`
+
+What this phase changed:
+- bottom navigation now has a calmer premium shell with clearer label visibility
+- global app bar theme added for stronger title presence
+- global input decoration theme added for cleaner fields and search surfaces
+- shared button defaults refined with better padding and calmer elevation
+- shared dropdown shells/menu surfaces refined with cleaner radius and softer elevation
+
+What this phase did NOT change:
+- route structure
+- feature order or workflow meaning
+- per-screen layout composition yet
+- screen-specific card/list hierarchy yet
+
+Touched files in this phase:
+- `lib/main.dart`
+- `lib/flutter_flow/flutter_flow_widgets.dart`
+- `lib/flutter_flow/flutter_flow_drop_down.dart`
+- `docs/ui-repair-plan.md`
+
+Rollback instruction:
+- revert only the Phase 2 commit once created
+
 ## Touched file target list (expected)
 
 High probability:

@@ -104,6 +104,71 @@ class _MyAppState extends State<MyApp> {
           surface: Color(0xFFFFFFFF),
           error: Color(0xFFD55C5C),
         ),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Color(0xFFF4F7F6),
+          foregroundColor: Color(0xFF152627),
+          elevation: 0,
+          centerTitle: false,
+          scrolledUnderElevation: 0,
+          titleTextStyle: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.w700,
+            color: Color(0xFF152627),
+            letterSpacing: -0.25,
+          ),
+        ),
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: const Color(0xFFFFFFFF),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          hintStyle: const TextStyle(
+            color: Color(0xFF8A9B9D),
+            fontSize: 14,
+          ),
+          labelStyle: const TextStyle(
+            color: Color(0xFF607476),
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+          ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide: const BorderSide(color: Color(0xFFD7E2E0), width: 1),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide: const BorderSide(color: Color(0xFFD7E2E0), width: 1),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide: const BorderSide(color: Color(0xFF0E8C7D), width: 1.4),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide: const BorderSide(color: Color(0xFFD55C5C), width: 1),
+          ),
+          focusedErrorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide: const BorderSide(color: Color(0xFFD55C5C), width: 1.2),
+          ),
+        ),
+        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+          backgroundColor: Color(0xFFFFFFFF),
+          selectedItemColor: Color(0xFF0E8C7D),
+          unselectedItemColor: Color(0xFF7B8D90),
+          selectedLabelStyle: TextStyle(
+            fontSize: 11,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 0.1,
+          ),
+          unselectedLabelStyle: TextStyle(
+            fontSize: 11,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.1,
+          ),
+          elevation: 8,
+          type: BottomNavigationBarType.fixed,
+        ),
       ),
       darkTheme: ThemeData(
         brightness: Brightness.dark,
@@ -119,6 +184,70 @@ class _MyAppState extends State<MyApp> {
           secondary: Color(0xFF87A9AE),
           surface: Color(0xFF152224),
           error: Color(0xFFFF7A7A),
+        ),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Color(0xFF0F191A),
+          foregroundColor: Color(0xFFF2F7F6),
+          elevation: 0,
+          centerTitle: false,
+          scrolledUnderElevation: 0,
+          titleTextStyle: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.w700,
+            color: Color(0xFFF2F7F6),
+            letterSpacing: -0.25,
+          ),
+        ),
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: Color(0xFF152224),
+          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          hintStyle: TextStyle(
+            color: Color(0xFF839A9C),
+            fontSize: 14,
+          ),
+          labelStyle: TextStyle(
+            color: Color(0xFF9CB1B2),
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+          ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide: BorderSide(color: Color(0xFF243537), width: 1),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide: BorderSide(color: Color(0xFF243537), width: 1),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide: BorderSide(color: Color(0xFF35C9B8), width: 1.4),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide: BorderSide(color: Color(0xFFFF7A7A), width: 1),
+          ),
+          focusedErrorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide: BorderSide(color: Color(0xFFFF7A7A), width: 1.2),
+          ),
+        ),
+        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+          backgroundColor: Color(0xFF152224),
+          selectedItemColor: Color(0xFF35C9B8),
+          unselectedItemColor: Color(0xFF89A0A2),
+          selectedLabelStyle: TextStyle(
+            fontSize: 11,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 0.1,
+          ),
+          unselectedLabelStyle: TextStyle(
+            fontSize: 11,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.1,
+          ),
+          elevation: 10,
+          type: BottomNavigationBarType.fixed,
         ),
       ),
       themeMode: _themeMode,
@@ -254,19 +383,47 @@ class _NavBarPageState extends State<NavBarPage> {
     return Scaffold(
       resizeToAvoidBottomInset: !widget.disableResizeToAvoidBottomInset,
       body: _currentPage ?? tabs[currentIndex].page,
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: currentIndex,
-        onTap: (i) => safeSetState(() {
-          _currentPage = null;
-          _currentPageName = tabs[i].pageName;
-        }),
-        backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
-        selectedItemColor: FlutterFlowTheme.of(context).primary,
-        unselectedItemColor: FlutterFlowTheme.of(context).secondaryText,
-        showSelectedLabels: true,
-        showUnselectedLabels: false,
-        type: BottomNavigationBarType.fixed,
-        items: tabs.map((e) => e.item).toList(),
+      bottomNavigationBar: DecoratedBox(
+        decoration: BoxDecoration(
+          color: Theme.of(context).bottomNavigationBarTheme.backgroundColor ??
+              FlutterFlowTheme.of(context).secondaryBackground,
+          border: Border(
+            top: BorderSide(
+              color: FlutterFlowTheme.of(context).alternate,
+              width: 1,
+            ),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? const Color(0x26000000)
+                  : const Color(0x120A1718),
+              blurRadius: 18,
+              offset: const Offset(0, -4),
+            ),
+          ],
+        ),
+        child: BottomNavigationBar(
+          currentIndex: currentIndex,
+          onTap: (i) => safeSetState(() {
+            _currentPage = null;
+            _currentPageName = tabs[i].pageName;
+          }),
+          backgroundColor:
+              Theme.of(context).bottomNavigationBarTheme.backgroundColor,
+          selectedItemColor:
+              Theme.of(context).bottomNavigationBarTheme.selectedItemColor,
+          unselectedItemColor:
+              Theme.of(context).bottomNavigationBarTheme.unselectedItemColor,
+          selectedLabelStyle:
+              Theme.of(context).bottomNavigationBarTheme.selectedLabelStyle,
+          unselectedLabelStyle:
+              Theme.of(context).bottomNavigationBarTheme.unselectedLabelStyle,
+          showSelectedLabels: true,
+          showUnselectedLabels: true,
+          type: BottomNavigationBarType.fixed,
+          items: tabs.map((e) => e.item).toList(),
+        ),
       ),
     );
   }

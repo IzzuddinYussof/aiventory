@@ -187,14 +187,17 @@ class _FFButtonWidgetState extends State<FFButtonWidget> {
       }),
       padding: WidgetStateProperty.all(
         widget.options.padding ??
-            const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
+            const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
       ),
       elevation: WidgetStateProperty.resolveWith<double?>((states) {
         if (states.contains(WidgetState.hovered) &&
             widget.options.hoverElevation != null) {
           return widget.options.hoverElevation!;
         }
-        return widget.options.elevation ?? 2.0;
+        if (states.contains(WidgetState.pressed)) {
+          return 0.0;
+        }
+        return widget.options.elevation ?? 0.0;
       }),
       iconColor: WidgetStateProperty.resolveWith<Color?>((states) {
         if (states.contains(WidgetState.disabled) &&
@@ -226,7 +229,7 @@ class _FFButtonWidgetState extends State<FFButtonWidget> {
               widget.options.borderSide ?? BorderSide.none,
             ),
             borderRadius:
-                widget.options.borderRadius ?? BorderRadius.circular(8),
+                widget.options.borderRadius ?? BorderRadius.circular(14),
           ),
           child: IconButton(
             splashRadius: 1.0,
