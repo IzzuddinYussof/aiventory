@@ -544,9 +544,9 @@ Status: completed (first-pass, partial)
 Branch: `ui-repair-phase1`
 
 What this phase changed:
-- `find_inventory` now opens with a calmer search brief and clearer result-state framing
+- `find_inventory` now opens with a calmer search brief, clearer search-filter framing, and stronger result-state messaging
 - `find_inventory` empty state now reads like an intentional no-result panel instead of a bare placeholder image
-- `stock_in` now has a clearer receiving intro and a more explicit final save CTA, especially for order-linked receiving
+- `stock_in` now has a clearer receiving intro, stronger field naming, tighter section cues, and a more explicit final save CTA, especially for order-linked receiving
 
 What this phase did NOT change yet:
 - shared dialog component restyling across the full app

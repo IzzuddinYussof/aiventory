@@ -345,7 +345,7 @@ class _StockInWidgetState extends State<StockInWidget> {
                             ),
                           Padding(
                             padding: EdgeInsetsDirectional.fromSTEB(
-                                0.0, 8.0, 0.0, 0.0),
+                                0.0, 12.0, 0.0, 0.0),
                             child: Text(
                               'Item lookup',
                               style: FlutterFlowTheme.of(context)
@@ -360,6 +360,14 @@ class _StockInWidgetState extends State<StockInWidget> {
                                     letterSpacing: 0.0,
                                     fontWeight: FontWeight.w600,
                                   ),
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsetsDirectional.fromSTEB(
+                                0.0, 2.0, 0.0, 6.0),
+                            child: Text(
+                              'Search the inventory first so unit, costing, and receipt details stay tied to the right item.',
+                              style: FlutterFlowTheme.of(context).labelSmall,
                             ),
                           ),
                           Padding(
@@ -465,7 +473,7 @@ class _StockInWidgetState extends State<StockInWidget> {
                                       obscureText: false,
                                       decoration: InputDecoration(
                                         isDense: false,
-                                        labelText: 'Search ..',
+                                        labelText: 'Item name',
                                         labelStyle: FlutterFlowTheme.of(context)
                                             .bodySmall
                                             .override(
@@ -1267,7 +1275,7 @@ class _StockInWidgetState extends State<StockInWidget> {
                                       .bodyMedium
                                       .fontStyle,
                                 ),
-                            hintText: 'Choose unit',
+                            hintText: 'Select unit',
                             icon: Icon(
                               Icons.keyboard_arrow_down_rounded,
                               color: FlutterFlowTheme.of(context).secondaryText,
@@ -1295,7 +1303,7 @@ class _StockInWidgetState extends State<StockInWidget> {
                         textCapitalization: TextCapitalization.words,
                         obscureText: false,
                         decoration: InputDecoration(
-                          labelText: 'Cost per Unit',
+                          labelText: 'Unit cost',
                           labelStyle:
                               FlutterFlowTheme.of(context).bodyMedium.override(
                                     font: GoogleFonts.inter(
@@ -1428,7 +1436,7 @@ class _StockInWidgetState extends State<StockInWidget> {
                         textCapitalization: TextCapitalization.words,
                         obscureText: false,
                         decoration: InputDecoration(
-                          labelText: 'Total Cost',
+                          labelText: 'Total cost',
                           labelStyle:
                               FlutterFlowTheme.of(context).bodyMedium.override(
                                     font: GoogleFonts.inter(
@@ -1564,7 +1572,7 @@ class _StockInWidgetState extends State<StockInWidget> {
                           obscureText: false,
                           decoration: InputDecoration(
                             isDense: true,
-                            labelText: 'Remark',
+                            labelText: 'Receiving note',
                             labelStyle: FlutterFlowTheme.of(context)
                                 .labelMedium
                                 .override(
@@ -1677,7 +1685,7 @@ class _StockInWidgetState extends State<StockInWidget> {
                       ),
                       Padding(
                         padding: EdgeInsetsDirectional.fromSTEB(
-                            0.0, 8.0, 0.0, 0.0),
+                            0.0, 10.0, 0.0, 0.0),
                         child: Text(
                           'Proof and notes',
                           style: FlutterFlowTheme.of(context)
@@ -1692,6 +1700,14 @@ class _StockInWidgetState extends State<StockInWidget> {
                                 letterSpacing: 0.0,
                                 fontWeight: FontWeight.w600,
                               ),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsetsDirectional.fromSTEB(
+                            0.0, 2.0, 0.0, 6.0),
+                        child: Text(
+                          'Attach receipt or photo evidence so the receiving record stays auditable.',
+                          style: FlutterFlowTheme.of(context).labelSmall,
                         ),
                       ),
                       Container(

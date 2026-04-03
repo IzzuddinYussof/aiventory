@@ -465,6 +465,35 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
                                       ],
                                     ),
                                   ),
+                                  Padding(
+                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                        0.0, 12.0, 0.0, 0.0),
+                                    child: Text(
+                                      'Search filters',
+                                      style: FlutterFlowTheme.of(context)
+                                          .bodyMedium
+                                          .override(
+                                            font: GoogleFonts.inter(
+                                              fontWeight: FontWeight.w600,
+                                              fontStyle:
+                                                  FlutterFlowTheme.of(context)
+                                                      .bodyMedium
+                                                      .fontStyle,
+                                            ),
+                                            letterSpacing: 0.0,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                        0.0, 2.0, 0.0, 10.0),
+                                    child: Text(
+                                      'Start with item name, then tighten by branch or date only when needed.',
+                                      style: FlutterFlowTheme.of(context)
+                                          .labelSmall,
+                                    ),
+                                  ),
                                   TextFormField(
                                     controller: _model.searchItemTextController,
                                     focusNode: _model.searchItemFocusNode,
@@ -590,7 +619,7 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
                                         TextCapitalization.sentences,
                                     obscureText: false,
                                     decoration: InputDecoration(
-                                      labelText: 'Search item ...',
+                                      labelText: 'Item name',
                                       labelStyle: FlutterFlowTheme.of(context)
                                           .labelMedium
                                           .override(
@@ -960,7 +989,7 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
                                       autofocus: false,
                                       obscureText: false,
                                       decoration: InputDecoration(
-                                        labelText: 'Search Supplier ...',
+                                        labelText: 'Supplier name',
                                         labelStyle: FlutterFlowTheme.of(context)
                                             .labelMedium
                                             .override(
@@ -1741,8 +1770,8 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
                             SizedBox(height: 4.0),
                             Text(
                               (_model.inventoryItems.isNotEmpty) == true
-                                  ? 'Tap any item card to view movement history and next actions.'
-                                  : 'Run a search to load branch inventory, then review item cards here.',
+                                  ? 'Review item cards here, then open one to inspect movement history and stock context.'
+                                  : 'Run a search first. Matching inventory for the selected branch will appear here.',
                               style: FlutterFlowTheme.of(context).labelSmall,
                             ),
                           ],
