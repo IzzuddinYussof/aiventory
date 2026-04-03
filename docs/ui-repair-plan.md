@@ -494,6 +494,28 @@ Touched files in this phase:
 Rollback instruction:
 - revert only the Phase 3 commit once created
 
+### Phase 4 — find inventory and order list calm-up pass
+Status: completed (first-pass, partial)
+Branch: `ui-repair-phase1`
+
+What this phase changed:
+- `order_list` now has a clearer top hierarchy with a calmer intro section before filters/tabs
+- `order_list` app bar posture refined to feel less generated
+- `find_inventory` hotfix-safe state preserved from the earlier mobile action-button fix
+
+What this phase did NOT change yet:
+- deeper `find_inventory` hierarchy pass (deferred to avoid destabilizing the already-fixed hotfix state)
+- `order_list` list-card restyling
+- destructive/approval action redesign
+- denser list row/card composition work
+
+Touched files in this phase:
+- `lib/order_list/order_list_widget.dart`
+- `docs/ui-repair-plan.md`
+
+Rollback instruction:
+- revert only the Phase 4 commit once created
+
 ## Touched file target list (expected)
 
 High probability:
