@@ -1,0 +1,9 @@
+RewriteEngine On
+
+# Let existing files/directories load normally.
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Flutter/SPA deep links: send all app routes back to index.html.
+RewriteRule ^ index.html [L]
