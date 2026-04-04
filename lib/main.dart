@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
+import '/backend/api_requests/api_calls.dart';
+import '/backend/schema/structs/index.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import 'flutter_flow/flutter_flow_util.dart';
 import 'index.dart';
@@ -61,6 +63,96 @@ class _MyAppState extends State<MyApp> {
           .toList();
   bool displaySplashImage = true;
 
+  Future<void> _bootstrapSession() async {
+    final appState = FFAppState();
+
+    if (appState.token.isEmpty) {
+      _appStateNotifier.stopShowingSplashImage();
+      return;
+    }
+
+    try {
+      final authMe = await AuthGroup.autMeCall.call(
+        token: appState.token,
+      );
+
+      if (!(authMe.succeeded)) {
+        appState.token = '';
+        _appStateNotifier.stopShowingSplashImage();
+        return;
+      }
+
+      appState.user = UserStruct.maybeFromMap((authMe.jsonBody ?? ''))!;
+
+      final results = await Future.wait([
+        InventoryGroup.inventoryCall.call(),
+        BranchGroup.branchListCall.call(),
+        InventoryCategoryGroup.getInventoryCategoryCall.call(),
+      ]);
+
+      final inventoryResponse = results[0];
+      final branchResponse = results[1];
+      final inventoryCategoryResponse = results[2];
+
+      if (inventoryResponse.succeeded) {
+        appState.allInventory = ((inventoryResponse.jsonBody ?? '')
+                .toList()
+                .map<InventoryStruct?>(InventoryStruct.maybeFromMap)
+                .toList() as Iterable<InventoryStruct?>)
+            .withoutNulls
+            .toList()
+            .cast<InventoryStruct>();
+      }
+
+      if (branchResponse.succeeded) {
+        final branchLists = ((branchResponse.jsonBody ?? '')
+                .toList()
+                .map<BranchStruct?>(BranchStruct.maybeFromMap)
+                .toList() as Iterable<BranchStruct?>)
+            .withoutNulls
+            .toList()
+            .cast<BranchStruct>();
+
+        appState.branchLists = branchLists;
+        if (!appState.branchLists.any((e) => e.id == 0)) {
+          appState.addToBranchLists(BranchStruct(
+            id: 0,
+            label: 'All Dentabay',
+          ));
+        }
+        appState.branchIdUser = valueOrDefault<int>(
+          appState.branchLists
+              .where((e) => e.label == appState.user.branch)
+              .toList()
+              .firstOrNull
+              ?.id,
+          0,
+        );
+        appState.setActiveBranch(
+          id: appState.isHQUser ? 0 : appState.branchIdUser,
+          label: appState.isHQUser ? 'All Dentabay' : appState.user.branch,
+          notify: false,
+        );
+      }
+
+      if (inventoryCategoryResponse.succeeded) {
+        appState.inventoryCategoryLists =
+            ((inventoryCategoryResponse.jsonBody ?? '')
+                    .toList()
+                    .map<InventoryCategoryStruct?>(
+                        InventoryCategoryStruct.maybeFromMap)
+                    .toList() as Iterable<InventoryCategoryStruct?>)
+                .withoutNulls
+                .toList()
+                .cast<InventoryCategoryStruct>();
+      }
+    } catch (_) {
+      appState.token = '';
+    } finally {
+      _appStateNotifier.stopShowingSplashImage();
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -68,8 +160,7 @@ class _MyAppState extends State<MyApp> {
     _appStateNotifier = AppStateNotifier.instance;
     _router = createRouter(_appStateNotifier);
 
-    Future.delayed(Duration(milliseconds: 1000),
-        () => safeSetState(() => _appStateNotifier.stopShowingSplashImage()));
+    _bootstrapSession();
   }
 
   void setThemeMode(ThemeMode mode) => safeSetState(() {

@@ -37,11 +37,32 @@ class AppStateNotifier extends ChangeNotifier {
   }
 }
 
+bool _hasValidSession() => FFAppState().token.isNotEmpty;
+
 GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
       initialLocation: '/',
       debugLogDiagnostics: true,
       refreshListenable: appStateNotifier,
       navigatorKey: appNavigatorKey,
+      redirect: (context, state) {
+        if (appStateNotifier.showSplashImage) {
+          return null;
+        }
+
+        final loggedIn = _hasValidSession();
+        final isLoginRoute = state.matchedLocation == LoginWidget.routePath ||
+            state.matchedLocation == '/';
+
+        if (!loggedIn && !isLoginRoute) {
+          return LoginWidget.routePath;
+        }
+
+        if (loggedIn && state.matchedLocation == LoginWidget.routePath) {
+          return DashboardHQWidget.routePath;
+        }
+
+        return null;
+      },
       errorBuilder: (context, state) => appStateNotifier.showSplashImage
           ? Builder(
               builder: (context) => Container(
