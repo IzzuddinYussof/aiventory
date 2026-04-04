@@ -1666,51 +1666,6 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
                           ],
                         ),
                       ),
-                      Container(
-                        width: double.infinity,
-                        padding: EdgeInsetsDirectional.fromSTEB(
-                          12.0,
-                          12.0,
-                          12.0,
-                          12.0,
-                        ),
-                        decoration: BoxDecoration(
-                          color: FlutterFlowTheme.of(context).secondaryBackground,
-                          borderRadius: BorderRadius.circular(16.0),
-                          border: Border.all(
-                            color: FlutterFlowTheme.of(context).alternate,
-                          ),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              (_model.inventoryItems.isNotEmpty) == true
-                                  ? 'Matched inventory'
-                                  : 'No inventory shown yet',
-                              style: FlutterFlowTheme.of(context)
-                                  .bodyLarge
-                                  .override(
-                                    font: GoogleFonts.inter(
-                                      fontWeight: FontWeight.w600,
-                                      fontStyle: FlutterFlowTheme.of(context)
-                                          .bodyLarge
-                                          .fontStyle,
-                                    ),
-                                    letterSpacing: 0.0,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                            ),
-                            SizedBox(height: 4.0),
-                            Text(
-                              (_model.inventoryItems.isNotEmpty) == true
-                                  ? 'Review item cards here, then open one to inspect movement history and stock context.'
-                                  : 'Run a search first. Matching inventory for the selected branch will appear here.',
-                              style: FlutterFlowTheme.of(context).labelSmall,
-                            ),
-                          ],
-                        ),
-                      ),
 
                       // This list view is "shrink wrapped" this can affect your app performance, we would suggest limiting the number of items you query in this list view.
                       //
