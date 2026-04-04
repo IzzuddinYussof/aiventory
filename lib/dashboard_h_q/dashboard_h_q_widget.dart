@@ -544,38 +544,6 @@ class _DashboardHQWidgetState extends State<DashboardHQWidget>
                         ),
                       ),
                     ),
-                  Padding(
-                    padding: EdgeInsetsDirectional.fromSTEB(
-                      isWideLayout ? 24.0 : 16.0,
-                      18.0,
-                      isWideLayout ? 24.0 : 16.0,
-                      12.0,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Operations snapshot',
-                          style: FlutterFlowTheme.of(context)
-                              .headlineSmall
-                              .override(
-                                font: GoogleFonts.interTight(
-                                  fontWeight: FlutterFlowTheme.of(context)
-                                      .headlineSmall
-                                      .fontWeight,
-                                  fontStyle: FlutterFlowTheme.of(context)
-                                      .headlineSmall
-                                      .fontStyle,
-                                ),
-                                letterSpacing: 0.0,
-                                fontStyle: FlutterFlowTheme.of(context)
-                                    .headlineSmall
-                                    .fontStyle,
-                              ),
-                        ),
-                      ],
-                    ),
-                  ),
                   if (responsiveVisibility(
                     context: context,
                     tabletLandscape: false,
