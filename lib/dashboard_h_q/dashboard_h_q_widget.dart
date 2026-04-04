@@ -573,25 +573,6 @@ class _DashboardHQWidgetState extends State<DashboardHQWidget>
                                     .fontStyle,
                               ),
                         ),
-                        SizedBox(height: 6.0),
-                        Text(
-                          'Monitor branch performance, orders, and stock health at a glance.',
-                          style:
-                              FlutterFlowTheme.of(context).bodySmall.override(
-                                    font: GoogleFonts.inter(
-                                      fontWeight: FlutterFlowTheme.of(context)
-                                          .bodySmall
-                                          .fontWeight,
-                                      fontStyle: FlutterFlowTheme.of(context)
-                                          .bodySmall
-                                          .fontStyle,
-                                    ),
-                                    letterSpacing: 0.0,
-                                    fontStyle: FlutterFlowTheme.of(context)
-                                        .bodySmall
-                                        .fontStyle,
-                                  ),
-                        ),
                       ],
                     ),
                   ),

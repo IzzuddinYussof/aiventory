@@ -408,63 +408,6 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
                                 mainAxisSize: MainAxisSize.max,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Container(
-                                    width: double.infinity,
-                                    padding: EdgeInsetsDirectional.fromSTEB(
-                                      14.0,
-                                      14.0,
-                                      14.0,
-                                      14.0,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: FlutterFlowTheme.of(context).primaryBackground,
-                                      borderRadius: BorderRadius.circular(14.0),
-                                      border: Border.all(
-                                        color: FlutterFlowTheme.of(context).alternate,
-                                      ),
-                                    ),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'Search live inventory with branch-ready filters.',
-                                          style: FlutterFlowTheme.of(context)
-                                              .bodyLarge
-                                              .override(
-                                                font: GoogleFonts.inter(
-                                                  fontWeight: FontWeight.w600,
-                                                  fontStyle:
-                                                      FlutterFlowTheme.of(context)
-                                                          .bodyLarge
-                                                          .fontStyle,
-                                                ),
-                                                letterSpacing: 0.0,
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                        ),
-                                        SizedBox(height: 6.0),
-                                        Text(
-                                          'Use item name, supplier, or expiry date to narrow the list before checking movement history.',
-                                          style: FlutterFlowTheme.of(context)
-                                              .labelMedium
-                                              .override(
-                                                font: GoogleFonts.inter(
-                                                  fontWeight:
-                                                      FlutterFlowTheme.of(context)
-                                                          .labelMedium
-                                                          .fontWeight,
-                                                  fontStyle:
-                                                      FlutterFlowTheme.of(context)
-                                                          .labelMedium
-                                                          .fontStyle,
-                                                ),
-                                                letterSpacing: 0.0,
-                                              ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
                                   Padding(
                                     padding: EdgeInsetsDirectional.fromSTEB(
                                         0.0, 12.0, 0.0, 0.0),
@@ -483,15 +426,6 @@ class _FindInventoryWidgetState extends State<FindInventoryWidget> {
                                             letterSpacing: 0.0,
                                             fontWeight: FontWeight.w600,
                                           ),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
-                                        0.0, 2.0, 0.0, 10.0),
-                                    child: Text(
-                                      'Start with item name, then tighten by branch or date only when needed.',
-                                      style: FlutterFlowTheme.of(context)
-                                          .labelSmall,
                                     ),
                                   ),
                                   TextFormField(

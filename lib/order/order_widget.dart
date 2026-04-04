@@ -206,52 +206,6 @@ class _OrderWidgetState extends State<OrderWidget> {
                                 mainAxisSize: MainAxisSize.max,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Container(
-                                    width: double.infinity,
-                                    padding: EdgeInsetsDirectional.fromSTEB(
-                                      16.0,
-                                      16.0,
-                                      16.0,
-                                      16.0,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: FlutterFlowTheme.of(context)
-                                          .secondaryBackground,
-                                      borderRadius: BorderRadius.circular(18.0),
-                                      border: Border.all(
-                                        color: FlutterFlowTheme.of(context)
-                                            .alternate,
-                                      ),
-                                    ),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'Build orders with clear intent and branch control.',
-                                          style: FlutterFlowTheme.of(context)
-                                              .bodyLarge
-                                              .override(
-                                                font: GoogleFonts.inter(
-                                                  fontWeight: FontWeight.w600,
-                                                  fontStyle:
-                                                      FlutterFlowTheme.of(context)
-                                                          .bodyLarge
-                                                          .fontStyle,
-                                                ),
-                                                letterSpacing: 0.0,
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                        ),
-                                        SizedBox(height: 6.0),
-                                        Text(
-                                          'Set the channel first, lock the category and item, then submit with quantity and proof in one deliberate flow.',
-                                          style: FlutterFlowTheme.of(context)
-                                              .labelMedium,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
                                   if (FFAppState().isHQUser)
                                     Padding(
                                       padding: EdgeInsetsDirectional.fromSTEB(
@@ -480,15 +434,6 @@ class _OrderWidgetState extends State<OrderWidget> {
                                             letterSpacing: 0.0,
                                             fontWeight: FontWeight.w600,
                                           ),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
-                                        0.0, 2.0, 0.0, 0.0),
-                                    child: Text(
-                                      'Choose the category first so the item list stays intentional and easier to scan.',
-                                      style: FlutterFlowTheme.of(context)
-                                          .labelSmall,
                                     ),
                                   ),
                                   FlutterFlowDropDown<String>(
@@ -924,15 +869,6 @@ class _OrderWidgetState extends State<OrderWidget> {
                                           ),
                                     ),
                                   ),
-                                  Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
-                                        0.0, 2.0, 0.0, 0.0),
-                                    child: Text(
-                                      'Add context that helps the receiving side act fast without guessing.',
-                                      style: FlutterFlowTheme.of(context)
-                                          .labelSmall,
-                                    ),
-                                  ),
                                   TextFormField(
                                     controller: _model.remarkTextController,
                                     focusNode: _model.remarkFocusNode,
@@ -1144,12 +1080,6 @@ class _OrderWidgetState extends State<OrderWidget> {
                                                 letterSpacing: 0.0,
                                                 fontWeight: FontWeight.w600,
                                               ),
-                                        ),
-                                        SizedBox(height: 4.0),
-                                        Text(
-                                          'Make sure the item, quantity, channel, and proof are aligned before sending the order through.',
-                                          style: FlutterFlowTheme.of(context)
-                                              .labelSmall,
                                         ),
                                         Padding(
                                           padding: EdgeInsetsDirectional.fromSTEB(

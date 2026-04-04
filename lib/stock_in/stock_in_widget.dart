@@ -229,50 +229,6 @@ class _StockInWidgetState extends State<StockInWidget> {
                     mainAxisSize: MainAxisSize.max,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        width: double.infinity,
-                        padding: EdgeInsetsDirectional.fromSTEB(
-                          16.0,
-                          16.0,
-                          16.0,
-                          16.0,
-                        ),
-                        decoration: BoxDecoration(
-                          color: FlutterFlowTheme.of(context).secondaryBackground,
-                          borderRadius: BorderRadius.circular(18.0),
-                          border: Border.all(
-                            color: FlutterFlowTheme.of(context).alternate,
-                          ),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Receive stock with clean branch and cost tracking.',
-                              style: FlutterFlowTheme.of(context)
-                                  .bodyLarge
-                                  .override(
-                                    font: GoogleFonts.inter(
-                                      fontWeight: FontWeight.w600,
-                                      fontStyle: FlutterFlowTheme.of(context)
-                                          .bodyLarge
-                                          .fontStyle,
-                                    ),
-                                    letterSpacing: 0.0,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                            ),
-                            SizedBox(height: 6.0),
-                            Text(
-                              widget.orderData != null
-                                  ? 'This receipt is linked to an order, so quantity and receiving status can flow together.'
-                                  : 'Search the item first, confirm the unit, then log quantity, costing, and proof in one pass.',
-                              style: FlutterFlowTheme.of(context)
-                                  .labelMedium,
-                            ),
-                          ],
-                        ),
-                      ),
                       Column(
                         mainAxisSize: MainAxisSize.max,
                         children: [
@@ -360,14 +316,6 @@ class _StockInWidgetState extends State<StockInWidget> {
                                     letterSpacing: 0.0,
                                     fontWeight: FontWeight.w600,
                                   ),
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsetsDirectional.fromSTEB(
-                                0.0, 2.0, 0.0, 6.0),
-                            child: Text(
-                              'Search the inventory first so unit, costing, and receipt details stay tied to the right item.',
-                              style: FlutterFlowTheme.of(context).labelSmall,
                             ),
                           ),
                           Padding(
@@ -1700,14 +1648,6 @@ class _StockInWidgetState extends State<StockInWidget> {
                                 letterSpacing: 0.0,
                                 fontWeight: FontWeight.w600,
                               ),
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsetsDirectional.fromSTEB(
-                            0.0, 2.0, 0.0, 6.0),
-                        child: Text(
-                          'Attach receipt or photo evidence so the receiving record stays auditable.',
-                          style: FlutterFlowTheme.of(context).labelSmall,
                         ),
                       ),
                       Container(

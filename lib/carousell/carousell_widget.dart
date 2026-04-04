@@ -210,52 +210,6 @@ class _CarousellWidgetState extends State<CarousellWidget> {
                             mainAxisSize: MainAxisSize.max,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Container(
-                                width: double.infinity,
-                                padding: EdgeInsetsDirectional.fromSTEB(
-                                  16.0,
-                                  16.0,
-                                  16.0,
-                                  16.0,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: FlutterFlowTheme.of(context)
-                                      .secondaryBackground,
-                                  borderRadius: BorderRadius.circular(18.0),
-                                  border: Border.all(
-                                    color: FlutterFlowTheme.of(context)
-                                        .alternate,
-                                  ),
-                                ),
-                                child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Keep marketplace listings tight and branch-aware.',
-                                      style: FlutterFlowTheme.of(context)
-                                          .bodyLarge
-                                          .override(
-                                            font: GoogleFonts.inter(
-                                              fontWeight: FontWeight.w600,
-                                              fontStyle:
-                                                  FlutterFlowTheme.of(context)
-                                                      .bodyLarge
-                                                      .fontStyle,
-                                            ),
-                                            letterSpacing: 0.0,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                    ),
-                                    SizedBox(height: 6.0),
-                                    Text(
-                                      'Search quickly, filter by category, then act on supply or request listings without losing branch context.',
-                                      style: FlutterFlowTheme.of(context)
-                                          .labelMedium,
-                                    ),
-                                  ],
-                                ),
-                              ),
                               if (FFAppState().isHQUser)
                                 Padding(
                                   padding: EdgeInsetsDirectional.fromSTEB(
@@ -364,12 +318,6 @@ class _CarousellWidgetState extends State<CarousellWidget> {
                                             letterSpacing: 0.0,
                                             fontWeight: FontWeight.w600,
                                           ),
-                                    ),
-                                    SizedBox(height: 4.0),
-                                    Text(
-                                      'Use search and category chips to narrow what needs action first.',
-                                      style: FlutterFlowTheme.of(context)
-                                          .labelSmall,
                                     ),
                                     Padding(
                                       padding: EdgeInsetsDirectional.fromSTEB(
