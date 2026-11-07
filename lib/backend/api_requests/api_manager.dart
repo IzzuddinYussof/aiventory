@@ -15,6 +15,7 @@ import 'package:flutter/foundation.dart';
 import 'package:http/browser_client.dart'
     if (dart.library.io) 'browser_client_stub.dart';
 
+import '/app_state.dart';
 import '/flutter_flow/uploaded_file.dart';
 
 import 'get_streamed_response.dart';
@@ -502,7 +503,23 @@ class ApiManager {
     ApiCallOptions? options,
     http.Client? client,
   }) async {
-    final callOptions = options ??
+    // Keep authentication tied to the current user, not a bundled/shared secret.
+    headers = Map<String, dynamic>.from(headers);
+    final uri = Uri.tryParse(apiUrl);
+    final isPrivateXanoCall = uri?.scheme == 'https' &&
+        uri?.host == 'xqoc-ewo0-x3u2.s2.xano.io' &&
+        RegExp(r'^/api:(s4bMNy03|0o-ZhGP6)/').hasMatch(uri!.path) &&
+        !RegExp(r'^/api:[^/]+/auth/(login|signup)(/|$)').hasMatch(uri.path);
+    final persistedToken = FFAppState().token.trim();
+    if (isPrivateXanoCall &&
+        persistedToken.isNotEmpty &&
+        !headers.keys.any((key) => key.toLowerCase() == 'authorization')) {
+      headers[HttpHeaders.authorizationHeader] =
+          RegExp(r'^Bearer\s+', caseSensitive: false).hasMatch(persistedToken)
+              ? persistedToken
+              : 'Bearer $persistedToken';
+    }
+    final callOptions = options?.copyWith(headers: headers) ??
         ApiCallOptions(
           callName: callName,
           callType: callType,
